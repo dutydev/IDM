@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+{% block pagecontent %}
+{% if installed %}
+<div class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <p><a href="/admin">Перейти в админ-панель</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <p>IDM установлен, но не настроен. Прейдите на <a href="/install">страницу настройки</a>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+{% endblock pagecontent %}

@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+{% block pagecontent %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4">
+
+            <div id="vk_auth"></div>
+
+        </div>
+        <div class="col-4"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var params = window
+        .location
+        .search
+        .replace('?','')
+        .split('&')
+        .reduce(
+            function(p,e){
+                var a = e.split('=');
+                p[ decodeURIComponent(a[0])] = decodeURIComponent(a[1]);
+                return p;
+            },
+            {}
+        );
+    VK.init({ apiId: "{{vk_app_id}}" });
+    VK.Widgets.Auth("vk_auth", {
+            "onAuth":function(data) {
+                cookies.set("uid", data.uid)
+                cookies.set("token", data.hash)
+                if (params.next != undefined) {
+                    document.location = params.next;
+                } else {
+                    document.location = "/";
+                }
+            }
+        });    
+</script>
+{% endblock pagecontent %}
