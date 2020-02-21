@@ -1,0 +1,16 @@
+{
+    "access_token": "",
+    "online_token": null,
+    "me_token": null,
+    "bp_token": null,
+    "secret": "",
+    "chats": {},
+    "trusted_users": [],
+    "owner_id": 0,
+    "duty_id": 0,
+    "vk_app_id": 0,
+    "vk_app_secret": "",
+    "templates": [],
+    "host": "",
+    "installed": false
+}
