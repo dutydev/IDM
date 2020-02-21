@@ -31,7 +31,6 @@
 ```bash
 rm -r IDM
 git clone https://github.com/LordRalInc/IDM.git
-python3.7 -m pip install --user -r IDM/requirements.txt
 ```
 Далее переходим во вкладку *Web* и нажимаем *Reload * `имя аккаунта`.pythonanywhere.com
 
