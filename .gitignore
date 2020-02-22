@@ -126,3 +126,4 @@ dmypy.json
 database*.json
 test*.py
 *.log
+database.json
