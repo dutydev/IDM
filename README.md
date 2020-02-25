@@ -110,8 +110,11 @@ cp database.json IDM/database.json
 Спасибо за помощь в тестировании:
 
 [Ридэль Яумбаев](https://vk.com/ss_20)
+
 [Влад Богданов](https://vk.com/gamtz)
+
 [Владислав Джениа](https://vk.com/klubnishhhka)
+
 [Димитрий Ким](https://vk.com/iris_wolf)
 
 
