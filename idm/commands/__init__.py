@@ -2,6 +2,7 @@
 from .add_user import add_user
 from .ban_expired import ban_expired
 from .ban_get_reason import ban_get_reason
+from .bind_chat import bind_chat
 from .delete_messages_from_user import delete_messages_from_user
 from .delete_messages import delete_messages
 from .forbidden_links import forbidden_links

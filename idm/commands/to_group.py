@@ -6,7 +6,7 @@ import re
 import requests
 
 @dp.event_handle(dp.Methods.TO_GROUP)
-def to_group(event: Event):
+def to_group(event: Event) -> str:
     def parse_attachments(event: Event) -> typing.Tuple[str, typing.List[str]]:
         def get_payload(text: str) -> str:
             regexp = r"(^[\S]+)|([\S]+)|(\n[\s\S \n]+)"
@@ -36,8 +36,10 @@ def to_group(event: Event):
                 payload = event.reply_message['text']
             message = utils.get_msg(event.api, event.chat.peer_id, event.reply_message['conversation_message_id'])
             for attachment in message.get('attachments', []):
-
+                
                 a_type = attachment['type']
+
+                if a_type in ['link']:continue
 
                 if a_type == 'photo':
                     attachments.append(upload_photo(

@@ -20,7 +20,7 @@ def delete_self_message(event: MySignalEvent) -> str:
     for mmsg in utils.get_all_history_gen(event.api, event.chat.peer_id):
         if datetime.now().timestamp() - mmsg['date'] > 86400:
             break        
-        if mmsg['from_id'] == user_id:
+        if mmsg['from_id'] == user_id and mmsg.get('action', None) == None:
             msg_ids.append(str(mmsg['id']))
     message_id = 0
     try:
@@ -34,6 +34,6 @@ def delete_self_message(event: MySignalEvent) -> str:
     except:
         message_id = utils.new_message(event.api, event.chat.peer_id, message=f"❗ Произошла неизвестная ошибка.")
 
-    t = Timer(10, delete_msg, (event.api, message_id))
+    t = Timer(2, delete_msg, (event.api, message_id))
     t.start()
     return "ok"

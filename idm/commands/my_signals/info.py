@@ -3,16 +3,10 @@ from ...utils import edit_message, new_message
 from datetime import datetime
 from idm import __version__
 import typing
-from .auto_friends_add import afa_thread
-from .online import online_thread
-from threading import Thread
+import threading
 
 @dp.my_signal_event_handle('инфо', 'инфа', '-i', 'info')
 def info(event: typing.Union[MySignalEvent, SignalEvent]) -> str:
-    def is_alive(th: Thread) -> bool:
-        if th == None:return False
-        if not th.is_alive():return False
-        return True
 
     owner = event.api('users.get', user_ids=event.db.owner_id)[0]
 
@@ -22,8 +16,8 @@ def info(event: typing.Union[MySignalEvent, SignalEvent]) -> str:
     Владелец: [id{owner['id']}|{owner['first_name']} {owner['last_name']}]
     Чатов: {len(event.db.chats.keys())}
 
-    Автодобавление в друзья: {'да' if is_alive(afa_thread) else 'нет'}
-    Вечный онлайн: {'да' if is_alive(online_thread) else 'нет'}
+    Автодобавление в друзья: {'да' if 'AFA Thread' in [th.getName() for th in threading.enumerate()] else 'нет'}
+    Вечный онлайн: {'да' if 'Online Thread' in [th.getName() for th in threading.enumerate()] else 'нет'}
 
     Панель управления: https://{event.db.host}/
 

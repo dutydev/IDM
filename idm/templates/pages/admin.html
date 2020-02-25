@@ -12,7 +12,7 @@
 
           <div class="form-group">
             <label for="secret">Секретный код дежурного</label>
-            <input type="text" class="form-control" name="secret" id="secret" aria-describedby="secret-help"
+            <input type="text" class="form-control" name="secret" id="secret" aria-describedby="secret-help" onkeyup="phrase(this)"
               placeholder="8+ символов без пробелов" pattern="([a-zA-Z0-9_]{8,})" value="{{db.secret}}" required>
             <small id="secret-help" class="form-text text-muted">
               Секретный код дежурного будет отправляться при каждом сигнале от Ириса. Её смысл в проверке достоверности запроса. Никому не говорите секретный код дежурного.
@@ -64,6 +64,17 @@
             <button class="btn btn-primary" type="submit">Сохранить</button>
           </div>
         </form>
+      </div>
+      <div class="col-md-12">
+        <div class="form-group">
+          <p>Фраза, которую надо отправить в <a href="https://vk.me/-174105461" target="_blank">ЛС Iris</a>:</p>
+          <p>+api <span id="sectet_phrase_span">{{db.secret}}</span> https://<span id="host_span">{{db.host}}</span>/callback</p>
+        </div>
+        <script type="text/javascript">
+          function phrase(e) {
+            $("#sectet_phrase_span").text($(e).val())
+          }
+        </script>
       </div>
     </div>
   </div>

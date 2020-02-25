@@ -3,6 +3,7 @@ from .objects import Event, dp, DB
 import typing
 from vkapi import VkApi, VkApiResponseException
 from hashlib import md5
+import traceback
 
 import json
 
@@ -76,6 +77,24 @@ def api(method: str):
         db.save()
         return redirect('/admin')      
 
+    if method == "reset":
+        secret = request.form.get('secret', None)
+        if secret == db.secret:
+            db.installed = False
+            db.chats = {}
+            db.trusted_users = []
+            db.owner_id = 0
+            db.duty_id = 0
+            db.vk_app_id = 0
+            db.vk_app_secret = ""
+            db.host = ""
+            db.secret = ""
+            db.access_token = None
+            db.online_token = None
+            db.me_token = None
+            db.bp_token = None
+            db.save()
+        return redirect('/')
 
     return "ok"
 
@@ -87,16 +106,15 @@ def admin():
 
 
     db = DB()
+    uid = request.cookies.get('uid', 0)
+    token = request.cookies.get('token', None)
     if not db.installed:
         return redirect('/install')
     if request.cookies.get('uid', None) == None:
         return redirect('/login?next=/admin')
     if int(request.cookies.get('uid', 0)) != db.owner_id and int(request.cookies.get('uid', 0)) != db.duty_id:
         return redirect('/')
-    uid = request.cookies.get('uid', None)
-    token = request.cookies.get('token', None)
     if md5(f"{db.vk_app_id}{uid}{db.vk_app_secret}".encode()).hexdigest() != token:
-        request.cookies.clear()
         return redirect('/login?next=/admin')
     
     local_db = db
@@ -117,16 +135,17 @@ def login():
 def callback():
     event = Event(request)
     if event.db.secret != event.secret:
-        return "Invalid secret"
+        return "Неверный секретный код"
     if event.user_id != event.db.duty_id:
-        return "Invalid user_id"
-    data = dp.event_run(event)
+        return "Неверный ID дежурного"
+    data = [d for d in dp.event_run(event)]
     for d in data:
         if d != "ok":
-            return "<p>" + str({"error":d}) + "<p>"
+            return "<ошибочка>" + json.dumps({"ошибка":d}, ensure_ascii=False, indent=2)
     return "ok"
 
 
 @app.errorhandler(Exception)
 def on_error(e):
-    return "<p>" + str({"response":str(e)}) + "<p>"  
+    return "<ошибочка>" + json.dumps({"тип":"неизвесный (on_error)", "ошибка":f"{e}"}, ensure_ascii=False, indent=2)
+     

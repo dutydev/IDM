@@ -7,8 +7,25 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <p>Упс, кажется IDM уже установлен.</p>
+        <p>Упс, кажется IDM уже установлен. Если Вы ошиблись в данных, то можете сбросить дежурного.</p>
       </div>
+      <div class="col-md-12">
+        <form action="/api/reset" method="post">
+          <div class="form-group">
+            <label for="secret">Секретный код дежурного</label>
+            <input type="text"
+              class="form-control" name="secret" id="secret" pattern="([a-zA-Z0-9_]{8,})" required>
+          </div>
+          <button class="btn btn-danger" type="submit">Сбросить дежурного</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="py-5">
+  <div class="container">
+    <div class="row">
       <div class="col-md-12 text-center">
         <p><a href="/">На главную</a></p>
       </div>
@@ -87,7 +104,7 @@
           </div>
 
           <div class="form-group">
-            <label for="vk_app_secret">Секретный код приложения ВК</label>
+            <label for="vk_app_secret">Защищённый ключ приложения ВК</label>
             <input type="text"
               class="form-control" name="vk_app_secret" id="vk_app_secret" aria-describedby="vk_app_secret-help" placeholder="20 символов" minlength="20" maxlength="20" required>
             <small id="vk_app_secret-help" class="form-text text-muted">

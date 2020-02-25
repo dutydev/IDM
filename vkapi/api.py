@@ -87,7 +87,7 @@ class VkApi(object):
             self.logger.info(f"Запрос {method} выполнен")
             return request.json()["response"]
         elif 'error' in request.json().keys():
-            self.logger.info(f"Запрос {method} не выполнен")
+            self.logger.info(f"Запрос {method} не выполнен: {request.json()['error']}")
             if raise_excepts:
                 raise VkApiResponseException(**request.json()["error"])
             else:

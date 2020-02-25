@@ -124,6 +124,8 @@ dmypy.json
 
 .vs/
 database*.json
+tests
+*.zip
 test*.py
 *.log
 database.json

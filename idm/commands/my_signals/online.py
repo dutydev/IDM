@@ -13,6 +13,7 @@ online_thread: Thread = None
 stop_thread = False
 
 def set_online(v):
+    global stop_thread
     db = DB()
     stop_thread = v
     if v == False:
@@ -25,14 +26,17 @@ def set_online(v):
 
 def online_th(api: VkApi, stop: typing.Callable):
     is_stop = False
-    while True:     
-        if is_stop:break
-        logger.info("Установлен онлайн")
-        api('account.setOnline', voip=0)
-        for _ in range(60):
-            is_stop = stop()
+    while True:
+        try:   
             if is_stop:break
-            time.sleep(5)
+            logger.info("Установлен онлайн")
+            api('account.setOnline', voip=0)
+            for _ in range(60):
+                is_stop = stop()
+                if is_stop:break
+                time.sleep(5)
+        except Exception as e:
+            logger.info(f"Ошибка в online: {e}")
 
 
 

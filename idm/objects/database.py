@@ -21,6 +21,7 @@ class DB:
     vk_app_id: int
     vk_app_secret: str
     templates: typing.List[dict]
+    dynamic_templates: list
 
     host: str
     installed: bool
@@ -29,6 +30,11 @@ class DB:
         get_dir = os.path.dirname
         self.path = os.path.join(get_dir(get_dir(get_dir(__file__))), 'database.json')
         self.read()
+        self.update()
+
+    def update(self):
+        self.__dict__.setdefault("dynamic_templates", [])
+        self.save()
 
     def read(self):
         logger.debug("Читаю базу данных")
@@ -52,6 +58,7 @@ class DB:
             "vk_app_id": self.vk_app_id,
             "vk_app_secret": self.vk_app_secret,
             "templates": self.templates,
+            "dynamic_templates":self.dynamic_templates,
             "host": self.host,
             "installed": self.installed
         }

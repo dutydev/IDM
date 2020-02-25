@@ -14,7 +14,7 @@ def delete_messages_from_user(event: Event) -> str:
     for mmsg in utils.get_all_history_gen(event.api, event.chat.peer_id):
         if datetime.now().timestamp() - mmsg['date'] >= 86400:
             break        
-        if mmsg['from_id'] == user_id:
+        if mmsg['from_id'] == user_id and mmsg.get('action', None) == None:
             msg_ids.append(str(mmsg['id']))
 
     if amount != None:

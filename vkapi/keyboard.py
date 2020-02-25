@@ -16,10 +16,8 @@ class ButtonColor(enum.Enum):
     NONE = None
 
 class Keyboard(object):
-
     ButtonType: ButtonType
     ButtonColor: ButtonColor
-
 
     one_time: bool
     inline: bool

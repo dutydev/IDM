@@ -15,3 +15,4 @@ class Methods(Enum):
     HERE_API = "hireApi"
     BAN_GET_REASON = "banGetReason"
     TO_GROUP = "toGroup"
+    BIND_CHAT = "bindChat"

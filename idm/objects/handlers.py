@@ -1,6 +1,8 @@
 import typing
 from . import Methods, Event, SignalEvent, MySignalEvent
 import logging
+from vkapi import VkApiResponseException
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -17,9 +19,31 @@ class Handler:
         logger.info(f"Выполнение команды {self.method.value}; F:{self.f.__name__}")
         try:
             return self.f(event)
-        except Exception as e:
-            return {"error": str(e)}
-
+        except VkApiResponseException as e:
+            data = {
+                    "тип":"vk_api",
+                    "код_ошибки":e.error_code,
+                    "сообщение":e.error_msg,
+                    "параметры":e.request_params,
+                    "traceback":traceback.format_exc()
+            }
+            logger.exception(data)
+            return data
+        except Exception as e:            
+            data = {
+                "тип":e.__class__.__name__,
+                "ошибка":f"{e}",
+                "traceback":traceback.format_exc()
+            }
+            logger.exception(data)
+            return data
+        except:                       
+            data = {
+                "тип":"неизвесный",
+                "traceback":traceback.format_exc()
+            }
+            logger.exception(data) 
+            return data
 
 class SignalHandler:
     commands: typing.List[str]
@@ -33,8 +57,31 @@ class SignalHandler:
         try:
             logger.info(f"Выполнение команды {event.command}; F:{self.f.__name__}")
             return self.f(event)
-        except Exception as e:
-            return {"error": str(e)}
+        except VkApiResponseException as e:
+            data = {
+                    "тип":"vk_api",
+                    "код_ошибки":e.error_code,
+                    "сообщение":e.error_msg,
+                    "параметры":e.request_params,
+                    "traceback":traceback.format_exc()
+            }
+            logger.exception(data)
+            return data
+        except Exception as e:            
+            data = {
+                "тип":e.__class__.__name__,
+                "ошибка":f"{e}",
+                "traceback":traceback.format_exc()
+            }
+            logger.exception(data)
+            return data
+        except:                       
+            data = {
+                "тип":"неизвесный",
+                "traceback":traceback.format_exc()
+            }
+            logger.exception(data) 
+            return data
     
 
 class MySignalHandler:
@@ -49,5 +96,28 @@ class MySignalHandler:
         try:
             logger.info(f"Выполнение команды {event.command}; F:{self.f.__name__}")
             return self.f(event)
-        except Exception as e:
-            return {"error": str(e)}
+        except VkApiResponseException as e:
+            data = {
+                    "тип":"vk_api",
+                    "код_ошибки":e.error_code,
+                    "сообщение":e.error_msg,
+                    "параметры":e.request_params,
+                    "traceback":traceback.format_exc()
+            }
+            logger.exception(data)
+            return data
+        except Exception as e:            
+            data = {
+                "тип":e.__class__.__name__,
+                "ошибка":f"{e}",
+                "traceback":traceback.format_exc()
+            }
+            logger.exception(data)
+            return data
+        except:                       
+            data = {
+                "тип":"неизвесный",
+                "traceback":traceback.format_exc()
+            }
+            logger.exception(data) 
+            return data

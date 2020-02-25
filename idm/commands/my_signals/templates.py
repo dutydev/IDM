@@ -6,6 +6,7 @@ def create_template(event: MySignalEvent) -> str:
 
     if ((event.payload == '' or event.payload == None) and len(event.attachments) == 0) or len(event.args) == 0:
             edit_message(event.api, event.chat.peer_id, event.msg['id'], message="❗ Нет данных")
+            return "ok"
 
     name = " ".join(event.args)
     data = event.payload

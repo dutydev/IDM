@@ -13,6 +13,9 @@ afa_thread: Thread = None
 stop_thread = False
 
 def set_afa(v):
+    global stop_thread
+    global afa_thread
+    
     db = DB()
     stop_thread = v
     if v == False:
@@ -26,23 +29,27 @@ def set_afa(v):
 
 def afa_th(api: VkApi, stop: typing.Callable):
     is_stop = False
-    while True:     
-        if is_stop:break
-        logger.info("Установлен онлайн")
-
-        data = api('friends.getRequests', offset=0, count=1000, extended=0, need_mutual=0, out=0, need_viewed=1)['items']
-        users = api('users.get', user_ids=",".join([str(i) for i in data]))
-
-        for user in users:
-            if user.get('deactivated', None) != None:
-                continue
-            try:
-                api("friends.add", user_id=user['id'])
-            except VkApiResponseException as e:
-                logger.error(f'Ошибка добавления пользвателя в друзья. {e.error_code} {e.error_msg} {e.request_params}')
-            time.sleep(5)
-            is_stop = stop()
+    while True:
+        try:     
             if is_stop:break
+            logger.info("Установлен онлайн")
+
+            data = api('friends.getRequests', offset=0, count=1000, extended=0, need_mutual=0, out=0, need_viewed=1)['items']
+            users = api('users.get', user_ids=",".join([str(i) for i in data]))
+
+            for user in users:
+                if user.get('deactivated', None) != None:
+                    continue
+                try:
+                    api("friends.add", user_id=user['id'])
+                except VkApiResponseException as e:
+                    logger.error(f'Ошибка добавления пользвателя в друзья. {e.error_code} {e.error_msg} {e.request_params}')
+                time.sleep(5)
+                is_stop = stop()
+                if is_stop:break
+        except Exception as e:
+            logger.info(f"Ошибка в AFA: {e}")
+        time.sleep(300)
 
 
 @dp.my_signal_event_handle('-адвд', '-друзья')
@@ -55,7 +62,7 @@ def off_afa(event: MySignalEvent):
     if afa_thread == None or not afa_thread.is_alive():
         utils.new_message(event.api, event.chat.peer_id, message="❗ Автодобавление в друзья не запущено")
         return "ok"
-    stop_thread = True
+    set_afa(False)
     utils.new_message(event.api, event.chat.peer_id, message="✅ Автодобавление в друзья остановлено.")
     return "ok"
     
@@ -71,10 +78,7 @@ def on_afa(event: MySignalEvent):
     if afa_thread != None and afa_thread.is_alive():
         utils.new_message(event.api, event.chat.peer_id, message="✅ Автодобавление в друзья и так запущено.")
         return "ok"
-    afa_thread = Thread(target=afa_th, args=(event.api, lambda:stop_thread))
-    afa_thread.setDaemon(True)
-    afa_thread.setName('AFA Thread')
-    afa_thread.start()
+    set_afa(True)
     utils.new_message(event.api, event.chat.peer_id, message="✅ Автодобавление в друзья запущено.")
     return "ok"
 

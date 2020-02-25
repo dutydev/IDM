@@ -3,7 +3,7 @@ from ..objects import dp, Event
 from vkapi import VkApiResponseException
 
 @dp.event_handle(dp.Methods.SUBSCRIBE_SIGNALS)
-def subscribe_signals(event: Event):
+def subscribe_signals(event: Event) -> str:
     message = f"""✅ Все отлично. 
         IDM настроен и готов к работе.
 
