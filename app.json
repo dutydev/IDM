@@ -1,0 +1,14 @@
+{
+  buildpacks [
+    {
+      url "heroku/python"
+    }
+  ],
+  
+    test {
+      scripts {
+        test bundle exec rake test
+      }
+    }
+  }
+}
