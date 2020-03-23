@@ -5,7 +5,7 @@ from vkapi import VkApiResponseException
 @dp.event_handle(dp.Methods.BAN_EXPIRED)
 def ban_expired(event: Event) -> str:
     user = event.api('users.get', user_ids=event.obj['user_id'])[0]
-    message = f"💚 Срок бана пользователя [id{user['id']}|{user['first_name']} {user['last_name']}] истек."
+    message = f"💚 Срок бана пользователя [id{user['id']}|{user['first_name']} {user['last_name']}] истек. Добавляю пользователя...."
 
     message_id = utils.new_message(event.api, event.chat.peer_id, message=message)
 
