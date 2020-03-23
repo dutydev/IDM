@@ -19,13 +19,13 @@ logger = logging.getLogger("IDMStart")
 logger.info(f"Запускаю IDM v{__version__}")
 
 from . import objects, utils, commands
-logger.info(f"Объекты импортированны")
+logger.info(f"Объекты импортированы")
 
 db = objects.DB()
 if db.installed:
-    logger.info(f"БД настоена Владелец: {db.owner_id} Дежурный: {db.duty_id} Хост: {db.host}")
+    logger.info(f"БД настроена Владелец: {db.owner_id} Дежурный: {db.duty_id} Хост: {db.host}")
 else:
-    logger.info("""БД не настоена""")
+    logger.info("""БД не настроена""")
 
 
 
