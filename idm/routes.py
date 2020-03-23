@@ -14,6 +14,10 @@ def index():
     db = DB()
     return render_template('pages/index.html', installed=db.installed)
 
+@app.route('/test')
+def hello_world():
+    return 'Hello, World!'
+
 @app.route('/install')
 def install():
     db = DB()
