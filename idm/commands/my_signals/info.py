@@ -16,15 +16,12 @@ def info(event: typing.Union[MySignalEvent, SignalEvent]) -> str:
     Владелец: [id{owner['id']}|{owner['first_name']} {owner['last_name']}]
     Чатов: {len(event.db.chats.keys())}
 
-    Автодобавление в друзья: {'да' if 'AFA Thread' in [th.getName() for th in threading.enumerate()] else 'нет'}
-    Вечный онлайн: {'да' if 'Online Thread' in [th.getName() for th in threading.enumerate()] else 'нет'}
-
-    Панель управления: https://{event.db.host}/
+    Код честно спизжен отсюда:
+    https://github.com/LordRalInc/IDM
 
     Информация о чате:
-    Я дежурный в чате: {'да' if event.chat.installed else 'нет'}
+    Я {'' if event.chat.installed else 'не'} дежурный в чате {'✅' if event.chat.installed else '❌'}
     Iris ID: {event.chat.iris_id}
-    Peer ID: {event.chat.peer_id}
     Имя: {event.chat.name}
     
     """.replace('    ', '')
