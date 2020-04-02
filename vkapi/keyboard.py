@@ -1,40 +1,34 @@
-import enum
 import json
+import typing
 
-class ButtonType(enum.Enum):
+from enum import Enum
+
+
+class ButtonType(Enum):
     TEXT = "text"
-    LOCATION ="location"
+    LOCATION = "location"
     VKPAY = "vkpay"
     OPEN_APP = "open_app"
     OPEN_LINK = "open_link"
 
-class ButtonColor(enum.Enum):
+
+class ButtonColor(Enum):
     PRIMARY = "primary"
-    SECONDARY = "secondary" 
-    NEGATIVE = "negative" 
+    SECONDARY = "secondary"
+    NEGATIVE = "negative"
     POSITIVE = "positive"
     NONE = None
 
+
 class Keyboard(object):
-    ButtonType: ButtonType
-    ButtonColor: ButtonColor
 
-    one_time: bool
-    inline: bool
-    keyboard: dict
-    lines: list
-
-    cureit_line: int
-
-    def __init__(self, one_time: bool, inline: bool):
-        self.ButtonType = ButtonType
-        self.ButtonColor = ButtonColor
-
-
-        self.one_time = one_time
-        self.inline = inline
-        self.cureit_line = 0
-        self.lines = [[]]
+    def __init__(self, one_time: bool = False, inline: bool = False):
+        self.ButtonType: ButtonType
+        self.ButtonColor: ButtonColor
+        self.one_time: bool = one_time
+        self.inline: bool = inline
+        self.current_line: int = 0
+        self.lines: typing.List[typing.List] = [[]]
 
         self.keyboard = {
             "one_time": self.one_time,
@@ -44,30 +38,49 @@ class Keyboard(object):
 
     def add_line(self):
         self.lines.append([])
-        self.cureit_line += 1
+        self.current_line += 1
 
-    def add_button(self, type: ButtonType, color: ButtonColor, label: str = None,
-                    hash: str = None, app_id: int = None,
-                    owber_id: int = None, payload: str = None, link: str = None):
-        button = {} # action color
-        action = {} 
+    def add_button(
+        self,
+        kind: ButtonType,
+        color: ButtonColor,
+        label: str = None,
+        hash_key: str = None,
+        app_id: int = None,
+        owner_id: int = None,
+        payload: str = None,
+        link: str = None
+    ):
+        button = {}
+        action = {}
 
-        if label != None: action["label"] = label
-        if type != None: action["type"] = type.value
-        if hash != None: action["hash"] = hash
-        if app_id != None: action["app_id"] = app_id
-        if owber_id != None: action["owber_id"] = owber_id
-        if payload != None: action["payload"] = payload
-        if link != None: action["link"] = link
+        if label:
+            action["label"] = label
+
+        if kind:
+            action["type"] = kind.value
+
+        if hash_key:
+            action["hash"] = kind
+
+        if app_id:
+            action["app_id"] = app_id
+
+        if owner_id:
+            action["owner_id"] = owner_id
+
+        if payload:
+            action["payload"] = payload
+
+        if link:
+            action["link"] = link
 
         button["action"] = action
         if color != ButtonColor.NONE:
-            button["color"] = color.value 
+            button["color"] = color.value
 
-        self.lines[self.cureit_line].append(button)
+        self.lines[self.current_line].append(button)
 
     def get(self):
         self.keyboard["buttons"] = self.lines
         return json.dumps(self.keyboard, ensure_ascii=False)
-        
-

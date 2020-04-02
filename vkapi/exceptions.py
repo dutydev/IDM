@@ -3,8 +3,6 @@ class VkApiResponseException(Exception):
         self.error_code = kwargs.get('error_code', None)
         self.error_msg = kwargs.get('error_msg', None)
         self.request_params = kwargs.get('request_params', None)
-
-
         self.args = args
         self.kwargs = kwargs
 

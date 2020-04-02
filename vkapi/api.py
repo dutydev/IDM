@@ -1,58 +1,47 @@
-
 import requests
-import enum
 import json
 import os
-
-from .exceptions import *
-
 import logging
 
+from .exceptions import *
+from enum import Enum
+
+API_URL = "https://api.vk.com/method/"
 
 
-class Mode(enum.Enum):
+class Mode(Enum):
     POST = "POST"
     GET = "GET"
 
 
 class VkApi(object):
-    Mode: Mode
 
-    mode: Mode
-    access_token: str
-    version: str
-    lang: str
-    raise_excepts: bool
-    api_url = "https://api.vk.com/method/"
+    def __init__(
+        self,
+        access_token: str,
+        version: str = "5.103",
+        mode: Mode = Mode.POST,
+        lang: str = "ru",
+        raise_excepts: bool = False
+    ):
 
-    
-
-
-    def __init__(self, access_token: str, version: str = "5.103", mode: Mode = Mode.POST, 
-            lang: str = "ru", raise_excepts: bool = False):
-        
-        self.logger = logging.getLogger('vkapi')
-        self.Mode = Mode
-        self.access_token = access_token
-        self.version = version
-        self.mode = self.Mode(mode)
-        self.lang = lang
+        self.logger = logging.getLogger('VKApi')
         self.raise_excepts = raise_excepts
+        self.__access_token = access_token
+        self.__mode = Mode(mode)
+        self.__version = version
+        self.__lang = lang
 
-    def method(self, method, **kwargs):
+    def method(self, method: str, **kwargs):
 
-        def load_methods():                        
+        def load_methods():
             with open(os.path.join(os.path.dirname(__file__), "schemes", "methods.json")) as file:
-                return json.loads(file.read()) 
+                return json.loads(file.read())
 
-
-
-        mode = self.Mode(kwargs.get('mode', self.mode))
-        version = kwargs.get('version', self.version)
-        access_token = kwargs.get('access_token', self.access_token)
-        lang = kwargs.get('lang', self.lang)
+        version = kwargs.get('version', self.__version)
+        access_token = kwargs.get('access_token', self.__access_token)
+        lang = kwargs.get('lang', self.__lang)
         raise_excepts = kwargs.get('raise_excepts', self.raise_excepts)
-
 
         methods = [method__['name'].lower() for method__ in load_methods()['methods']]
 
@@ -67,39 +56,31 @@ class VkApi(object):
             if key.lower() not in ["mode", "version", "access_token", "lang", "raise_excepts"]:
                 data[key] = kwargs[key]
 
-        request = None
-
-        if mode == self.Mode.GET:
-            url_ = self.api_url + method + "?"
+        if self.__mode is Mode.GET:
+            url = f"{API_URL}{method}?"
             data_list = [f"{key_}={data[key_]}" for key_ in data.keys()]
             data_list.append(f"v={version}")
             data_list.append(f"access_token={access_token}")
             data_list.append(f"lang={lang}")
 
-            url_ += "&".join(data_list)
-            request = requests.get(url_)
+            url += "&".join(data_list)
+            request = requests.get(url)
 
         else:
-            url_ = self.api_url + method + f"?v={version}&access_token={access_token}&lang={lang}"
-            request = requests.post(url_, data=data)
+            url = f"{API_URL}{method}?v={version}&access_token={access_token}&lang={lang}"
+            request = requests.post(url, data=data)
 
         if 'response' in request.json().keys():
             self.logger.info(f"Запрос {method} выполнен")
             return request.json()["response"]
+
         elif 'error' in request.json().keys():
             self.logger.info(f"Запрос {method} не выполнен: {request.json()['error']}")
             if raise_excepts:
                 raise VkApiResponseException(**request.json()["error"])
-            else:
-                return request.json()
-        else:
-            raise Exception()
+            return request.json()
 
-        
-
-            
-
-
+        raise Exception()
 
     def __call__(self, method, **kwargs):
         return self.method(method, **kwargs)
