@@ -66,5 +66,12 @@ def search_group_id(s: str) -> typing.Union[int, None]:
 def edit_message(api: VkApi, chat_id: int, msg_id: int, **kwargs) -> int:
     return api("messages.edit", peer_id=chat_id, message_id=msg_id, **kwargs)
 
+def delete_message(api: VkApi, chat_id: int, msg_id: int, **kwargs) -> int:
+    return api("messages.delete", peer_id=chat_id, message_id=msg_id, delete_for_all=True, **kwargs) 
+
 def new_message(api: VkApi, chat_id: int, **kwargs) -> int:
     return api("messages.send", random_id=0, peer_id=chat_id, **kwargs)
+
+def sticker_message(api: VkApi, chat_id: int, sticker_id: int, **kwargs) -> int:
+    return api("messages.send", random_id=0, peer_id=chat_id, sticker_id=sticker_id, **kwargs)
+
