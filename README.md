@@ -107,6 +107,10 @@ cp database.json IDM/database.json
 
 ## Благодарности
 
+Спасибо за исходный код:
+
+[Юрий Юшманов](https://vk.com/llordrall)
+
 Спасибо за помощь в тестировании:
 
 [Ридэль Яумбаев](https://vk.com/ss_20)
