@@ -1,23 +1,28 @@
 from ...objects import dp, MySignalEvent
 from ... import utils
 from datetime import datetime
-from vkapi import VkApi, VkApiResponseException
+from vkapi import VkApiResponseException
 import time
 
-@dp.my_signal_event_handle('-смс', 'dsm')
+@dp.my_signal_event_handle('-смс', 'dsm', '-смсб')
 def delete_self_message(event: MySignalEvent) -> str:
     message_id = event.msg['id']
     utils.edit_message(event.api, event.chat.peer_id, message_id, message="хехехе ща падажжы удаляю")
-
     user_id = event.msg['from_id']
+    if event.command == '-смсб':
+        period = 1800
+    else:
+        period = 86400
+
     try:
-        amount = " ".join(event.args)
-        amount = int(amount) + 1
+        #amount = " ".join(event.args)
+        amount = int(event.args[0]) + 1
     except:
-        amount = 2    
+        amount = 2
+
     msg_ids = []
     for mmsg in utils.get_all_history_gen(event.api, event.chat.peer_id):
-        if datetime.now().timestamp() - mmsg['date'] > 86400:
+        if datetime.now().timestamp() - mmsg['date'] > period:
             break
         if mmsg['from_id'] == user_id and mmsg.get('action', None) == None:
             msg_ids.append(str(mmsg['id']))
@@ -37,7 +42,7 @@ def delete_self_message(event: MySignalEvent) -> str:
             message_id = utils.new_message(event.api, event.chat.peer_id, message=f"❗ Не удалось удалить сообщения. Ошибка VK {e.error_msg}")
     except:
         message_id = utils.new_message(event.api, event.chat.peer_id, message=f"❗ Произошла неизвестная ошибка.")
-    
+
     time.sleep(2)
     utils.delete_message(event.api, event.chat.peer_id, message_id)
     return "ok"

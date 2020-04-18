@@ -3,7 +3,7 @@ from ...utils import edit_message, new_message, delete_message, sticker_message
 
 @dp.my_signal_event_handle('дебагхелп', 'debughelp')
 def debughelp(event: MySignalEvent) -> str:
-    if event.args[0] == None:
+    if event.args == None:
         new_message(event.api, event.chat.peer_id,
         message=f"""Справочник для псевдопрограммистов:
         (добавь после команды цифру из списка)
@@ -11,7 +11,7 @@ def debughelp(event: MySignalEvent) -> str:
 
         Пока все, хули ты хотел?""")
         return "ok"
-    if event.args[0] == 'signalevent' or event.args[0] == 1:
+    elif event.args[0] == '1':
         new_message(event.api, event.chat.peer_id,
         message=f"""event.message:\n{event.message}\n\nevent.msg:\n{event.msg}\n\nevent.chat:\n{event.chat}\n
         event.command:\n{event.command}\n\nevent.args:\n{event.args}\n\nevent.payload:\n{event.payload}\n

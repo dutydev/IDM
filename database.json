@@ -11,6 +11,7 @@
     "vk_app_id": 0,
     "vk_app_secret": "",
     "templates": [],
+    "dynamic_templates": [],
     "host": "",
     "installed": false
 }
