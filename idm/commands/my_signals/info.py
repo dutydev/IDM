@@ -16,10 +16,7 @@ def info(event: typing.Union[MySignalEvent, SignalEvent]) -> str:
     Владелец: [id{owner['id']}|{owner['first_name']} {owner['last_name']}]
     Чатов: {len(event.db.chats.keys())}
 
-    Код честно спизжен отсюда:
-    https://github.com/LordRalInc/IDM
-
-    Моя версия с кривыми дополнениями лежит здесь:
+    Код лежит здесь:
     https://github.com/Elchinchel/IDM
 
     Информация о чате:
