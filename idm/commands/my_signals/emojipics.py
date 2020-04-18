@@ -1,5 +1,5 @@
 from ...objects import dp, MySignalEvent
-from ...utils import edit_message
+from ...utils import edit_message, new_message
 import time
 
 @dp.my_signal_event_handle('ф', 'f')
@@ -29,4 +29,17 @@ def fpic(event: MySignalEvent) -> str:
         pic7 = pic7[-1:] + pic7[:-1]
         pic8 = pic8[-1:] + pic8[:-1]
         time.sleep(0.8)
+    return "ok"
+
+@dp.my_signal_event_handle('луна')
+def notthisdezh(event: MySignalEvent) -> str:
+    msg = new_message(event.api, event.chat.peer_id, message='⚠ Не в этом дежурном')
+    time.sleep(3)
+    edit_message(event.api, event.chat.peer_id, msg, message='Ладно, хорошо, так уж и быть...')
+    time.sleep(2)
+    pic = '🌑🌒🌓🌔🌕🌖🌗🌘'
+    for i in 0, 1, 2, 3, 4, 5, 6, 7, 8:
+        edit_message(event.api, event.chat.peer_id, msg, message=pic)
+        pic = pic[-1:] + pic[:-1]
+        time.sleep(1)
     return "ok"
