@@ -22,13 +22,14 @@
 Даллее кликаем на кнопку *Web*
 Кликаем на *Add a new web app*
 В появившемся окошке *next*  -> *Flask* -> *Python3.7*
-В путь вводим /home/`имя аккаунта`/IDM/routes.py
+В путь вводим /home/`имя аккаунта`/IDM/setup.py
 
 Переходим по ссылке [pythonanywhere.com/consoles/](https://www.pythonanywhere.com/consoles/)
 Ищем блок *Start a new console*, в нем выбираем *Bash*
 
 После загрузки консоли набираем в консоли
 ```bash
+rm -r IDM
 git clone https://github.com/Elchinchel/IDM.git
 ```
 Далее переходим во вкладку *Web* и нажимаем *Reload * `имя аккаунта`.pythonanywhere.com
@@ -105,6 +106,10 @@ cp database.json IDM/database.json
 
 
 ## Благодарности
+
+Спасибо за исходный код:
+
+[Юрий Юшманов](https://vk.com/llordrall)
 
 Спасибо за помощь в тестировании:
 
