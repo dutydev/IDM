@@ -36,11 +36,6 @@ def gtfo(event: MySignalEvent) -> str:
     sticker_message(event.api, event.chat.peer_id, 17762)
     return "ok"
 
-@dp.my_signal_event_handle('луна')
-def notthisdezh(event: MySignalEvent) -> str:
-    new_message(event.api, event.chat.peer_id, message='⚠ не в этом дежурном', expire_ttl = 60)
-    return "ok"
-
 @dp.my_signal_event_handle('повтори')
 def repeat(event: MySignalEvent) -> str:
     #arg = event.args
