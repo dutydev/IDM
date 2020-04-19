@@ -49,18 +49,7 @@ def gtfo(event: MySignalEvent) -> str:
     message='Так, щас капчу словлю, поэтому хватит\nНе расстраивайся, повезет в следующий раз')
     sticker_message(event.api, event.chat.peer_id, 17762)
     return "ok"
-
-@dp.my_signal_event_handle('антиспамчек')
-def ascheck(event: MySignalEvent) -> str:
-    new_message(event.api, event.chat.peer_id, message='Проверка антиспама ириса')
-    for i in 1, 2, 3, 4, 5:
-        new_message(event.api, event.chat.peer_id, message='ирис выбери 1 или 2')
-        time.sleep(1)
-    new_message(event.api, event.chat.peer_id,
-    message='Так, щас капчу словлю, поэтому хватит\nНе расстраивайся, повезет в следующий раз')
-    sticker_message(event.api, event.chat.peer_id, 17762)
-    return "ok"
-
+    
 @dp.my_signal_event_handle('повтори')
 def repeat(event: MySignalEvent) -> str:
     delay = 0.1
