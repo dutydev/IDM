@@ -145,11 +145,11 @@ def callback():
     data = [d for d in dp.event_run(event)]
     for d in data:
         if d != "ok":
-            return "<ошибочка>" + json.dumps({"ошибка":d}, ensure_ascii=False, indent=2)
+            return "<Ошибочка>" + json.dumps({"Ошибка":d}, ensure_ascii=False, indent=2)
     return "ok"
 
 
 @app.errorhandler(Exception)
 def on_error(e):
-    return "<ошибочка>" + json.dumps({"тип":"неизвесный (on_error)", "ошибка":f"{e}"}, ensure_ascii=False, indent=2)
+    return "<Ошибочка>" + json.dumps({"Тип":"неизвестный (on_error)", "Ошибка":f"{e}"}, ensure_ascii=False, indent=2)
      
