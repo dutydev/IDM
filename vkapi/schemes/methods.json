@@ -183,6 +183,25 @@
   ],
   "methods": [
     {
+      "name": "execute",
+      "description": "executing",
+      "access_token_type": [
+        "user"
+      ],
+      "parameters": [
+        {
+          "name": "code",
+          "description": "code",
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "response": {
+          "$ref": "responses.json#/definitions/ok_response"
+        }
+      }
+    },
+    {
       "name": "account.ban",
       "access_token_type": [
         "user"

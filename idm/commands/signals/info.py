@@ -29,9 +29,6 @@ def sinfo(event: SignalEvent) -> str:
     Владелец: [id{owner['id']}|{owner['first_name']} {owner['last_name']}]
     Чатов: {len(event.db.chats.keys())}
 
-    Код лежит здесь:
-    https://github.com/Elchinchel/IDM
-
     Информация о чате:
     Я {'' if event.chat.installed else 'не'} дежурный в чате {'✅' if event.chat.installed else '❌'}
     Iris ID: {event.chat.iris_id}

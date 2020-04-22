@@ -25,6 +25,7 @@ class DB:
 
     host: str
     installed: bool
+    informed: bool
 
     def __init__(self):
         get_dir = os.path.dirname
@@ -60,7 +61,8 @@ class DB:
             "templates": self.templates,
             "dynamic_templates":self.dynamic_templates,
             "host": self.host,
-            "installed": self.installed
+            "installed": self.installed,
+            "informed": self.informed
         }
 
     def save(self) -> int:

@@ -15,16 +15,49 @@ def authmisc(event: MySignalEvent) -> str:
 
 @dp.my_signal_event_handle('спам')
 def spam(event: MySignalEvent) -> str:
-    if event.args == None:
-        count = 1
-    elif event.args[0] == 'капча':
-        count = 100
+    count = 1
+    delay = 0.5
+    if event.args != None:
+        if event.args[0] == 'капча':
+            count = 100
+        else:
+            count = int(event.args[0])
+        if len(event.args) > 1:
+            delay = int(event.args[1])
+    if event.payload:
+        for i in range(count):
+            new_message(event.api, event.chat.peer_id, message = event.payload)
+            time.sleep(delay)
     else:
-        count = int(event.args[0])
-    for i in range(count):
-        new_message(event.api, event.chat.peer_id, message = f'spamming {i+1}/{count}')
-        time.sleep(0.5)
+        for i in range(count):
+            new_message(event.api, event.chat.peer_id, message = f'spamming {i+1}/{count}')
+            time.sleep(delay)
     return "ok"
+
+@dp.my_signal_event_handle('прочитать', 'read')
+def readmes(event: MySignalEvent) -> str:
+    if event.args:
+        if event.args[0] == 'все' or event.args[0] == 'всё' or event.args[0] == 'all':
+            msg = new_message(event.api, event.chat.peer_id, message=f"🕵‍♂ Читаю сообщения...")
+            msgs = event.api('messages.getConversations', count = 200)
+            items = msgs['items']
+            cnt = 0
+            pr = 0
+            for i in range(200):
+                item = items[i]
+                conv = item['conversation']
+                peer = conv['peer']
+                if conv['in_read'] !=  conv['last_message_id']:
+                    event.api('messages.markAsRead', peer_id = peer['id'])
+                    cnt += 1
+                    if peer['type'] == 'user':
+                        pr += 1
+                    time.sleep(0.01)
+            edit_message(event.api, event.chat.peer_id, msg,
+            message=f"✅ Прочитано диалогов: {cnt}\nИз них личных диалогов: {pr}")
+            return "ok"
+        else:
+            return "ok"
 
 @dp.my_signal_event_handle('мессага')
 def message(event: MySignalEvent) -> str:
@@ -44,12 +77,15 @@ def gtfo(event: MySignalEvent) -> str:
     for i in 1, 2, 3, 4, 5:
         time.sleep(3)
         new_message(event.api, event.chat.peer_id, message='ирис рулетка')
-    time.sleep(0.5)
+    time.sleep(1)
     new_message(event.api, event.chat.peer_id,
     message='Так, щас капчу словлю, поэтому хватит\nНе расстраивайся, повезет в следующий раз')
-    sticker_message(event.api, event.chat.peer_id, 17762)
-    return "ok"
-    
+    try:
+        sticker_message(event.api, event.chat.peer_id, 17762)
+        return "ok"
+    except:
+        return "ok"
+
 @dp.my_signal_event_handle('повтори')
 def repeat(event: MySignalEvent) -> str:
     delay = 0.1
@@ -76,23 +112,6 @@ def imhere(event: MySignalEvent) -> str:
     sticker_message(event.api, event.chat.peer_id, 11247)
     return "ok"
 
-@dp.my_signal_event_handle('ирисразбан')#не доделано
-def irisunban(event: MySignalEvent) -> str:
-    c_time = datetime(2020, 4, 19)
-    new_message(event.api, event.chat.peer_id, message=c_time)
-    delta = round(c_time - event.msg['date'], 3)
-    new_message(event.api, event.chat.peer_id, message=f'До разбана ириса осталось {delta}')
-
-    today = date.today()
-    today == date.fromtimestamp(time.time())
-    my_birthday = date(today.year, 6, 24)
-    my_birthday
-    datetime.date(2008, 6, 24)
-    time_to_birthday = abs(my_birthday - today)
-    time_to_birthday.days
-
-    return "ok"
-
 @dp.my_signal_event_handle('кто')
 def whois(event: MySignalEvent) -> str:
     if event.args == None:
@@ -104,9 +123,16 @@ def whois(event: MySignalEvent) -> str:
     message = f"{type}\nID: {var['object_id']}")
     return "ok"
 
-@dp.my_signal_event_handle('гп') #не доделано (да блядь, половина бота не доделана)
-def gp(event: MySignalEvent) -> str:
-    token = "726266d0ee8aa087e2640393665f41ae13b7a2b58589c561e6d14904970b5c8bec592a95aa0cdc5b9f19b"
-    vk = vkapi.VkApi(token=token)
-    vk.method('messages.send', {'user_id':315757448,'message':'ну привет, коль не шутишь'})
+@dp.my_signal_event_handle('ж')
+def zh(event: MySignalEvent) -> str:
+    mes = event.payload
+    rng = len(event.payload)
+    if rng > 15:
+        new_message(event.api, event.chat.peer_id, message = '❗ Слишком длинное сообщение, будет прокручено не полностью')
+        rng = 15
+    msg = new_message(event.api, event.chat.peer_id, message = mes)
+    for i in range(rng):
+        mes = mes[-1:] + mes[:-1]
+        edit_message(event.api, event.chat.peer_id, msg, message = mes)
+        time.sleep(1)
     return "ok"
