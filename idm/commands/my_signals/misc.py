@@ -77,7 +77,7 @@ def gtfo(event: MySignalEvent) -> str:
     for i in 1, 2, 3, 4, 5:
         time.sleep(3)
         new_message(event.api, event.chat.peer_id, message='ирис рулетка')
-	time.sleep(1)
+    time.sleep(1)
     new_message(event.api, event.chat.peer_id,
     message='Так, щас капчу словлю, поэтому хватит\nНе расстраивайся, повезет в следующий раз')
     try:
