@@ -12,7 +12,7 @@ def add_to_fr(event: MySignalEvent) -> str:
     try:
         event.api('friends.add', user_id=friend_id)
         edit_message(event.api, event.chat.peer_id, event.msg['id'],
-            message="✅ Все отлично, запрос отправлен")
+            message="✅ Все отлично, запрос отправлен/принят")
         return "ok"
     except VkApiResponseException as e:
         if e.error_code == 174:
@@ -37,7 +37,7 @@ def remove_from_fr(event: MySignalEvent) -> str:
         return "ok"
 
     friend_id = event.reply_message['from_id']
-    
+
     try:
         data = event.api('friends.delete', user_id=friend_id)
         if data.get('friend_deleted', False):edit_message(event.api, event.chat.peer_id, event.msg['id'], message="✅ Друг удален")
@@ -48,7 +48,7 @@ def remove_from_fr(event: MySignalEvent) -> str:
         else:edit_message(event.api, event.chat.peer_id, event.msg['id'], message="❗ Произошла ошибка")
     except VkApiResponseException as e:
         edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f"❗ Произошла ошибка VK №{e.error_code} {e.error_msg}")
-    
+
 
 
     return "ok"

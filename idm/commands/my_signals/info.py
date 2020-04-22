@@ -19,6 +19,9 @@ def info(event: typing.Union[MySignalEvent, SignalEvent]) -> str:
     Код лежит здесь:
     https://github.com/Elchinchel/IDM
 
+    Основано на IDM [llordrall|Юрия Юшманова]:
+    https://github.com/LordRalInc/IDM
+
     Информация о чате:
     Я {'' if event.chat.installed else 'не'} дежурный в чате {'✅' if event.chat.installed else '❌'}
     Iris ID: {event.chat.iris_id}

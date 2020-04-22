@@ -13,5 +13,6 @@
     "templates": [],
     "dynamic_templates": [],
     "host": "",
-    "installed": false
+    "installed": false,
+    "informed": false
 }
