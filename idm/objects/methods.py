@@ -12,7 +12,7 @@ class Methods(Enum):
     FORBIDDEN_LINKS = "forbiddenLinks"
     SEND_SIGNAL = "sendSignal"
     SEND_MY_SIGNAL = "sendMySignal"
-    HERE_API = "hireApi"
+    HIRE_API = "hireApi"
     BAN_GET_REASON = "banGetReason"
     TO_GROUP = "toGroup"
     BIND_CHAT = "bindChat"

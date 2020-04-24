@@ -1,5 +1,4 @@
-__version__ = "1.0.1 mod (1.3.2 public)" 
-
+__version__ = "1.0.2 mod (1.3.2 public)"
 
 import logging
 import os
@@ -7,7 +6,7 @@ import os
 path = os.path.join(os.path.dirname(os.path.dirname(__file__)), f"idm.log")
 logging.basicConfig(handlers=[
     logging.FileHandler(path, 'a', 'utf-8'),
-    logging.StreamHandler()    
+    logging.StreamHandler()
     ], level=logging.ERROR,
     format="%(asctime)s:%(levelname)s:[%(module)s]:[th:%(threadName)s|fn:%(funcName)s]:%(message)s")
 
@@ -30,3 +29,12 @@ else:
 
 
 from .routes import app
+
+from .objects import DB
+from .lp import IIS
+db = DB()
+if db.installed:
+    if db.v_last != __version__:
+        IIS(f'Я обновил твоего дежурного, новая версия: {__version__}')
+        db.v_last = __version__
+        db.save()

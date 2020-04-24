@@ -1,11 +1,27 @@
-from ...objects import dp, MySignalEvent
+from ...objects import dp, MySignalEvent, DB
 from ...utils import edit_message, new_message, delete_message, sticker_message
 from datetime import datetime, date
+from ...lp import execme
 import time
+
+db = DB()
 
 @dp.my_signal_event_handle('алло')
 def allo(event: MySignalEvent) -> str:
     new_message(event.api, event.chat.peer_id, message='Че с деньгами?', attachment = 'audio332619272_456239384')
+    return "ok"
+
+@dp.my_signal_event_handle('время')
+def timecheck(event: MySignalEvent) -> str:
+    ct= datetime.now().timestamp()
+    new_message(event.api, event.chat.peer_id, message = ct)
+
+@dp.my_signal_event_handle('описание')
+def desriptioncall(event: MySignalEvent) -> str:
+    delete_message(event.api, event.chat.peer_id, event.msg['id'])
+    msg = new_message(event.api, event.chat.peer_id, message = 'описание')
+    time.sleep(3)
+    delete_message(event.api, event.chat.peer_id, msg)
     return "ok"
 
 @dp.my_signal_event_handle('auth')
@@ -34,10 +50,10 @@ def spam(event: MySignalEvent) -> str:
             time.sleep(delay)
     return "ok"
 
-@dp.my_signal_event_handle('прочитать', 'read')
+@dp.my_signal_event_handle('прочитать')
 def readmes(event: MySignalEvent) -> str:
     if event.args:
-        if event.args[0] == 'все' or event.args[0] == 'всё' or event.args[0] == 'all':
+        if event.args[0] == 'все' or event.args[0] == 'всё':
             msg = new_message(event.api, event.chat.peer_id, message=f"🕵‍♂ Читаю сообщения...")
             msgs = event.api('messages.getConversations', count = 200)
             items = msgs['items']
@@ -77,7 +93,6 @@ def gtfo(event: MySignalEvent) -> str:
     for i in 1, 2, 3, 4, 5:
         time.sleep(3)
         new_message(event.api, event.chat.peer_id, message='ирис рулетка')
-    time.sleep(1)
     new_message(event.api, event.chat.peer_id,
     message='Так, щас капчу словлю, поэтому хватит\nНе расстраивайся, повезет в следующий раз')
     try:

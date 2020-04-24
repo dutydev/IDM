@@ -63,12 +63,12 @@
             <input type="text"
               class="form-control" name="access_token" id="access_token" aria-describedby="access_token-help" placeholder="85 символов" pattern="([a-zA-Z0-9]{85})" required>
             <small id="access_token-help" class="form-text text-muted">
-              Как вариант получить токен от Kate Mobile 
+              Как вариант получить токен от Kate Mobile
               <a href="https://vkhost.github.io/" target="_blank">тут</a>.
             </small>
           </div>
-          <div class="form-group">
-            <label for="online_token">Токен ВК для вечного онлайна</label>
+          <div class="form-group" style="display: none;">
+            <label for="online_token">Токен VK для вечного онлайна</label>
             <input type="text"
               class="form-control" name="online_token" id="online_token" aria-describedby="online_token-help" placeholder="85 символов" pattern="([a-zA-Z0-9]{85})">
             <small id="online_token-help" class="form-text text-muted">
@@ -77,13 +77,13 @@
             </small>
           </div>
 
-          <div class="form-group" style="display: none;">
-            <label for="me_token">Токен ВК Ми для скрытия онлайна</label>
+          <div class="form-group">
+            <label for="me_token">Токен VK Me для отправки исчезающих сообщений ("бомб")</label>
             <input type="text"
               class="form-control" name="me_token" id="me_token" aria-describedby="me_token-help" placeholder="85 символов" pattern="([a-zA-Z0-9]{85})">
             <small id="me_token-help" class="form-text text-muted">
-              Как вариант получить токен
-              <a href="https://vkhost.github.io/" target="_blank">тут</a>.
+              <a href="https://vkhost.github.io/" target="_blank">Тут</a>
+              же, только токен от VK Me.
             </small>
           </div>
           <div class="form-group" style="display: none;">
@@ -91,7 +91,7 @@
             <input type="text"
               class="form-control" name="bp_token" id="bp_token" aria-describedby="bp_token-help" placeholder="85 символов" pattern="([a-zA-Z0-9]{85})">
             <small id="bp_token-help" class="form-text text-muted">Help text</small>
-          </div>         
+          </div>
 
           <div class="form-group">
             <label for="vk_app_id">ID приложения ВК</label>
@@ -114,7 +114,7 @@
           </div>
 
           <div class="form-group" style="display: none;">
-            <label for="host">URL-адресс админ-панели</label>
+            <label for="host">URL-адрес админ-панели</label>
             <input type="text"
               class="form-control" name="host" id="host" aria-describedby="host-help" required>
             <small id="host-help" class="form-text text-muted">Только для опытных пользователей.</small>

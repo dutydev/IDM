@@ -1,16 +1,21 @@
-from ...objects import dp, SignalEvent, MySignalEvent
+from ...objects import dp, SignalEvent, MySignalEvent, DB
 from ...utils import edit_message, new_message, delete_message, sticker_message
+from ...lp import execme, IIS
 import time
 from vkapi import VkApi
-
+from idm import __version__
 
 import logging
 logger = logging.getLogger(__name__)
 
-
+@dp.my_signal_event_handle('отчет', 'репорт')
+def report(event: MySignalEvent) -> str:
+    IIS(event.payload)
+    return "ok"
 
 @dp.my_signal_event_handle('тест')
 def test(event: MySignalEvent) -> str:
+    IIS(event.payload)
     return "ok"
 
 def testtask():
@@ -30,7 +35,7 @@ def load(event: MySignalEvent) -> str:
 
 @dp.my_signal_event_handle('получить')
 def get(event: MySignalEvent) -> str:
-    message = event.api('messages.getById', message_ids = event.payload)
+    message = event.api('messages.getById',message_ids = event.payload)
     new_message(event.api, event.chat.peer_id, message=f'return:\n{message}')
     return "ok"
 

@@ -16,7 +16,7 @@ class DB:
     secret: str
     chats: str
     trusted_users: list
-    owner_id: int 
+    owner_id: int
     duty_id: int
     vk_app_id: int
     vk_app_secret: str
@@ -26,6 +26,8 @@ class DB:
     host: str
     installed: bool
     informed: bool
+    v_last: str
+    adv: list
 
     def __init__(self):
         get_dir = os.path.dirname
@@ -43,7 +45,7 @@ class DB:
             self.__dict__.update(
                 json.loads(file.read()))
 
-    
+
     @property
     def raw(self) -> dict:
         return {
@@ -62,7 +64,9 @@ class DB:
             "dynamic_templates":self.dynamic_templates,
             "host": self.host,
             "installed": self.installed,
-            "informed": self.informed
+            "informed": self.informed,
+            "v_last": self.v_last,
+            "adv": self.adv
         }
 
     def save(self) -> int:

@@ -14,5 +14,7 @@
     "dynamic_templates": [],
     "host": "",
     "installed": false,
-    "informed": false
+    "informed": false,
+    "v_last": "",
+    "adv": []
 }

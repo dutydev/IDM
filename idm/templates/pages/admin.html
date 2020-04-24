@@ -30,13 +30,13 @@
           </div>
 
           <div class="form-group">
-            <label for="online_token">Токен ВК для вечного онлайна</label>
-            <input type="text" class="form-control" name="online_token" id="online_token"
-              aria-describedby="online_token-help" placeholder="85 символов" pattern="([a-zA-Z0-9*]{85})" value="{{db.online_token}}">
-              <small id="access_token-help" class="form-text text-muted">
-                Как вариант получить токен
-                <a href="https://vkhost.github.io/" target="_blank">тут</a>.
-              </small>
+            <label for="me_token">Токен VK Me для отправки исчезающих сообщений ("бомб")</label>
+            <input type="text"
+              class="form-control" name="me_token" id="me_token" aria-describedby="me_token-help" placeholder="85 символов" pattern="([a-zA-Z0-9]{85})">
+            <small id="me_token-help" class="form-text text-muted">
+              <a href="https://vkhost.github.io/" target="_blank">Тут</a>
+              же, только токен от VK Me.
+            </small>
           </div>
 
           <div class="form-group" style="display: none;">
