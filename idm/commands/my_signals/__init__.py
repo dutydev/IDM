@@ -12,5 +12,6 @@ from .debug import debughelp
 from .convert import convert
 from .misc import *
 from .emojipics import *
+from .bomb import bomb
 # from .dynamic_templates import dtemplate
 # from .test import test_user, test_group
