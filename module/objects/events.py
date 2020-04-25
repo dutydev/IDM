@@ -29,7 +29,6 @@ class Event:
             raise TypeError("Handler has to be coroutine function.")
         handler = Handler(func, method)
         self.handler.append(handler)
-        logger.debug("Registered new handler <{}>", func.__name__)
 
     def add_message_handler(
         self,
@@ -42,7 +41,6 @@ class Event:
             raise TypeError("Handler has to be coroutine function.")
         message_handler = MessageHandler(func, method, text, lower)
         self.message_handler.append(message_handler)
-        logger.debug("Registered new message handler <{}>", func.__name__)
 
     def event(self, method: Method):
         def decorator(func):

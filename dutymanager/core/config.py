@@ -11,7 +11,7 @@ default_data = {
     "bp_token": None,
     "secret": None,
     "user_id": None,
-    "debug": True,
+    "debug": False,
     "port": 8080,
     "polling": False
 }
@@ -32,3 +32,7 @@ workers_state = {
     'friends': False,
     'deleter': False
 }
+
+state = """[IDM v2.0]:
+{}
+Ответ через: {} сек"""

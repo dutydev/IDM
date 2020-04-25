@@ -17,7 +17,7 @@ async def print_bookmark(event: types.PrintBookmark):
         await send_msg(
             peer_id,
             f"🔼 Перейти к закладке «{description}»",
-            reply_to=await get_msg_id(peer_id, local_id)
+            reply_to=(await get_by_local(peer_id, local_id))["id"]
         )
     except (IndexError, VKError) as e:
         e = list(e.args)[0][0]
@@ -32,7 +32,7 @@ async def ban_get_reason(event: types.BanGetReason):
         await send_msg(
             peer_id,
             "🔼 Перейти к месту бана",
-            reply_to=await get_msg_id(peer_id, local_id)
+            reply_to=(await get_by_local(peer_id, local_id))["id"]
         )
     except (IndexError, VKError) as e:
         e = list(e.args)[0][0]

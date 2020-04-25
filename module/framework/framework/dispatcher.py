@@ -59,18 +59,22 @@ class Dispatcher(AsyncHandleManager):
         logger.add(
             sys.stderr,
             colorize=True,
-            format="<level>[<blue>Duty</blue>] {message}</level> <white>[TIME {time:HH:MM:ss}]</white>",
+            format="<blue>[IDM]</blue> <lvl>{message}</lvl> <white>[TIME {time:HH:MM:ss}]</white>",
             filter=self.logger,
             level=0,
             enqueue=mobile is False
         )
         logger.level("INFO", color="<white>")
         logger.level("ERROR", color="<red>")
+
         if log_to_path:
             logger.add(
-                "logs/log_{time}.log" if log_to_path is True else log_to_path,
-                rotation="00:00",
+                "logs/errors.log" if log_to_path is True else log_to_path,
+                level=debug,
+                format="[{time:YYYY-MM-DD HH:MM:SS} | {level}] {message}",
+                rotation="5 MB"
             )
+
         if not secret:
             logger.success("Generated new secret word: {}", self._secret)
 
@@ -92,11 +96,11 @@ class Dispatcher(AsyncHandleManager):
             return errors[3]
 
         ev = await self.get_event_type(event)
-        task = None
         try:
             task = (await self._processor(ev, self._patcher))
         except (VKError, Exception):
-            logger.exception(traceback.format_exc())
+            logger.exception(traceback.format_exc(limit=5))
+            return traceback.format_exc(limit=5)
 
         if task is not None:
             return {"response": task}

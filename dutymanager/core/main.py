@@ -18,6 +18,8 @@ worker = Worker(bot.loop)
 async def wrapper(request: web.Request):
     event = await request.json()
     emulation = await bot.emulate(event)
+    if isinstance(emulation, str):
+        return web.Response(text=emulation)
     return web.json_response(data=emulation)
 
 

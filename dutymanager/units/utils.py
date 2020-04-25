@@ -11,27 +11,31 @@ bp = Blueprint()
 
 __all__ = (
     "get_chat", "send_msg",
-    "get_msg_id", "get_msg_ids",
-    "get_history", "edit_msg",
-    "get_attachments",
-    "bp"
+    "get_msg_ids", "edit_msg",
+    "get_history", "get_by_local",
+    "bp", "get_attachments"
 )
 
 
-async def get_attachments(message_id: int) -> Optional[str]:
+async def get_attachments(obj: dict) -> Optional[str]:
     attachments = []
-    data = (await bp.api.request("messages.getById", {
-        "message_ids": message_id
-    }))["items"][0]
-    if not data["attachments"]:
+    if not obj["attachments"]:
         return
-    for x in data["attachments"]:
+    for x in obj["attachments"]:
         kind = x["type"]
         if kind != "link":
             attachments.append(
                 f"{kind}{x[kind]['owner_id']}_{x[kind]['id']}"
             )
     return ",".join(attachments)
+
+
+async def get_by_local(peer_id: int, local_id: int) -> dict:
+    data = (await bp.api.request("messages.getByConversationMessageId", {
+        "peer_id": peer_id,
+        "conversation_message_ids": local_id
+    }))["items"][0]
+    return data
 
 
 async def get_history(peer_id: int, count: int = 200) -> dict:
@@ -47,14 +51,6 @@ async def get_msg_ids(peer_id: int, local_ids: list) -> list:
         conversation_message_ids=local_ids
     )
     return [str(i['id']) for i in data.items if "action" not in i]
-
-
-async def get_msg_id(peer_id: int, local_id: int) -> int:
-    data = await bp.api.messages.get_by_conversation_message_id(
-        peer_id=peer_id,
-        conversation_message_ids=local_id
-    )
-    return data.items[0]['id']
 
 
 async def send_msg(
@@ -92,5 +88,3 @@ async def get_chat(date: int, text: str = "!связать") -> int:
     for i in data:
         if i["date"] == date:
             return i["peer_id"]
-
-

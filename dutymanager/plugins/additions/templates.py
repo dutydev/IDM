@@ -1,5 +1,5 @@
 from module import Blueprint, Method
-from module import VKError, types
+from module import types
 from dutymanager.units.utils import *
 from dutymanager.db.methods import AsyncDatabase
 
@@ -21,24 +21,24 @@ def from_context(tag: str) -> typing.Optional[str]:
 )
 async def add_template(event: types.SendMySignal, tag: str, text: str = None):
     peer_id = db.chats[event.object.chat]
-    message_id = await get_msg_id(
+    data = (await get_by_local(
         peer_id, event.object.conversation_message_id
-    )
-    attachments = await get_attachments(message_id)
+    ))
+    attachments = await get_attachments(data)
     if tag.lower() in db.templates:
         return await edit_msg(
             peer_id=peer_id,
-            message_id=message_id,
+            message_id=data["id"],
             message=await edit_template(tag, text, attachments)
         )
 
     if not any([attachments, text]):
         return await edit_msg(
-            peer_id, message_id, "❗ Шаблон не может быть пустым."
+            peer_id, data["id"], "❗ Шаблон не может быть пустым."
         )
     await db.add_template(tag, text, attachments)
     await edit_msg(
-        peer_id, message_id, f"✅ Шаблон «{tag.lower()}» успешно добавлен."
+        peer_id, data["id"], f"✅ Шаблон «{tag.lower()}» успешно добавлен."
     )
 
 
@@ -54,9 +54,9 @@ async def edit_template(tag: str, *args) -> str:
 @bot.on.message_event(Method.SEND_MY_SIGNAL, text="-шаб <tag>")
 async def remove_template(event: types.SendMySignal, tag: str):
     peer_id = db.chats[event.object.chat]
-    message_id = await get_msg_id(
+    message_id = (await get_by_local(
         peer_id, event.object.conversation_message_id
-    )
+    ))["id"]
     if tag.lower() not in db.templates:
         return await edit_msg(
             peer_id,
@@ -75,9 +75,9 @@ async def remove_template(event: types.SendMySignal, tag: str):
 )
 async def get_templates(event: types.SendMySignal):
     peer_id = db.chats[event.object.chat]
-    message_id = await get_msg_id(
+    message_id = (await get_by_local(
         peer_id, event.object.conversation_message_id
-    )
+    ))["id"]
     templates = [f"{n + 1}. {k}" for n, k in enumerate(db.templates)]
     await edit_msg(
         peer_id,
@@ -95,7 +95,9 @@ async def get_template(event: types.SendMySignal, tag: str):
     template = from_context(tag)
     peer_id = db.chats[event.object.chat]
     local_id = event.object.conversation_message_id
-    message_id = await get_msg_id(peer_id, local_id)
+    message_id = (await get_by_local(
+        peer_id, local_id
+    ))["id"]
     if not template:
         return await edit_msg(peer_id, message_id, "❗ Нет у меня шаблона с таким названием.")
 

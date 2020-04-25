@@ -55,8 +55,3 @@ class Worker:
                     p.method("friends.delete", {"user_id": i})
 
             await asyncio.sleep(3600)
-
-
-
-
-

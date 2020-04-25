@@ -51,7 +51,8 @@ def get_params() -> dict:
         secret=default_data["secret"],
         user_id=default_data["user_id"],
         debug=default_data["debug"],
-        polling=default_data["polling"]
+        polling=default_data["polling"],
+        log_to_path=True
     )
 
 
