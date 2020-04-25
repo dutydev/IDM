@@ -3,7 +3,7 @@
   "me_token": null,
   "online_token": null,
   "bp_token": null,
-  "secret": null,
+  "secret": "chicagoland",
   "user_id": null,
   "debug": true,
   "port": 8080,

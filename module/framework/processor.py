@@ -1,7 +1,7 @@
 from ..objects.events import Event
 from ..utils import logger, sub_string
 
-from vbml import Patcher, Pattern
+from vbml import Patcher
 
 
 class AsyncHandleManager:

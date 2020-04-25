@@ -62,7 +62,6 @@ class Dispatcher(AsyncHandleManager):
             enqueue=mobile is False
         )
         logger.level("INFO", color="<white>")
-        logger.level("SUCCESS", color="<green>")
         logger.level("ERROR", color="<red>")
         if log_to_path:
             logger.add(
@@ -92,7 +91,10 @@ class Dispatcher(AsyncHandleManager):
         ev = await self.get_event_type(event)
         task = (await self._processor(ev, self._patcher))
 
-        return task if task else "ok"
+        if task is not None:
+            return {"response": task}
+
+        return {"response": "ok"}
 
     def set_blueprints(self, *blueprints: Blueprint):
         for blueprint in blueprints:

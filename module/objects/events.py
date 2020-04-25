@@ -47,7 +47,7 @@ class Event:
     def event(self, method: Method):
         def decorator(func):
             self.add_handler(func, method)
-
+            return func
         return decorator
 
     def message_event(
@@ -60,7 +60,7 @@ class Event:
             if method.value not in ("sendSignal", "sendMySignal"):
                 raise ValueError("Invalid method")
             self.add_message_handler(func, method, text, lower)
-
+            return func
         return decorator
 
 
