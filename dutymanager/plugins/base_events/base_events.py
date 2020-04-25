@@ -8,6 +8,22 @@ bot = Blueprint(name="Base")
 db = AsyncDatabase.get_current()
 
 
+@bot.on.event(Method.PRINT_BOOKMARK)
+async def print_bookmark(event: types.PrintBookmark):
+    peer_id = db.chats[event.object.chat]
+    local_id = event.object.conversation_message_id
+    description = event.object.description
+    try:
+        await send_msg(
+            peer_id,
+            f"🔼 Перейти к закладке «{description}»",
+            reply_to=await get_msg_id(peer_id, local_id)
+        )
+    except (IndexError, VKError) as e:
+        e = list(e.args)[0][0]
+        await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
+
+
 @bot.on.event(Method.BAN_GET_REASON)
 async def ban_get_reason(event: types.BanGetReason):
     peer_id = db.chats[event.object.chat]
@@ -18,7 +34,7 @@ async def ban_get_reason(event: types.BanGetReason):
             "🔼 Перейти к месту бана",
             reply_to=await get_msg_id(peer_id, local_id)
         )
-    except VKError as e:
+    except (IndexError, VKError) as e:
         e = list(e.args)[0][0]
         await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
 

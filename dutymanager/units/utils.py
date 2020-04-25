@@ -11,8 +11,16 @@ bp = Blueprint()
 __all__ = (
     "get_chat", "send_msg",
     "get_msg_id", "get_msg_ids",
+    "get_history",
     "bp"
 )
+
+
+async def get_history(peer_id: int, count: int = 200) -> dict:
+    history = (await bp.api.request("messages.getHistory", {
+        "peer_id": peer_id, "count": count
+    }))["items"]
+    return history
 
 
 async def get_msg_ids(peer_id: int, local_ids: list) -> list:

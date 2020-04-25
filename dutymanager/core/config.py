@@ -26,3 +26,9 @@ intervals = {
     'сек': 1,
     'день': 86400
 }
+
+workers_state = {
+    'online': True,
+    'friends': True,
+    'deleter': True
+}

@@ -43,6 +43,7 @@ class DeleteMessagesFromUserObject(BaseModel):
     chat: str
     member_ids: List[int]
     user_id: int
+    amount: int = 1000
     is_spam: int
 
 

@@ -3,9 +3,9 @@
   "me_token": null,
   "online_token": null,
   "bp_token": null,
-  "secret": "chicagoland",
+  "secret": null,
   "user_id": null,
   "debug": true,
-  "port": 80,
+  "port": 8080,
   "polling": false
 }

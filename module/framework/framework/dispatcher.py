@@ -1,5 +1,6 @@
 import asyncio
 import typing
+import traceback
 import sys
 
 from module.utils import LoggerLevel, logger
@@ -12,6 +13,7 @@ from module.framework.processor import AsyncHandleManager
 from module.framework.framework.blueprint import Blueprint
 from vbml import Patcher
 from vkbottle.user import User
+from vkbottle import VKError
 from const import errors
 
 
@@ -89,7 +91,11 @@ class Dispatcher(AsyncHandleManager):
             return errors[3]
 
         ev = await self.get_event_type(event)
-        task = (await self._processor(ev, self._patcher))
+        task = None
+        try:
+            task = (await self._processor(ev, self._patcher))
+        except (VKError, Exception):
+            logger.exception(traceback.format_exc())
 
         if task is not None:
             return {"response": task}
