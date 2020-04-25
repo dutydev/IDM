@@ -28,4 +28,3 @@ class AsyncHandleManager:
                     )
                     if patcher.check(text, pattern) is not None:
                         return await handler(event, **pattern.dict())
-

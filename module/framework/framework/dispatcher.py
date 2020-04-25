@@ -66,13 +66,13 @@ class Dispatcher(AsyncHandleManager):
         logger.level("ERROR", color="<red>")
         if log_to_path:
             logger.add(
-                "log_{time}.log" if log_to_path is True else log_to_path,
-                rotation="100 MB",
+                "logs/log_{time}.log" if log_to_path is True else log_to_path,
+                rotation="00:00",
             )
         if not secret:
             logger.success("Generated new secret word: {}", self._secret)
 
-    async def emulate(self, event: dict) -> dict:
+    async def emulate(self, event: dict) -> typing.Union[dict, str]:
         """ Process all signals
         from IRIS CM.
         :param event: New signal
@@ -91,10 +91,8 @@ class Dispatcher(AsyncHandleManager):
 
         ev = await self.get_event_type(event)
         task = (await self._processor(ev, self._patcher))
-        if task is None:
-            return {"response": "ok"}
 
-        return task
+        return task if task else "ok"
 
     def set_blueprints(self, *blueprints: Blueprint):
         for blueprint in blueprints:
@@ -108,6 +106,10 @@ class Dispatcher(AsyncHandleManager):
         :return: None
         """
         self.__loop = loop or asyncio.get_event_loop()
+        return self.__loop
+
+    @property
+    def loop(self):
         return self.__loop
 
     @property
