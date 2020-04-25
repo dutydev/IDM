@@ -6,6 +6,6 @@
   "secret": "chicagoland",
   "user_id": null,
   "debug": true,
-  "port": 8080,
+  "port": 80,
   "polling": false
 }
