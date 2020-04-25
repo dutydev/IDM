@@ -1,7 +1,7 @@
 from module import Blueprint, Method
 from module import types
 from dutymanager.units.utils import *
-from dutymanager.core.config import state
+from dutymanager.core.config import ping_state
 from dutymanager.db.methods import AsyncDatabase
 from time import time as current
 
@@ -19,7 +19,7 @@ responses = {
 async def abstract_ping(uid: str, text: str, timestamp: int):
     await send_msg(
         peer_id=db.chats[uid],
-        message=state.format(
+        message=ping_state.format(
             responses[text].title(),
             round(current() - timestamp, 2)
         )

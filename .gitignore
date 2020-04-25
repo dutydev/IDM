@@ -8,6 +8,9 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+dutymanager/core/duty.db
+dutymanager/core/duty.db-shm
+dutymanager/core/duty.db-wal
 build/
 develop-eggs/
 dist/

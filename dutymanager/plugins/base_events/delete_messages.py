@@ -51,4 +51,3 @@ async def delete_messages(event: types.DeleteMessages):
     except VKError as e:
         e = list(e.args)[0][0]
         await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
-

@@ -7,6 +7,7 @@ for duty-manager.
 
 from ..core.config import default_data, intervals
 from module.utils import logger
+from const import SETTINGS_PATH
 
 import json
 import re
@@ -60,7 +61,7 @@ def load_values():
     copy = default_data.copy()
     default_data.clear()
     try:
-        with open("settings.json") as file:
+        with open(SETTINGS_PATH) as file:
             dumps = json.loads(file.read())
             default_data.update(**dumps)
     except FileNotFoundError:
@@ -74,6 +75,6 @@ def load_values():
 def recreate(data: dict = None):
     if data is None:
         data = default_data
-    with open("settings.json", mode="w") as file:
+    with open(SETTINGS_PATH, mode="w") as file:
         file.write(json.dumps(data, indent=2))
         logger.info("Recreated datafile \"settings.json\".")
