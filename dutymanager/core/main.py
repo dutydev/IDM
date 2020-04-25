@@ -2,6 +2,7 @@ from module import Dispatcher, TaskManager
 from tortoise import Tortoise
 from aiohttp import web
 from dutymanager.plugins import blueprints
+from dutymanager.core.config import default_data
 from dutymanager.db.methods import db
 from dutymanager.units.tools import *
 from dutymanager.units.validator import patcher
@@ -30,5 +31,5 @@ async def init():
 if __name__ == '__main__':
     app = web.Application()
     app.router.add_route("POST", "/", wrapper)
-    task.add_task(web._run_app(app, port=80))
+    task.add_task(web._run_app(app, port=default_data["port"]))
     task.run(on_startup=init)

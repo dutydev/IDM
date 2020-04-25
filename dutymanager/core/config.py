@@ -11,6 +11,8 @@ default_data = {
     "bp_token": None,
     "secret": None,
     "user_id": None,
+    "debug": True,
+    "port": 8080,
     "polling": False
 }
 
@@ -24,7 +26,3 @@ intervals = {
     'сек': 1,
     'день': 86400
 }
-
-chats = {}
-trusted = {}
-templates = {}

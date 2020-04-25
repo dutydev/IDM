@@ -19,4 +19,3 @@ async def bind_chat(event: types.BindChat):
         chat_id = await get_chat(event.message.date)
         await db.create_chat(uid, chat_id)
     await send_msg(db.chats[uid], "Беседа распознана")
-    return "ok"
