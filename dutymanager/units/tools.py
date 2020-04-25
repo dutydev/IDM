@@ -7,7 +7,7 @@ for duty-manager.
 
 from ..core.config import default_data, intervals
 from module.utils import logger
-from const import SETTINGS_PATH
+from dutymanager.units.const import SETTINGS_PATH
 
 import json
 import re

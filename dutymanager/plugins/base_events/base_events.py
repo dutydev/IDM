@@ -1,6 +1,6 @@
 from module import Blueprint, Method
 from module import VKError, types
-from const import errors
+from dutymanager.units.const import errors
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.utils import *
 

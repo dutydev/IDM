@@ -15,4 +15,4 @@ errors = {
     921: '⚠ Не могу переслать выбранные сообщения.'
 }
 
-SETTINGS_PATH = "dutymanager/core/settings.json"
+SETTINGS_PATH = "../core/settings.json"

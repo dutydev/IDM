@@ -14,7 +14,7 @@ from module.framework.framework.blueprint import Blueprint
 from vbml import Patcher
 from vkbottle.user import User
 from vkbottle import VKError
-from const import errors
+from dutymanager.units.const import errors
 
 
 class Dispatcher(AsyncHandleManager):
