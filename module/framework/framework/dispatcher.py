@@ -40,7 +40,8 @@ class Dispatcher(AsyncHandleManager):
 
         self.__loop = loop or asyncio.get_event_loop()
         self.__user: User = User(
-            tokens=tokens, login=login, password=password
+            tokens=tokens, user_id=user_id,
+            login=login, password=password
         )
         if user_id is None:
             self._user_id = self.__user.user_id

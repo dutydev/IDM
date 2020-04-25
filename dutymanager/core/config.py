@@ -28,7 +28,7 @@ intervals = {
 }
 
 workers_state = {
-    'online': True,
-    'friends': True,
-    'deleter': True
+    'online': False,
+    'friends': False,
+    'deleter': False
 }

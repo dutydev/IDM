@@ -30,18 +30,24 @@ class AsyncDatabase(ContextInstanceMixin):
     async def add_template(self, *args):
         tag, text, attachments = args
         await Template.create(
-            tag=tag,
-            tex=text,
+            tag=tag.lower(),
+            text=text,
             attachments=attachments
         )
-        self.templates[tag] = {
+        self.templates[tag.lower()] = {
             "message": text,
             "attachment": attachments
         }
 
-    async def edit_template(self, tag: str, **kwargs):
-        self.templates[tag].update(**kwargs)
-        await Template.filter(tag=tag).update(**kwargs)
+    async def edit_template(self, tag: str, *args):
+        text, attachments = args
+        self.templates[tag].update({
+            "message": text,
+            "attachment": attachments
+        })
+        await Template.filter(tag=tag).update(
+            text=text, attachments=attachments
+        )
 
     async def remove_template(self, tag: str) -> str:
         await Template.filter(tag=tag).delete()

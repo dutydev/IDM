@@ -54,7 +54,7 @@ class Event:
         self,
         method: Method,
         text: Text,
-        lower: bool = True
+        lower: bool = False
     ):
         def decorator(func):
             if method.value not in ("sendSignal", "sendMySignal"):

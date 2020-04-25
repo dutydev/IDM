@@ -1,7 +1,7 @@
 import asyncio
 import vk_api
 from module.utils import logger
-from ..core.config import default_data, workers_state
+from dutymanager.core.config import default_data, workers_state
 
 
 class Worker:
@@ -15,8 +15,9 @@ class Worker:
         self.loop = loop or asyncio.get_event_loop()
 
     def start(self):
-        for value in self.metadata.values():
-            self.loop.create_task(value())
+        for k, v in self.metadata.items():
+            if workers_state[k]:
+                self.loop.create_task(v())
         logger.debug("Workers have been dispatched.")
 
     @staticmethod

@@ -5,15 +5,33 @@ Tools for vk-bot
 """
 
 from module import Blueprint
+from typing import Optional
 
 bp = Blueprint()
 
 __all__ = (
     "get_chat", "send_msg",
     "get_msg_id", "get_msg_ids",
-    "get_history",
+    "get_history", "edit_msg",
+    "get_attachments",
     "bp"
 )
+
+
+async def get_attachments(message_id: int) -> Optional[str]:
+    attachments = []
+    data = (await bp.api.request("messages.getById", {
+        "message_ids": message_id
+    }))["items"][0]
+    if not data["attachments"]:
+        return
+    for x in data["attachments"]:
+        kind = x["type"]
+        if kind != "link":
+            attachments.append(
+                f"{kind}{x[kind]['owner_id']}_{x[kind]['id']}"
+            )
+    return ",".join(attachments)
 
 
 async def get_history(peer_id: int, count: int = 200) -> dict:
@@ -46,7 +64,6 @@ async def send_msg(
     disable_mentions: bool = True,
     **kwargs
 ):
-
     await bp.api.messages.send(
         peer_id=peer_id,
         message=message,
@@ -54,6 +71,17 @@ async def send_msg(
         disable_mentions=disable_mentions,
         random_id=0,
         **kwargs
+    )
+
+
+async def edit_msg(
+    peer_id: int,
+    message_id: int,
+    message: str,
+    attachment: int = None
+):
+    await bp.api.messages.edit(
+        **locals(), keep_forward_messages=True
     )
 
 

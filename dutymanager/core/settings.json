@@ -5,7 +5,7 @@
   "bp_token": null,
   "secret": null,
   "user_id": null,
-  "debug": true,
+  "debug": null,
   "port": 8080,
   "polling": false
 }

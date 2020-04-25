@@ -4,9 +4,9 @@ from aiohttp import web
 from dutymanager.plugins import blueprints
 from dutymanager.core.config import default_data
 from dutymanager.db.methods import db
-from dutymanager.db.workers import Worker
+from dutymanager.units.dataclasses.workers import Worker
 from dutymanager.units.tools import *
-from dutymanager.units.validator import patcher
+from dutymanager.units.dataclasses.validator import patcher
 
 load_values()
 bot = Dispatcher(**get_params(), patcher=patcher)

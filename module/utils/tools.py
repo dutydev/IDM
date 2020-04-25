@@ -45,4 +45,5 @@ def generate_string(length: int = 15) -> str:
 
 
 def sub_string(text: str) -> str:
-    return " ".join(text.split()[1:])
+    split = text.split()[0]
+    return (text.replace(split, "")).strip()

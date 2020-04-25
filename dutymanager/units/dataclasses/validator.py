@@ -1,5 +1,5 @@
 from vbml import Patcher, PatchedValidators
-from .tools import parse_interval
+from dutymanager.units.tools import parse_interval
 
 import typing
 
