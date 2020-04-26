@@ -21,7 +21,7 @@ worker = Worker(bot.loop)
 
 
 class Core:
-    def __init__(self, use_ngrok: bool = True):
+    def __init__(self, use_ngrok: bool = False):
         self.use_ngrok = use_ngrok
         self.app = web.Application()
         self.app.router.add_route("POST", "/", wrapper)
