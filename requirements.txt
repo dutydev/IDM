@@ -1,3 +1,5 @@
+https://github.com/timoniq/vkbottle/archive/master.zip
+uvloop
 aiohttp==3.6.2
 aiosqlite==0.12.0
 async-timeout==3.0.1
@@ -15,6 +17,5 @@ PyYAML==5.3.1
 tortoise-orm==0.16.8
 typing-extensions==3.7.4.2
 vbml==0.5.92
-vkbottle==2.7.1
 watchgod==0.6
 yarl==1.4.2
