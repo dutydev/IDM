@@ -65,7 +65,6 @@ class AsyncDatabase(ContextInstanceMixin):
                 "message": y.text,
                 "attachment": y.attachments
             }
-        logger.success("Successfully loaded values from database.")
 
 
 db = AsyncDatabase()

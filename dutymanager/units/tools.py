@@ -47,6 +47,7 @@ def parse_interval(text: str) -> int:
 
 
 def get_params() -> dict:
+    load_values()
     return dict(
         tokens=default_data["access_token"],
         secret=default_data["secret"],

@@ -40,7 +40,7 @@ def folder_checkup(path, create: bool = True):
 
 
 def generate_string(length: int = 15) -> str:
-    mixin = string.ascii_letters + string.digits
+    mixin = string.ascii_lowercase + string.digits
     return ''.join(choice(mixin) for _ in range(length))
 
 

@@ -1,4 +1,5 @@
 from module import Dispatcher, TaskManager
+from module.utils import logger
 from tortoise import Tortoise
 from aiohttp import web
 from dutymanager.plugins import blueprints
@@ -8,33 +9,51 @@ from dutymanager.units.dataclasses.workers import Worker
 from dutymanager.units.tools import *
 from dutymanager.units.dataclasses.validator import patcher
 
+try:
+    from pyngrok import ngrok
+except ModuleNotFoundError:
+    ngrok = None
 
-class Bot:
-    def __init__(self):
-        load_values()
+bot = Dispatcher(**get_params(), patcher=patcher)
+bot.set_blueprints(*blueprints)
+task = TaskManager(bot.loop)
+worker = Worker(bot.loop)
+
+
+class Core:
+    def __init__(self, use_ngrok: bool = True):
+        self.use_ngrok = use_ngrok
         self.app = web.Application()
-        self.bot = Dispatcher(**get_params(), patcher=patcher)
-        self.bot.set_blueprints(*blueprints)
-        self.task = TaskManager(self.bot.loop)
-        self.worker = Worker(self.bot.loop)
+        self.app.router.add_route("POST", "/", wrapper)
+        self.port = default_data["port"]
+        worker.start()
+        task.add_task(web._run_app(self.app, port=self.port))
 
-    def start(self):
-        self.app.router.add_route("POST", "/", self.wrapper)
-        self.task.add_task(web._run_app(self.app, port=default_data["port"]))
-        self.worker.start()
-        self.task.run(on_startup=self.init)
+    def run(self):
+        if self.use_ngrok:
+            logger.info("Using ngrok WSGI: {}", self.get_url())
+        task.run(on_startup=init)
 
-    async def wrapper(self, request: web.Request):
-        event = await request.json()
-        emulation = await self.bot.emulate(event)
-        if isinstance(emulation, str):
-            return web.Response(text=emulation)
-        return web.json_response(data=emulation)
+    def get_url(self) -> str:
+        if ngrok is None:
+            raise ModuleNotFoundError(
+                "First install pyngrok - pip install pyngrok"
+            )
+        return ngrok.connect(port=self.port)
 
-    async def init(self):
-        await Tortoise.init(
-            db_url="sqlite://dutymanager/core/duty.db",
-            modules={"models": ["dutymanager.db.models"]}
-        )
-        await Tortoise.generate_schemas()
-        await db.load_values()
+
+async def wrapper(request: web.Request):
+    event = await request.json()
+    emulation = await bot.emulate(event)
+    if isinstance(emulation, str):
+        return web.Response(text=emulation)
+    return web.json_response(data=emulation)
+
+
+async def init():
+    await Tortoise.init(
+        db_url="sqlite://dutymanager/core/duty.db",
+        modules={"models": ["dutymanager.db.models"]}
+    )
+    await Tortoise.generate_schemas()
+    await db.load_values()
