@@ -8,11 +8,11 @@ from module.utils import generate_string
 from module.objects.events import Event
 from module.objects.methods import Method
 from module.objects import types
+from module.framework.framework.bot import User
 from module.framework.processor import AsyncHandleManager
 from module.framework.framework.blueprint import Blueprint
 from vbml import Patcher
 from vkbottle.framework.framework.handler.user import Handler
-from vkbottle.user import User
 from vkbottle import VKError
 from dutymanager.units.const import errors
 
@@ -70,9 +70,6 @@ class Dispatcher(AsyncHandleManager):
             level=0,
             enqueue=mobile is False
         )
-        logger.level("INFO", color="<white>")
-        logger.level("ERROR", color="<red>")
-
         if log_to_path:
             logger.add(
                 "logs/errors.log" if log_to_path is True else log_to_path,
