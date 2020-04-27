@@ -1,4 +1,3 @@
-from module.utils import logger
 from vkbottle.utils import ContextInstanceMixin
 from .models import Chat, Trusted, Template
 

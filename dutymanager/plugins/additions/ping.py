@@ -26,7 +26,7 @@ async def abstract_ping(uid: str, text: str, timestamp: int):
     )
 
 
-@bot.on.message_event(
+@bot.event.message_signal(
     Method.SEND_MY_SIGNAL,
     list(responses.keys()),
     lower=True
@@ -39,7 +39,7 @@ async def send_my_signal(event: types.SendMySignal):
     )
 
 
-@bot.on.message_event(
+@bot.event.message_signal(
     Method.SEND_SIGNAL,
     list(responses.keys()),
     lower=True

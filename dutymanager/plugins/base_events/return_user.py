@@ -7,7 +7,7 @@ bot = Blueprint()
 db = AsyncDatabase.get_current()
 
 
-@bot.on.event(Method.BAN_EXPIRED)
+@bot.event.ban_expired()
 async def ban_expired(event: types.BanExpired):
     uid = event.object.chat
     user_id = event.object.user_id
@@ -26,7 +26,7 @@ async def ban_expired(event: types.BanExpired):
         )
 
 
-@bot.on.event(Method.ADD_USER)
+@bot.event.add_user()
 async def add_user(event: types.AddUser):
     uid = event.object.chat
     user_id = event.object.user_id

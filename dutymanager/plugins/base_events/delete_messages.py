@@ -8,7 +8,7 @@ bot = Blueprint()
 db = AsyncDatabase.get_current()
 
 
-@bot.on.event(Method.DELETE_MESSAGES_FROM_USER)
+@bot.event.delete_messages_from_user()
 async def delete_from_user(event: types.DeleteMessagesFromUser):
     message_ids = []
     member_ids = event.object.member_ids
@@ -33,7 +33,7 @@ async def delete_from_user(event: types.DeleteMessagesFromUser):
         await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
 
 
-@bot.on.event(Method.DELETE_MESSAGES)
+@bot.event.delete_messages()
 async def delete_messages(event: types.DeleteMessages):
     peer_id = db.chats[event.object.chat]
     local_ids = event.object.local_ids

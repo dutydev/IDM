@@ -8,13 +8,17 @@ from module.utils import generate_string
 from module.objects.events import Event
 from module.objects.methods import Method
 from module.objects import types
-
 from module.framework.processor import AsyncHandleManager
 from module.framework.framework.blueprint import Blueprint
 from vbml import Patcher
+from vkbottle.framework.framework.handler.user import Handler
 from vkbottle.user import User
 from vkbottle import VKError
 from dutymanager.units.const import errors
+
+#  Type hints
+Token = typing.Union[str, list]
+Union = typing.Union[str, bool]
 
 
 class Dispatcher(AsyncHandleManager):
@@ -22,13 +26,13 @@ class Dispatcher(AsyncHandleManager):
         self,
         secret: str = None,
         user_id: int = None,
-        tokens: typing.Union[str, list] = None,
+        tokens: Token = None,
         login: str = None,
         password: str = None,
         polling: bool = False,
         mobile: bool = False,
-        debug: typing.Union[str, bool] = True,
-        log_to_path: typing.Union[str, bool] = False,
+        debug: Union = True,
+        log_to_path: Union = False,
         patcher: Patcher = None,
         loop: asyncio.AbstractEventLoop = None,
     ):
@@ -52,8 +56,10 @@ class Dispatcher(AsyncHandleManager):
         if polling:
             self.__loop.create_task(self.__user.run())
 
+        # Sign assets
         self.logger = LoggerLevel(debug)
-        self.on: Event = Event()
+        self.on: Handler = Handler()
+        self.event: Event = Event()
 
         logger.remove()
         logger.add(
@@ -71,7 +77,7 @@ class Dispatcher(AsyncHandleManager):
             logger.add(
                 "logs/errors.log" if log_to_path is True else log_to_path,
                 level=debug,
-                format="[{time:YYYY-MM-DD HH:MM:SS} | {level}] {message}",
+                format="[{time:YYYY-MM-DD HH:MM:SS} | {level}]: {message}",
                 rotation="5 MB"
             )
 
@@ -95,9 +101,9 @@ class Dispatcher(AsyncHandleManager):
         if event.get("user_id") != self._user_id:
             return errors[3]
 
-        ev = await self.get_event_type(event)
+        ev = await self.get_event_type(event)  # noqa: Event
         try:
-            task = (await self._processor(ev, self._patcher))
+            task = (await self._processor(ev))
         except (VKError, Exception):
             logger.exception(traceback.format_exc(limit=5))
             return traceback.format_exc(limit=5)
@@ -110,7 +116,7 @@ class Dispatcher(AsyncHandleManager):
     def set_blueprints(self, *blueprints: Blueprint):
         for blueprint in blueprints:
             blueprint.api = self.api
-            self.on.concatenate(blueprint.on)
+            self.event.concatenate(blueprint.event)
         logger.debug("Blueprints have been successfully loaded")
 
     def loop_update(self, loop: asyncio.AbstractEventLoop = None):

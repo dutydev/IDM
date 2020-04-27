@@ -26,12 +26,12 @@ class Core:
         self.app = web.Application()
         self.app.router.add_route("POST", "/", wrapper)
         self.port = default_data["port"]
-        worker.start()
-        task.add_task(web._run_app(self.app, port=self.port))
 
     def run(self):
         if self.use_ngrok:
             logger.info("Using ngrok WSGI: {}", self.get_url())
+        task.add_task(web._run_app(self.app, port=self.port))  # noqa
+        worker.start()
         task.run(on_startup=init)
 
     def get_url(self) -> str:

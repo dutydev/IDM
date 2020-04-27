@@ -12,6 +12,7 @@ default_data = {
     "secret": None,
     "user_id": None,
     "debug": True,
+    "log_to_path": True,
     "port": 8080,
     "polling": False
 }

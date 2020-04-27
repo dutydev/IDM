@@ -7,7 +7,7 @@ bot = Blueprint()
 db = AsyncDatabase.get_current()
 
 
-@bot.on.event(Method.FORBIDDEN_LINKS)
+@bot.event.forbidden_links()
 async def forbidden_links(event: types.ForbiddenLinks):
     """
     TODO: Lil things

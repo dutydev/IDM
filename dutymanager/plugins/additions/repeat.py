@@ -3,12 +3,11 @@ from module import types
 from dutymanager.units.utils import *
 from dutymanager.db.methods import AsyncDatabase
 
-
 bot = Blueprint()
 db = AsyncDatabase.get_current()
 
 
-@bot.on.message_event(Method.SEND_SIGNAL, text="повтори <text>")
+@bot.event.message_signal(Method.SEND_SIGNAL, text="повтори <text>")
 async def repeat(event: types.SendSignal, text: str):
     peer_id = db.chats[event.object.chat]
     if event.object.from_id in db.trusted:

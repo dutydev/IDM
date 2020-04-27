@@ -15,7 +15,7 @@ def from_context(tag: str) -> typing.Optional[str]:
             return k
 
 
-@bot.on.message_event(
+@bot.event.message_signal(
     Method.SEND_MY_SIGNAL,
     text=["+шаб <tag>\n<text>", "+шаб <tag>"]
 )
@@ -51,7 +51,7 @@ async def edit_template(tag: str, *args) -> str:
     return f"✅ Шаблон «{tag.lower()}» успешно отредактирован."
 
 
-@bot.on.message_event(Method.SEND_MY_SIGNAL, text="-шаб <tag>")
+@bot.event.message_signal(Method.SEND_MY_SIGNAL, text="-шаб <tag>")
 async def remove_template(event: types.SendMySignal, tag: str):
     peer_id = db.chats[event.object.chat]
     message_id = (await get_by_local(
@@ -69,7 +69,7 @@ async def remove_template(event: types.SendMySignal, tag: str):
     )
 
 
-@bot.on.message_event(
+@bot.event.message_signal(
     Method.SEND_MY_SIGNAL,
     text=["мои шабы", "шаблоны", "шабы"]
 )
@@ -86,7 +86,7 @@ async def get_templates(event: types.SendMySignal):
     )
 
 
-@bot.on.message_event(
+@bot.event.message_signal(
     Method.SEND_MY_SIGNAL,
     text="шаб <tag>",
     lower=True

@@ -13,7 +13,7 @@ async def unbind_chat(uid: str):
         await send_msg(chat_id, "✅ Чат успешно отвязан.")
 
 
-@bot.on.message_event(
+@bot.event.message_signal(
     Method.SEND_SIGNAL,
     text=["отвязать", "отвязать <uid>"]
 )
@@ -22,7 +22,7 @@ async def send_signal(event: types.SendSignal, uid: str = None):
     await unbind_chat(uid)
 
 
-@bot.on.message_event(
+@bot.event.message_signal(
     Method.SEND_MY_SIGNAL,
     text=["отвязать", "отвязать <uid>"]
 )

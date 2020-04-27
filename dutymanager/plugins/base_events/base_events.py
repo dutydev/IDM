@@ -8,7 +8,7 @@ bot = Blueprint(name="Base")
 db = AsyncDatabase.get_current()
 
 
-@bot.on.event(Method.PRINT_BOOKMARK)
+@bot.event.print_bookmark()
 async def print_bookmark(event: types.PrintBookmark):
     peer_id = db.chats[event.object.chat]
     local_id = event.object.conversation_message_id
@@ -24,7 +24,7 @@ async def print_bookmark(event: types.PrintBookmark):
         await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
 
 
-@bot.on.event(Method.BAN_GET_REASON)
+@bot.event.ban_get_reason()
 async def ban_get_reason(event: types.BanGetReason):
     peer_id = db.chats[event.object.chat]
     local_id = event.object.local_id
@@ -46,7 +46,7 @@ async def abstract_bind(uid: str, text: str, date: int):
     await send_msg(db.chats[uid], "✅ Беседа распознана")
 
 
-@bot.on.event(Method.BIND_CHAT)
+@bot.event.bind_chat()
 async def bind_chat(event: types.BindChat):
     await abstract_bind(
         uid=event.object.chat,
@@ -55,7 +55,7 @@ async def bind_chat(event: types.BindChat):
     )
 
 
-@bot.on.event(Method.SUBSCRIBE_SIGNALS)
+@bot.event.subscribe_signals()
 async def subscribe_signals(event: types.SubscribeSignals):
     await abstract_bind(
         uid=event.object.chat,

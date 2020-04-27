@@ -24,42 +24,123 @@ class Event:
             handler=handler.__class__.__name__
         )
 
-    def add_handler(self, func: Callable, method: Method):
+    def add_handler(self, method: Method, func: Callable):
         if not iscoroutinefunction(func):
             raise TypeError("Handler has to be coroutine function.")
         handler = Handler(func, method)
         self.handler.append(handler)
 
     def add_message_handler(
-        self,
-        func: Callable,
-        method: Method,
-        text: Text,
-        lower: bool = True
+            self,
+            method: Method,
+            func: Callable,
+            text: Text,
+            lower: bool = True
     ):
         if not iscoroutinefunction(func):
             raise TypeError("Handler has to be coroutine function.")
+        if method.value not in ("sendSignal", "sendMySignal"):
+            raise ValueError("Invalid method")
         message_handler = MessageHandler(func, method, text, lower)
         self.message_handler.append(message_handler)
 
-    def event(self, method: Method):
+    def ping(self):
         def decorator(func):
-            self.add_handler(func, method)
+            self.add_handler(Method.PING, func)
             return func
+
         return decorator
 
-    def message_event(
+    def subscribe_signals(self):
+        def decorator(func):
+            self.add_handler(Method.SUBSCRIBE_SIGNALS, func)
+            return func
+
+        return decorator
+
+    def ban_expired(self):
+        def decorator(func):
+            self.add_handler(Method.BAN_EXPIRED, func)
+            return func
+
+        return decorator
+
+    def add_user(self):
+        def decorator(func):
+            self.add_handler(Method.ADD_USER, func)
+            return func
+
+        return decorator
+
+    def delete_messages(self):
+        def decorator(func):
+            self.add_handler(Method.DELETE_MESSAGES, func)
+            return func
+
+        return decorator
+
+    def hire_api(self):
+        def decorator(func):
+            self.add_handler(Method.HIRE_API, func)
+            return func
+
+        return decorator
+
+    def delete_messages_from_user(self):
+        def decorator(func):
+            self.add_handler(Method.DELETE_MESSAGES_FROM_USER, func)
+            return func
+
+        return decorator
+
+    def print_bookmark(self):
+        def decorator(func):
+            self.add_handler(Method.PRINT_BOOKMARK, func)
+            return func
+
+        return decorator
+
+    def forbidden_links(self):
+        def decorator(func):
+            self.add_handler(Method.FORBIDDEN_LINKS, func)
+            return func
+
+        return decorator
+
+    def to_group(self):
+        def decorator(func):
+            self.add_handler(Method.TO_GROUP, func)
+            return func
+
+        return decorator
+
+    def ban_get_reason(self):
+        def decorator(func):
+            self.add_handler(Method.BAN_GET_REASON, func)
+            return func
+
+        return decorator
+
+    def bind_chat(self):
+        def decorator(func):
+            self.add_handler(Method.BIND_CHAT, func)
+            return func
+
+        return decorator
+
+    def ignore_messages(self):
+        def decorator(func):
+            self.add_handler(Method.IGNORE_MESSAGES, func)
+
+        return decorator
+
+    def message_signal(
         self,
         method: Method,
         text: Text,
         lower: bool = False
     ):
         def decorator(func):
-            if method.value not in ("sendSignal", "sendMySignal"):
-                raise ValueError("Invalid method")
-            self.add_message_handler(func, method, text, lower)
+            self.add_message_handler(method, func, text, lower)
             return func
         return decorator
-
-
-
