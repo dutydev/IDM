@@ -58,7 +58,7 @@ class Dispatcher(AsyncHandleManager):
 
         # Sign assets
         self.logger = LoggerLevel(debug)
-        self.on: Handler = Handler()
+        self.on: Handler = self.__user.on
         self.event: Event = Event()
 
         logger.remove()
@@ -115,8 +115,9 @@ class Dispatcher(AsyncHandleManager):
 
     def set_blueprints(self, *blueprints: Blueprint):
         for blueprint in blueprints:
-            blueprint.api = self.api
+            blueprint.create(self.api)
             self.event.concatenate(blueprint.event)
+            self.on.concatenate(blueprint.on)
         logger.debug("Blueprints have been successfully loaded")
 
     def loop_update(self, loop: asyncio.AbstractEventLoop = None):
