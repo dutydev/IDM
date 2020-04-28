@@ -9,6 +9,11 @@ from dutymanager.units.dataclasses.workers import Worker
 from dutymanager.units.tools import *
 from dutymanager.units.dataclasses.validator import patcher
 
+from dutymanager.web import urls
+import aiohttp_jinja2
+from jinja2.loaders import FileSystemLoader
+from dutymanager.units import const
+
 try:
     from pyngrok import ngrok
 except ModuleNotFoundError:
@@ -26,6 +31,20 @@ class Core:
         self.app = web.Application()
         self.app.router.add_route("POST", "/", wrapper)
         self.port = default_data["port"]
+        self.setup_web()
+
+    def setup_web(self):
+        aiohttp_jinja2.setup(
+            self.app,
+            loader=FileSystemLoader(const.TEMPLATES_PATH)
+        )
+        self.app.router.add_static(
+            const.STATIC_URL, const.STATIC_PATH,
+            follow_symlinks=True
+        )
+
+        for urlpath in urls.urlpatterns:
+            urlpath.register(self.app.router)
 
     def run(self):
         if self.use_ngrok:

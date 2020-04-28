@@ -3,7 +3,8 @@ from .tools import (
     folder_checkup,
     sub_string,
     generate_string,
-    get_params
+    get_params,
+    DotDict
 )
 from .logger import logger
 from ._status import LoggerLevel
