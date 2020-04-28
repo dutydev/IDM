@@ -5,7 +5,7 @@ import socket, time
 import vkapi
 from ...pythonping import ping as pingp
 
-@dp.my_signal_event_handle('пинг', 'пиу', 'кинг', 'п', 'пингб')
+@dp.my_signal_event_handle('пинг', 'пиу', 'кинг', 'п', 'пингб', 'тик')
 def ping(event: MySignalEvent) -> str:
 
     if event.command == 'пингб':
@@ -17,7 +17,7 @@ def ping(event: MySignalEvent) -> str:
     #c_time_str = str(datetime.fromtimestamp(round(c_time)))
     #v_time_str = str(datetime.fromtimestamp(round(event.msg['date'])))
 
-    r_type = 'ПОНГ' if event.command == "пинг" else "ПАУ" if event.command == "пиу" else "КОНГ"
+    r_type = 'ПОНГ' if event.command == "пинг" else "ПАУ" if event.command == "пиу" else "ТОК" if event.command == "тик" else "КОНГ"
 
     if delta > 15:r_type += "\nМОРОСИТ КОНКРЕТНО КТО-ТО!!!!!"
     elif delta > 10:r_type += "\nЭЭЭЭЭ КТО МОРОСИТ?!"

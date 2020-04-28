@@ -1,6 +1,6 @@
 from ...objects import dp, MySignalEvent
 from ...utils import new_message, edit_message
-
+#################    не смотрите сюда мне стыдно  ####################
 @dp.my_signal_event_handle('+викосиф', '+викиосиф', '+wikosif', '+wikiosif', '+wikosiph', '+wikiosiph')
 def WIadd(event: MySignalEvent) -> str:
 
@@ -63,23 +63,17 @@ def WIlist(event: MySignalEvent) -> str:
     new_message(event.api, event.chat.peer_id, message=_message)
     return "ok"
 
-@dp.my_signal_event_handle('викосиф помощь', 'викиосиф помощь', 'wikosif help', 'wikiosif help', 'wikosiph help', 'wikiosiph help')
-def WIhelp(event: MySignalEvent) -> str:
-
-    _message = f"""Ты ебу дал, мальчик? 🤔
-    Понимаешь, что ты нихуя в этом скрипте не написал, кроме этого сообщения?
-    Хули ты от меня хочешь? Пиздуй бороздуй дописывать, сука
-        """.replace("    ", "")
-
-    edit_message(event.api, event.chat.peer_id, event.msg['id'], message=_message)
-    return "ok"
-
 @dp.my_signal_event_handle('викосиф', 'викиосиф', 'wikosif', 'wikiosif', 'wikosiph', 'wikiosiph')
 def run_template(event: MySignalEvent) -> str:
     
     if len(event.args) == 0:
         edit_message(event.api, event.chat.peer_id, event.msg['id'], message="❗ Нет данных")
-
+    if event.args[0] == 'помощь' or event.args[0] == 'help':
+        msg = f"""Ты ебу дал, мальчик? 🤔
+        Понимаешь, что ты нихуя в этом скрипте не написал, кроме этого сообщения?
+        Хули ты от меня хочешь? Пиздуй бороздуй дописывать, сука
+        """.replace("    ", "")
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=msg)
     name = " ".join(event.args)
 
     for temp in event.db.templates:

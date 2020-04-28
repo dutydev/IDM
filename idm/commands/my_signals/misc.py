@@ -29,6 +29,31 @@ def authmisc(event: MySignalEvent) -> str:
     new_message(event.api, event.chat.peer_id, attachment = 'video155440394_168735361', reply_to = event.msg['id'])
     return "ok"
 
+@dp.my_signal_event_handle('опрос')
+def pollcreate(event: MySignalEvent) -> str:
+    ans = ['','','','','','','','','','','']
+    c = 0
+    i = 0
+    anss = event.payload
+    while c != -1 and i < 10:
+        c = anss.find('\n')
+        if c == -1:
+            i += 1
+            continue
+        ans[i] = anss[:c]
+        anss = anss[c+1:]
+        i += 1
+    if i == 10:
+        ans[10] = '⚠ Максимальное количество ответов - 10'
+        i = 9
+    ans[i] = anss
+    anss = f'''["{ans[0]}","{ans[1]}","{ans[2]}","{ans[3]}","{ans[4]}",
+    "{ans[5]}","{ans[6]}","{ans[7]}","{ans[8]}","{ans[9]}"]'''
+    poll = event.api('polls.create', question = " ".join(event.args), add_answers = anss)
+    edit_message(event.api, event.chat.peer_id, event.msg['id'], message = ans[10],
+    attachment = f"poll{poll['owner_id']}_{poll['id']}")
+    return "ok"
+
 @dp.my_signal_event_handle('спам')
 def spam(event: MySignalEvent) -> str:
     count = 1

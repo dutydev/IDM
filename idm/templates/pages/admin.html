@@ -32,7 +32,8 @@
           <div class="form-group">
             <label for="me_token">Токен VK Me для отправки исчезающих сообщений ("бомб")</label>
             <input type="text"
-              class="form-control" name="me_token" id="me_token" aria-describedby="me_token-help" placeholder="85 символов" pattern="([a-zA-Z0-9]{85})">
+              class="form-control" name="me_token" id="me_token" aria-describedby="me_token-help" placeholder="85 символов" pattern="([a-zA-Z0-9]{85})"
+              value="{{db.me_token}}>
             <small id="me_token-help" class="form-text text-muted">
               <a href="https://vkhost.github.io/" target="_blank">Тут</a>
               же, только токен от VK Me.

@@ -23,7 +23,7 @@ def check(event: MySignalEvent) -> str:
     message = f"""
     Основной токен: {check_token(event.db.access_token)}
     Токен для вечного онлайна: {check_token(event.db.online_token)}
-    Токен для скрытия онлайна: {check_token(event.db.me_token)}
+    Токен VK Me: {check_token(event.db.me_token)}
     Токен для добавления групп: {check_token(event.db.bp_token)}
     
     """.replace('    ', '')

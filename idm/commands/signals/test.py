@@ -41,30 +41,25 @@ def get(event: MySignalEvent) -> str:
 
 @dp.my_signal_event_handle('монтест')
 def monitoringtest(event: MySignalEvent) -> str:
-    lp = event.api('messages.getLongPollServer', need_pts = 1)
-    #new_message(event.api, event.chat.peer_id, message=f"Получен ts: {lp['ts']}")
+    delete_message(event.api, event.chat.peer_id, event.msg['id'])
     i = 0
     old_msg = ''
-    while i < 5:
-        msg = ''
-        time.sleep(1)
-        lph = event.api('messages.getLongPollHistory', ts = lp['ts'])
-        #if (i % 5) == 0:
-        lp = event.api('messages.getLongPollServer', need_pts = 1)
-            #new_message(event.api, event.chat.peer_id, message=f"Новый ts: {lp['ts']}")
-        msgs = lph['messages']
-        items = msgs['items']
-        for l in range(len(items)):
-            item = items[l]
-            if item['text']:
-                msg += '\n' + item['text']
+    msg = ''
+    item = {"text": ""}
+    last_msg = new_message(event.api, event.chat.peer_id, message='Наблюдаю 👀')
+    while item['text'] != 'стоп':
+        history = event.api('messages.getHistory', peer_id = event.chat.peer_id, count = 2)
+        items = history['items']
+        item = items[0]
+        if item['text'] != old_msg and last_msg != item['id']:
+            msg += '\n' + item['text']
+            old_msg = item['text']
+        if item['text'].find('скинь') != -1 and last_msg != item['id']:
+            last_msg = new_message(event.api, event.chat.peer_id, message=msg)
+            msg = ''
         i += 1
-        msg = msg.replace(old_msg, '')
-        if msg == '' or msg == '':
-            msg = 'null'
-        old_msg += msg
-        new_message(event.api, event.chat.peer_id,
-        message=msg)
+    new_message(event.api, event.chat.peer_id, message=msg)
+    new_message(event.api, event.chat.peer_id, message=f'Итераций цикла: {i}')
     return "ok"
     #addlist
     #wall.createComment

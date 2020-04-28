@@ -47,9 +47,10 @@ def remove_template(event: MySignalEvent) -> str:
     return "ok"
 
 
-@dp.my_signal_event_handle('шабы')
+@dp.my_signal_event_handle('шабы', 'мои')
 def templates(event: MySignalEvent) -> str:
-
+    if event.args[0] != 'шабы':
+        return "ok"
     _message = "Ваши шаблоны:"
     itr = 0
     for temp in event.db.templates:
