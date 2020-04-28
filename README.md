@@ -28,8 +28,9 @@
 Ищем блок *Start a new console*, в нем выбираем *Bash*
 
 После загрузки консоли набираем в консоли
+(это две команды, после каждой нужно нажимать Enter)
 ```bash
-rm -r IDM
+rm -rf IDM
 git clone https://github.com/Elchinchel/IDM.git
 ```
 Далее переходим во вкладку *Web* и нажимаем *Reload * `имя аккаунта`.pythonanywhere.com
@@ -61,6 +62,7 @@ git clone https://github.com/Elchinchel/IDM.git
 ## Как обновить
 
 Открываем консоль, набираем:
+(это четыре команды, после каждой нужно нажимать Enter)
 
 ```bash
 cp IDM/database.json database.json
