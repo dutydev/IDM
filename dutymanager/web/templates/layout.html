@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Language" content="ru">
+    <meta name="author" lang="ru" content="Юрий Юшманов, Даниил Маркелов">
+    <meta name="author" lang="en" content="Yuriy Yushmanov, Daniil Markelov">
+    <meta content="no-cache" http-equiv="Pragma">
+    <meta name="theme-color" content="#151515">
+    <meta name="msapplication-navbutton-color" content="#151515">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#151515">
+
+    <script src="https://vk.com/js/api/openapi.js?162" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans&display=swap&subset=cyrillic">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+          type="text/css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+
+    {% block headscripts %}{% endblock headscripts %}
+
+    <link rel="stylesheet" href="/static/css/site.css">
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <link rel="stylesheet" href="/static/css/theme.scss">
+
+    {% if title %}<title>{{ title }} - IDM</title>{% else %}<title>IDM</title>{% endif %}
+
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">IDM v2.0</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/">Главная</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div id="cookies-js-alerts">
+    <noscript>
+        <div class="py-12">
+            <div class="container">
+                <div class="row">
+                    <p>Для работы сайта требуется javascript и cookies, пожалуйстав включите их.</p>
+                </div>
+            </div>
+        </div>
+    </noscript>
+
+    <div class="py-5" id="cookies-blocked">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>Для работы сайта требуется cookies, пожалуйста включите их.</p>
+                    <script>
+                        if (navigator.cookieEnabled) {
+                            $("#cookies-blocked").hide();
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="page-content">
+    {% block content %}
+    {% endblock content %}
+</div>
+
+
+<footer id="sticky-footer" class="py-5 bg-dark text-white-50 fixed-bottom">
+    <div class="container">
+        <div class="row">
+            <div class="col text-center">
+                <small style="font-size: 10px;color: #909090;">Copyright &copy; <span id="year"></span>, Юрий
+                    Юшманов, Даниил Маркелов</small>
+            </div>
+        </div>
+    </div>
+    <script>let t = new Date();
+    $("#year").text(t.getFullYear());</script>
+</footer>
+</body>
+
+{% block endscripts %}{% endblock endscripts %}
+
+</html>

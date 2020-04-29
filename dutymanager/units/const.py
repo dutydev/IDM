@@ -16,3 +16,6 @@ errors = {
 }
 
 SETTINGS_PATH = "dutymanager/core/settings.json"
+TEMPLATES_PATH = "dutymanager/web/templates"
+STATIC_PATH = "dutymanager/web/static"
+STATIC_URL = "/static"

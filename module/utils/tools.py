@@ -19,6 +19,25 @@ class Logger:
         )
 
 
+class DotDict(dict):
+    def __init__(self, *args, **kwargs):
+        _rargs = list(args)
+        for i in range(0, len(_rargs)):
+            if type(_rargs[i]) is dict:
+                for key in _rargs[i].keys():
+                    if type(_rargs[i][key]) is dict:
+                        _rargs[i][key] = DotDict(_rargs[i][key])
+
+        for key in kwargs.keys():
+            if type(kwargs[key]) is dict:
+                kwargs[key] = DotDict(kwargs[key])
+
+        super().__init__(*tuple(_rargs), **kwargs)
+
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
 def chunks(x, y):
     """Yield successive n-sized chunks from l."""
     for i in range(0, len(x), y):

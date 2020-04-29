@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+    <div class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2 align-middle">
+                    <form action="" method="post" class="form-group">
+                        <input type="text" name="csfr_token" value="{{ csfr_token }}" hidden>
+                        <div class="card">
+                            <div class="card-header">
+                                Вход
+                            </div>
+                            <div class="card-body">
+                                {{ login_form }}
+                            </div>
+                            <div class="card-footer text-center">
+                                 <button class="btn btn-primary" type="submit">Войти</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

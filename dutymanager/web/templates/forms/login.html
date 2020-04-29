@@ -1,0 +1,39 @@
+
+
+<input type="text" name="formId" value="loginForm" hidden>
+
+<div class="form-group">
+    <div class="invalid-feedback">
+        <li>
+            {% for error in form_errors.form %}
+                <ul><small class="text-muted">{{ error }}</small></ul>
+            {% endfor %}
+        </li>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="id_login">Логин</label>
+    <input type="text" class="form-control" id="id_login" name="login" value="{{ login }}">
+    <div class="invalid-feedback">
+        <li>
+            {% for error in form_errors.login %}
+                <ul>
+                    <small class="text-muted">{{ error }}</small>
+                </ul>
+            {% endfor %}
+        </li>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="id_password">Пароль</label>
+    <input type="password" class="form-control" id="id_password" name="password" value="{{ password }}">
+    <div class="invalid-feedback">
+        <li>
+            {% for error in form_errors.password %}
+                <ul><small class="text-muted">{{ error }}</small></ul>
+            {% endfor %}
+        </li>
+    </div>
+</div>
