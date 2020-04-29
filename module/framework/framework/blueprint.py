@@ -5,11 +5,15 @@ from vkbottle.api import UserApi
 
 class Blueprint:
     def __init__(self, name: str = None, description: str = None):
-        self.api: UserApi = None
-        self.on: Handler = Handler()
-        self.event: Event = Event()
+        self.user_id: int = None
         self._name = name or "Unknown"
         self._description = description or "Unknown"
 
-    def create(self, api_instance: UserApi):
+        # Sign assets
+        self.api: UserApi = None
+        self.on: Handler = Handler()
+        self.event: Event = Event()
+
+    def create(self, api_instance: UserApi, user_id: int):
         self.api = api_instance
+        self.user_id = user_id

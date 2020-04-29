@@ -19,7 +19,8 @@ async def unbind_chat(uid: str):
 )
 async def send_signal(event: types.SendSignal, uid: str = None):
     uid = uid if uid else event.object.chat
-    await unbind_chat(uid)
+    if event.object.from_id in db.trusted:
+        await unbind_chat(uid)
 
 
 @bot.event.message_signal(

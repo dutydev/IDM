@@ -23,9 +23,6 @@ class AsyncHandleManager:
         for handler in self.event.message_handler:
             if handler.method.value == event.method:
                 for pattern in handler.patterns:
-                    text = sub_string(
-                        event.message.text if not handler.lower
-                        else event.message.text.lower()
-                    )
+                    text = sub_string(event.message.text)
                     if self.patcher.check(text, pattern) is not None:
                         return await handler(event, **pattern.dict())

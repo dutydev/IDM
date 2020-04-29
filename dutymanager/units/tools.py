@@ -48,8 +48,12 @@ def parse_interval(text: str) -> int:
 
 def get_params() -> dict:
     load_values()
+    tokens = [
+        default_data["access_token"],
+        default_data["me_token"]
+    ]
     return dict(
-        tokens=default_data["access_token"],
+        tokens=tokens,
         secret=default_data["secret"],
         user_id=default_data["user_id"],
         debug=default_data["debug"],

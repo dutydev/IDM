@@ -1,9 +1,10 @@
 from module import Blueprint, Method
 from module import types
-from dutymanager.units.utils import *
 from dutymanager.core.config import ping_state
 from dutymanager.db.methods import AsyncDatabase
+from dutymanager.units.vk_script import msg_edit
 from time import time as current
+from datetime import datetime
 
 
 bot = Blueprint()
@@ -16,14 +17,18 @@ responses = {
 }
 
 
-async def abstract_ping(uid: str, text: str, timestamp: int):
-    await send_msg(
-        peer_id=db.chats[uid],
-        message=ping_state.format(
-            responses[text].title(),
-            round(current() - timestamp, 2)
-        )
+async def abstract_ping(
+        uid: str, text: str,
+        timestamp: int, local_id: int
+):
+    message = ping_state.format(
+        "",
+        responses[text].upper(),
+        round(current() - timestamp, 2),
+        datetime.fromtimestamp(timestamp),
+        datetime.fromtimestamp(int(current()))
     )
+    await msg_edit(db.chats[uid], message, local_id)
 
 
 @bot.event.message_signal(
@@ -35,7 +40,8 @@ async def send_my_signal(event: types.SendMySignal):
     await abstract_ping(
         event.object.chat,
         event.object.value,
-        event.message.date
+        event.message.date,
+        event.object.conversation_message_id
     )
 
 
@@ -49,5 +55,6 @@ async def send_signal(event: types.SendSignal):
         await abstract_ping(
             event.object.chat,
             event.object.value,
-            event.message.date
+            event.message.date,
+            event.object.conversation_message_id
         )

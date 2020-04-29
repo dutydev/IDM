@@ -3,6 +3,7 @@ from ..objects.types import BaseObject
 
 from typing import Callable, List, Union
 from vbml import Pattern
+from re import IGNORECASE
 
 
 class Handler:
@@ -26,7 +27,9 @@ class MessageHandler(Handler):
         self.lower = lower
         text = text if isinstance(text, list) else [text]
         for x in text:
-            self.patterns.append(Pattern(x))
+            self.patterns.append(Pattern(
+                x, flags=IGNORECASE if lower else None
+            ))
         super().__init__(handler, method)
 
     async def __call__(self, event: BaseObject, **kwargs):

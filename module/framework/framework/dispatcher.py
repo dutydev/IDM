@@ -112,7 +112,7 @@ class Dispatcher(AsyncHandleManager):
 
     def set_blueprints(self, *blueprints: Blueprint):
         for blueprint in blueprints:
-            blueprint.create(self.api)
+            blueprint.create(self.api, self._user_id)
             self.event.concatenate(blueprint.event)
             self.on.concatenate(blueprint.on)
         logger.debug("Blueprints have been successfully loaded")

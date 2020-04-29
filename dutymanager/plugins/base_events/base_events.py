@@ -2,6 +2,7 @@ from module import Blueprint
 from module import VKError, types
 from dutymanager.units.const import errors
 from dutymanager.db.methods import AsyncDatabase
+from dutymanager.units.vk_script import msg_send
 from dutymanager.units.utils import *
 
 bot = Blueprint(name="Base")
@@ -13,16 +14,12 @@ async def print_bookmark(event: types.PrintBookmark):
     peer_id = db.chats[event.object.chat]
     local_id = event.object.conversation_message_id
     description = event.object.description
-    code = """return API.messages.send({
-    "peer_id": %s, 
-    "message": "🔼 Перейти к закладке «%s»",
-    "random_id": 0,
-    "reply_to": API.messages.getByConversationMessageId({
-        "peer_id": %s, 
-        "conversation_message_ids": %s
-        }).items@.id});""" % (peer_id, description, peer_id, local_id)
     try:
-        await bot.api.request("execute", {"code": code})
+        await msg_send(
+            peer_id,
+            f"🔼 Перейти к закладке «{description}»",
+            local_id
+        )
     except (IndexError, VKError) as e:
         e = list(e.args)[0][0]
         await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
@@ -32,17 +29,10 @@ async def print_bookmark(event: types.PrintBookmark):
 async def ban_get_reason(event: types.BanGetReason):
     peer_id = db.chats[event.object.chat]
     local_id = event.object.local_id
-    code = """return API.messages.send({
-        "peer_id": %s, 
-        "message": "🔼 Перейти к месту бана",
-        "random_id": 0,
-        "reply_to": API.messages.getByConversationMessageId({
-            "peer_id": %s, 
-            "conversation_message_ids": %s
-            }).items@.id});""" % (peer_id, peer_id, local_id)
     try:
-        await bot.api.request("execute", {"code": code})
+        await msg_send(peer_id, "🔼 Перейти к месту бана", local_id)
     except (IndexError, VKError) as e:
+        print(e)
         e = list(e.args)[0][0]
         await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
 
