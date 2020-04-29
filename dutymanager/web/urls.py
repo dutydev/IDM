@@ -4,26 +4,32 @@ from dutymanager.web import viewers
 
 
 class UrlPath:
-    def __init__(self,
-                 method: str,
-                 path: str,
-                 handler: typing.Callable,
-                 name: str = None):
+    def __init__(
+        self,
+        method: str,
+        path: str,
+        handler: typing.Callable,
+        name: str = None
+    ):
         self.method = method
         self.path = path
         self.handler = handler
         self.name = name
 
     @staticmethod
-    def add_POST(path: str,
-                 handler: typing.Callable,
-                 name: str = None):
+    def add_post(
+        path: str,
+        handler: typing.Callable,
+        name: str = None
+    ):
         return UrlPath('POST', path, handler, name)
 
     @staticmethod
-    def add_GET(path: str,
-                handler: typing.Callable,
-                name: str = None):
+    def add_get(
+        path: str,
+        handler: typing.Callable,
+        name: str = None
+    ):
         return UrlPath('GET', path, handler, name)
 
     def register(self, router: web.UrlDispatcher) -> web.AbstractRoute:
@@ -31,9 +37,9 @@ class UrlPath:
 
 
 urlpatterns = [
-    UrlPath.add_GET('', viewers.index, name='index'),
-    UrlPath.add_GET('/home', viewers.index),
+    UrlPath.add_get('', viewers.index, name='index'),
+    UrlPath.add_get('/home', viewers.index),
 
-    UrlPath.add_GET('/login', viewers.login, name='login'),
-    UrlPath.add_POST('/login', viewers.login),
+    UrlPath.add_get('/login', viewers.login, name='login'),
+    UrlPath.add_post('/login', viewers.login),
 ]

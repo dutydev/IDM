@@ -1,3 +1,4 @@
+jinja2
 https://github.com/timoniq/vkbottle/archive/master.zip
 uvloop
 aiohttp==3.6.2
