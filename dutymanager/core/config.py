@@ -5,7 +5,7 @@ Configuration file
 """
 
 default_data = {
-    "access_token": None,
+    "access_tokens": None,
     "me_token": None,
     "online_token": None,
     "bp_token": None,

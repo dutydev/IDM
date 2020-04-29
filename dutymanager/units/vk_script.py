@@ -24,7 +24,6 @@ async def msg_edit(peer_id: int, message: str, local_id: Multiple):
     "peer_id": %s, "conversation_message_ids": %s
     }).items@.id
     });""" % (peer_id, message, peer_id, local_id)
-    print(code)
     await bot.api.request("execute", {"code": code})
 
 
