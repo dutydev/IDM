@@ -1,4 +1,4 @@
-from module import Blueprint, Method
+from module import Blueprint
 from module import VKError, types
 from dutymanager.units.const import errors
 from dutymanager.units.utils import *

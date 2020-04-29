@@ -29,8 +29,9 @@ class Core:
 
     def run(self):
         if self.use_ngrok:
-            logger.info("Using ngrok WSGI: {}", self.get_url())
-        task.add_task(web._run_app(self.app, port=self.port))  # noqa
+            url = self.get_url()
+            logger.info("Using ngrok WSGI: {}", url)
+        task.add_task(web._run_app(self.app, port=self.port))
         worker.start()
         task.run(on_startup=init)
 
