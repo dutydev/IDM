@@ -33,6 +33,7 @@ class Dispatcher(AsyncHandleManager):
     ):
         self._secret: str = secret or generate_string()
         self._user_id: int = user_id
+        self._tokens = [tokens] if isinstance(tokens, str) else tokens
 
         self._debug: bool = debug
         self._patcher = patcher or Patcher()
@@ -40,8 +41,9 @@ class Dispatcher(AsyncHandleManager):
 
         self.__loop = asyncio.get_event_loop()
         self.__user: User = User(
-            tokens=tokens, user_id=user_id,
-            login=login, password=password
+            tokens=self._tokens, user_id=user_id,
+            login=login, password=password,
+            expand_models=len(self._tokens) > 1
         )
         if user_id is None:
             self._user_id = self.__user.user_id
@@ -65,11 +67,12 @@ class Dispatcher(AsyncHandleManager):
             level=0,
             enqueue=mobile is False
         )
+        logger.level("DEBUG", color="<white>")
         if errors_log:
             logger.add(
                 "logs/errors.log",
                 level="ERROR",
-                format="[{time:YYYY-MM-DD HH:MM:SS} | {level}]: {message}",
+                format="[{time:YYYY-MM-DD HH:MM:SS +08:00} | {level}]: {message}",
                 rotation="5 MB"
             )
 
@@ -100,7 +103,7 @@ class Dispatcher(AsyncHandleManager):
             return traceback.format_exc(limit=5)
 
         if task is not None:
-            return {"response": task}
+            return task
 
         return {"response": "ok"}
 

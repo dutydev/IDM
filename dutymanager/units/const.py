@@ -1,9 +1,3 @@
-"""
-
-
-
-"""
-
 errors = {
     1: {"error_code": 1},
     2: {"error_code": 2},
@@ -15,6 +9,11 @@ errors = {
 api_errors = {
     # TODO: Rewrite API Errors
 }
+
+__version__ = 2.0
+
+__author__ = "Юрий Юшманов & Даниил Маркелов"
+
 
 SETTINGS_PATH = "dutymanager/core/settings.json"
 TEMPLATES_PATH = "dutymanager/web/templates"

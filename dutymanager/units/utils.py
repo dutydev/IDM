@@ -5,16 +5,27 @@ Tools for vk-bot
 """
 
 from module import Blueprint
-from typing import Optional
+from typing import Optional, Union
 
 bp = Blueprint()
 
 __all__ = (
-    "send_msg",
-    "get_msg_ids", "edit_msg",
+    "send_msg", "edit_msg",
+    "get_attachments", "get_msg_ids",
     "get_history", "get_by_local",
-    "get_attachments"
+    "get_name"
 )
+
+
+async def get_name(user_ids: Union[int, list]) -> dict:
+    data = dict()
+    if isinstance(user_ids, str):
+        user_ids = [user_ids]
+    for i in await bp.api.users.get(
+        user_ids=",".join(list(map(str, user_ids)))
+    ):
+        data[i.id] = f"{i.first_name} {i.last_name}"
+    return data
 
 
 async def get_attachments(obj: dict) -> Optional[str]:

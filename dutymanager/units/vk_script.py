@@ -9,7 +9,8 @@ from module.utils import logger
 bot = Blueprint(name="VK Script")
 __all__ = (
     'execute', 'get_chat',
-    'msg_edit', 'msg_send'
+    'msg_edit', 'msg_send',
+    'delete_messages'
 )
 
 
@@ -17,6 +18,19 @@ async def execute(code: str):
     return await bot.api.request(
         "execute", {"code": code}
     )
+
+
+async def delete_messages(peer_id: int, local_ids: list, spam: int):
+    local_ids = ",".join(list(map(str, local_ids)))
+    code = """return API.messages.delete({
+    "delete_for_all": 1,
+    "spam": %s,
+    "message_ids": API.messages.getByConversationMessageId({
+        "peer_id": %s, "conversation_message_ids": [%s]
+    }).items@.id
+    });""" % (spam, peer_id, local_ids)
+    logger.debug("Formatting result:\n{}", code)
+    return await execute(code)
 
 
 async def get_chat(date: int, q: str = "!связать"):
@@ -35,7 +49,7 @@ async def get_chat(date: int, q: str = "!связать"):
         }
         a = a + 1;
     }""" % (q, date)
-    logger.debug(code)
+    logger.debug("Formatting result:\n{}", code)
     return await execute(code)
 
 
@@ -52,7 +66,7 @@ async def msg_edit(peer_id: int, message: str, local_id: int):
         "peer_id": %s, "conversation_message_ids": %s
     }).items@.id
     });""" % (peer_id, text, peer_id, local_id)
-    logger.debug(code)
+    logger.debug("Formatting result:\n{}", code)
     return await execute(code)
 
 
@@ -70,5 +84,5 @@ async def msg_send(peer_id: int, message: str, local_id: int):
         "peer_id": %s, "conversation_message_ids": %s
     }).items@.id
     });""" % (peer_id, text, peer_id, local_id)
-    logger.debug(code)
+    logger.debug("Formatting result:\n{}", code)
     return await execute(code)

@@ -1,10 +1,12 @@
 from module import Blueprint
 from module import VKError, types
-from dutymanager.db.methods import AsyncDatabase
+from module.utils import logger
+from dutymanager.db.methods import AsyncDatabase, Chat
 from dutymanager.units.vk_script import msg_send
 from dutymanager.units.utils import *
 from dutymanager.units.vk_script import get_chat
 from dutymanager.units.const import errors
+from tortoise.exceptions import BaseORMException
 
 bot = Blueprint(name="Base")
 db = AsyncDatabase.get_current()
@@ -33,20 +35,15 @@ async def ban_get_reason(event: types.BanGetReason):
     try:
         await msg_send(peer_id, "🔼 Перейти к месту бана", local_id)
     except (IndexError, VKError) as e:
-        print(e)
         e = list(e.args)[0][0]
         await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
 
 
 async def abstract_bind(uid: str, text: str, date: int):
     if uid not in db.chats:
-        try:
-            chat_id = await get_chat(date, text)
-            await db.create_chat(uid, chat_id)
-        except VKError:
-            return {"response": "error", **errors[10]}
-    else:
-        await send_msg(db.chats[uid], "✅ Беседа распознана")
+        chat_id = await get_chat(date, text)
+        return await db.create_chat(uid, chat_id)
+    await send_msg(db.chats[uid], "✅ Беседа распознана")
 
 
 @bot.event.bind_chat()
@@ -60,8 +57,16 @@ async def bind_chat(event: types.BindChat):
 
 @bot.event.subscribe_signals()
 async def subscribe_signals(event: types.SubscribeSignals):
-    return await abstract_bind(
-        uid=event.object.chat,
-        text=event.object.text,
-        date=event.message.date
-    )
+    uid = event.object.chat
+    try:
+        await abstract_bind(
+            uid=uid,
+            text=event.object.text,
+            date=event.message.date
+        )
+        await Chat.filter(uid=uid).update(
+            is_duty=True
+        )
+    except (BaseORMException, Exception) as e:
+        logger.error(e)
+        return {"response": "error", **errors[10]}
