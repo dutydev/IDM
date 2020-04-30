@@ -10,10 +10,10 @@ from typing import Optional
 bp = Blueprint()
 
 __all__ = (
-    "get_chat", "send_msg",
+    "send_msg",
     "get_msg_ids", "edit_msg",
     "get_history", "get_by_local",
-    "bp", "get_attachments"
+    "get_attachments"
 )
 
 
@@ -79,12 +79,3 @@ async def edit_msg(
     await bp.api.messages.edit(
         **locals(), keep_forward_messages=True
     )
-
-
-async def get_chat(date: int, text: str = "!связать") -> int:
-    data = (await bp.api.request("messages.search", {
-        "q": text, "count": 5
-    }))["items"]
-    for i in data:
-        if i["date"] == date:
-            return i["peer_id"]

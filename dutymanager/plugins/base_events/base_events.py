@@ -1,9 +1,10 @@
 from module import Blueprint
 from module import VKError, types
-from dutymanager.units.const import errors
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.vk_script import msg_send
 from dutymanager.units.utils import *
+from dutymanager.units.vk_script import get_chat
+from dutymanager.units.const import errors
 
 bot = Blueprint(name="Base")
 db = AsyncDatabase.get_current()
@@ -39,14 +40,18 @@ async def ban_get_reason(event: types.BanGetReason):
 
 async def abstract_bind(uid: str, text: str, date: int):
     if uid not in db.chats:
-        chat_id = await get_chat(date, text)
-        await db.create_chat(uid, chat_id)
-    await send_msg(db.chats[uid], "✅ Беседа распознана")
+        try:
+            chat_id = await get_chat(date, text)
+            await db.create_chat(uid, chat_id)
+        except VKError:
+            return {"response": "error", **errors[10]}
+    else:
+        await send_msg(db.chats[uid], "✅ Беседа распознана")
 
 
 @bot.event.bind_chat()
 async def bind_chat(event: types.BindChat):
-    await abstract_bind(
+    return await abstract_bind(
         uid=event.object.chat,
         text="!связать",
         date=event.message.date
@@ -55,7 +60,7 @@ async def bind_chat(event: types.BindChat):
 
 @bot.event.subscribe_signals()
 async def subscribe_signals(event: types.SubscribeSignals):
-    await abstract_bind(
+    return await abstract_bind(
         uid=event.object.chat,
         text=event.object.text,
         date=event.message.date

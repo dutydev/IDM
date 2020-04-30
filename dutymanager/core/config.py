@@ -12,7 +12,7 @@ default_data = {
     "secret": None,
     "user_id": None,
     "debug": True,
-    "log_to_path": True,
+    "errors_log": True,
     "port": 8080,
     "polling": False
 }
@@ -34,7 +34,7 @@ workers_state = {
     'deleter': False
 }
 
-ping_state = """{} {}
+ping_state = """{}
 
 Ответ через: {} сек.
 Время сервера ВК: {}

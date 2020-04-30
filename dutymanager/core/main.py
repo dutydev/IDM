@@ -1,5 +1,4 @@
 from module import Dispatcher, TaskManager
-from module.utils import logger
 from tortoise import Tortoise
 from aiohttp import web
 from dutymanager.plugins import blueprints

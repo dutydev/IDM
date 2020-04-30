@@ -14,9 +14,7 @@ from vkbottle.framework.framework.handler.user import Handler
 from vkbottle import VKError
 from dutymanager.units.const import errors
 
-#  Type hints
 Token = typing.Union[str, list]
-Union = typing.Union[str, bool]
 
 
 class Dispatcher(AsyncHandleManager):
@@ -29,18 +27,18 @@ class Dispatcher(AsyncHandleManager):
         password: str = None,
         polling: bool = False,
         mobile: bool = False,
-        debug: Union = True,
-        log_to_path: Union = False,
         patcher: Patcher = None,
-        loop: asyncio.AbstractEventLoop = None,
+        debug: typing.Union[str, bool] = True,
+        errors_log: bool = False
     ):
         self._secret: str = secret or generate_string()
         self._user_id: int = user_id
 
         self._debug: bool = debug
         self._patcher = patcher or Patcher()
+        Patcher.set_current(self._patcher)
 
-        self.__loop = loop or asyncio.get_event_loop()
+        self.__loop = asyncio.get_event_loop()
         self.__user: User = User(
             tokens=tokens, user_id=user_id,
             login=login, password=password
@@ -54,7 +52,6 @@ class Dispatcher(AsyncHandleManager):
         if polling:
             self.__loop.create_task(self.__user.run())
 
-        # Sign assets
         self.logger = LoggerLevel(debug)
         self.on: Handler = self.__user.on
         self.event: Event = Event()
@@ -68,16 +65,16 @@ class Dispatcher(AsyncHandleManager):
             level=0,
             enqueue=mobile is False
         )
-        if log_to_path:
+        if errors_log:
             logger.add(
-                "logs/errors.log" if log_to_path is True else log_to_path,
-                level=debug,
+                "logs/errors.log",
+                level="ERROR",
                 format="[{time:YYYY-MM-DD HH:MM:SS} | {level}]: {message}",
                 rotation="5 MB"
             )
 
         if not secret:
-            logger.success("Generated new secret word: {}", self._secret)
+            print(f"Generated new secret word: {self._secret}")
 
     async def emulate(self, event: dict) -> typing.Union[dict, str]:
         """ Process all signals

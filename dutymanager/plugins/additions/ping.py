@@ -18,11 +18,10 @@ responses = {
 
 
 async def abstract_ping(
-        uid: str, text: str,
-        timestamp: int, local_id: int
+    uid: str, text: str,
+    timestamp: int, local_id: int
 ):
     message = ping_state.format(
-        "",
         responses[text].upper(),
         round(current() - timestamp, 2),
         datetime.fromtimestamp(timestamp),

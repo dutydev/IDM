@@ -6,7 +6,7 @@
   "secret": null,
   "user_id": null,
   "debug": true,
-  "log_to_path": false,
+  "errors_log": false,
   "port": 8080,
   "polling": false
 }
