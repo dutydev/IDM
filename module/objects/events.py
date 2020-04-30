@@ -31,16 +31,14 @@ class Event:
         self.handler.append(handler)
 
     def add_message_handler(
-            self,
-            method: Method,
-            func: Callable,
-            text: Text,
-            lower: bool = True
+        self,
+        method: Method,
+        func: Callable,
+        text: Text,
+        lower: bool = True
     ):
         if not iscoroutinefunction(func):
             raise TypeError("Handler has to be coroutine function.")
-        if method.value not in ("sendSignal", "sendMySignal"):
-            raise ValueError("Invalid method")
         message_handler = MessageHandler(func, method, text, lower)
         self.message_handler.append(message_handler)
 
@@ -148,7 +146,7 @@ class Event:
 
     def __repr__(self):
         return (
-            f"MESSAGE HANDLERS: {len(self.message_handler)}"
+            f"MESSAGE HANDLERS: {len(self.message_handler)}\n"
             f"EVENT HANDLERS: {len(self.handler)}"
         )
 

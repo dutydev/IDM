@@ -2,9 +2,9 @@ from ..objects.methods import Method
 from ..objects.types import BaseObject
 
 from typing import Callable, List, Union
+from inspect import getfullargspec
 from vbml import Pattern
 from re import IGNORECASE
-from inspect import getfullargspec
 
 
 class Handler:
@@ -24,19 +24,19 @@ class Handler:
 
 class MessageHandler(Handler):
     def __init__(
-            self,
-            handler: Callable,
-            method: Method,
-            text: Union[str, List[str]],
-            lower: bool
+        self,
+        handler: Callable,
+        method: Method,
+        text: Union[str, List[str]],
+        lower: bool
     ):
         self.patterns: List[Pattern] = list()
         self.lower = lower
         text = text if isinstance(text, list) else [text]
         for x in text:
-            self.patterns.append(Pattern(
-                x, flags=IGNORECASE if lower else None
-            ))
+            self.patterns.append(
+                Pattern(x, flags=IGNORECASE if lower else None)
+            )
         super().__init__(handler, method)
 
     async def __call__(self, event: dict, **kwargs):

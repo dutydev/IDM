@@ -88,13 +88,13 @@ class Dispatcher(AsyncHandleManager):
         logger.debug("Event: {event}", event=event)
 
         if event is None:
-            return errors[1]
+            return {"response": "error", **errors[1]}
 
         if event.get("secret") != self._secret:
-            return errors[3]
+            return {"response": "error", **errors[3]}
 
         if event.get("user_id") != self._user_id:
-            return errors[3]
+            return {"response": "error", **errors[3]}
 
         try:
             task = (await self._processor(event))

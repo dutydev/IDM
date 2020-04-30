@@ -6,12 +6,11 @@ from dutymanager.plugins import blueprints
 from dutymanager.core.config import default_data
 from dutymanager.db.methods import db
 from dutymanager.units.dataclasses.workers import Worker
-from dutymanager.units.tools import *
 from dutymanager.units.dataclasses.validator import patcher
-
+from dutymanager.units.tools import *
 from dutymanager.web import urls
-import aiohttp_jinja2
 from jinja2.loaders import FileSystemLoader
+from aiohttp_jinja2 import setup
 from dutymanager.units import const
 
 try:
@@ -34,7 +33,7 @@ class Core:
         self.setup_web()
 
     def setup_web(self):
-        aiohttp_jinja2.setup(
+        setup(
             self.app,
             loader=FileSystemLoader(const.TEMPLATES_PATH)
         )
@@ -43,13 +42,13 @@ class Core:
             follow_symlinks=True
         )
 
-        for urlpath in urls.urlpatterns:
-            urlpath.register(self.app.router)
+        for url in urls.urlpatterns:
+            url.register(self.app.router)
 
     def run(self):
         if self.use_ngrok:
             url = self.get_url()
-            logger.info("Using ngrok WSGI: {}", url)
+            print("Using ngrok WSGI: {}", url)
         task.add_task(web._run_app(self.app, port=self.port))
         worker.start()
         task.run(on_startup=init)
