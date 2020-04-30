@@ -6,8 +6,6 @@ import sys
 from module.utils import LoggerLevel, logger
 from module.utils import generate_string
 from module.objects.events import Event
-from module.objects.methods import Method
-from module.objects import types
 from module.framework.framework.bot import User
 from module.framework.processor import AsyncHandleManager
 from module.framework.framework.blueprint import Blueprint
@@ -98,9 +96,8 @@ class Dispatcher(AsyncHandleManager):
         if event.get("user_id") != self._user_id:
             return errors[3]
 
-        ev = await self.get_event_type(event)  # noqa: Event
         try:
-            task = (await self._processor(ev))
+            task = (await self._processor(event))
         except (VKError, Exception):
             logger.exception(traceback.format_exc(limit=5))
             return traceback.format_exc(limit=5)
@@ -136,58 +133,3 @@ class Dispatcher(AsyncHandleManager):
     @property
     def patcher(self):
         return Patcher.get_current()
-
-    @staticmethod
-    async def get_event_type(event: dict):
-        """ What the bullshit I made...
-        :param event: -> dict
-        :return: object
-        """
-        event_type = Method(event["method"])
-        ev = None
-        if event_type is Method.PING:
-            ev = types.Ping(**event)
-
-        if event_type is Method.BIND_CHAT:
-            ev = types.BindChat(**event)
-
-        if event_type is Method.BAN_EXPIRED:
-            ev = types.BanExpired(**event)
-
-        if event_type is Method.ADD_USER:
-            ev = types.AddUser(**event)
-
-        if event_type is Method.IGNORE_MESSAGES:
-            ev = types.IgnoreMessages(**event)
-
-        if event_type is Method.SUBSCRIBE_SIGNALS:
-            ev = types.SubscribeSignals(**event)
-
-        if event_type is Method.DELETE_MESSAGES:
-            ev = types.DeleteMessages(**event)
-
-        if event_type is Method.DELETE_MESSAGES_FROM_USER:
-            ev = types.DeleteMessagesFromUser(**event)
-
-        if event_type is Method.PRINT_BOOKMARK:
-            ev = types.PrintBookmark(**event)
-
-        if event_type is Method.FORBIDDEN_LINKS:
-            ev = types.ForbiddenLinks(**event)
-
-        if event_type is Method.SEND_SIGNAL:
-            ev = types.SendSignal(**event)
-
-        if event_type is Method.SEND_MY_SIGNAL:
-            ev = types.SendSignal(**event)
-
-        if event_type is Method.HIRE_API:
-            ev = types.HireApi(**event)
-
-        if event_type is Method.BAN_GET_REASON:
-            ev = types.BanGetReason(**event)
-
-        if event_type is Method.TO_GROUP:
-            ev = types.ToGroup(**event)
-
-        return ev

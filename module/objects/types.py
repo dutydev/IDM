@@ -111,7 +111,6 @@ class BanExpired(BaseObject):
 
 
 class AddUser(BaseObject):
-    method: str
     object: AddUserObject
 
 
@@ -177,6 +176,3 @@ SendMySignal.update_forward_refs()
 HireApi.update_forward_refs()
 BanGetReason.update_forward_refs()
 ToGroup.update_forward_refs()
-
-
-

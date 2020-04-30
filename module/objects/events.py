@@ -143,4 +143,12 @@ class Event:
         def decorator(func):
             self.add_message_handler(method, func, text, lower)
             return func
+
         return decorator
+
+    def __repr__(self):
+        return (
+            f"MESSAGE HANDLERS: {len(self.message_handler)}"
+            f"EVENT HANDLERS: {len(self.handler)}"
+        )
+

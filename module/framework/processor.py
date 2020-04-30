@@ -9,20 +9,20 @@ class AsyncHandleManager:
     patcher: Patcher
 
     async def _processor(self, event):
-        if event.method != "ping":
+        if event["method"] != "ping":
             logger.debug(
                 "-> NEW SIGNAL {} FROM CHAT {}",
-                event.method, event.object.chat
+                event["method"], event["object"]["chat"]
             )
 
-        if event.method not in ("sendSignal", "sendMySignal"):
+        if event["method"] not in ("sendSignal", "sendMySignal"):
             for handler in self.event.handler:
-                if handler.method.value == event.method:
+                if handler.method.value == event["method"]:
                     return await handler(event)
 
         for handler in self.event.message_handler:
-            if handler.method.value == event.method:
+            if handler.method.value == event["method"]:
                 for pattern in handler.patterns:
-                    text = sub_string(event.message.text)
+                    text = sub_string(event["message"]["text"])
                     if self.patcher.check(text, pattern) is not None:
                         return await handler(event, **pattern.dict())

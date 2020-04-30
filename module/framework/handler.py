@@ -4,24 +4,31 @@ from ..objects.types import BaseObject
 from typing import Callable, List, Union
 from vbml import Pattern
 from re import IGNORECASE
+from inspect import getfullargspec
 
 
 class Handler:
     def __init__(self, handler: Callable, method: Method):
         self.handler = handler
         self.method = method
+        self.args = getfullargspec(handler).annotations
+        if not issubclass(self.args["event"], BaseObject):
+            raise AttributeError(
+                f'Value should be instance of BaseObject not {self.args["event"].__name__!r}'
+            )
 
-    async def __call__(self, event: BaseObject):
-        return await self.handler(event)
+    async def __call__(self, event: dict):
+        dataclass = self.args["event"](**event)
+        return await self.handler(dataclass)
 
 
 class MessageHandler(Handler):
     def __init__(
-        self,
-        handler: Callable,
-        method: Method,
-        text: Union[str, List[str]],
-        lower: bool
+            self,
+            handler: Callable,
+            method: Method,
+            text: Union[str, List[str]],
+            lower: bool
     ):
         self.patterns: List[Pattern] = list()
         self.lower = lower
@@ -32,5 +39,6 @@ class MessageHandler(Handler):
             ))
         super().__init__(handler, method)
 
-    async def __call__(self, event: BaseObject, **kwargs):
-        return await self.handler(event, **kwargs)
+    async def __call__(self, event: dict, **kwargs):
+        dataclass = self.args["event"](**event)
+        return await self.handler(dataclass, **kwargs)
