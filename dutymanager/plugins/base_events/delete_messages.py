@@ -13,7 +13,7 @@ db = AsyncDatabase.get_current()
 async def delete_from_user(event: types.DeleteMessagesFromUser):
     message_ids = []
     member_ids = event.object.member_ids
-    peer_id = db.chats[event.object.chat]
+    peer_id = db.chats(event.object.chat)
     for i in await get_history(peer_id):
         if i["from_id"] in member_ids and "action" not in i:
             if len(member_ids) < event.object.amount:
@@ -36,7 +36,7 @@ async def delete_from_user(event: types.DeleteMessagesFromUser):
 
 @bot.event.delete_messages()
 async def _delete_messages(event: types.DeleteMessages):
-    peer_id = db.chats[event.object.chat]
+    peer_id = db.chats(event.object.chat)
     local_ids = event.object.local_ids
     spam = event.object.is_spam
     try:

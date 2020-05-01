@@ -24,8 +24,7 @@ worker = Worker(bot.loop)
 
 
 class Core:
-    def __init__(self, use_ngrok: bool = False):
-        self.use_ngrok = use_ngrok
+    def __init__(self):
         self.app = web.Application()
         self.app.router.add_route("POST", "/", wrapper)
         self.port = default_data["port"]
@@ -44,8 +43,8 @@ class Core:
         for url in urls.urlpatterns:
             url.register(self.app.router)
 
-    def run(self):
-        if self.use_ngrok:
+    def run(self, use_ngrok: bool = False):
+        if use_ngrok:
             url = self.get_url()
             print("Using ngrok WSGI: {}", url)
         task.add_task(web._run_app(self.app, port=self.port))

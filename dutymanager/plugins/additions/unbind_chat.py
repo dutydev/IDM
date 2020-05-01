@@ -9,8 +9,10 @@ db = AsyncDatabase.get_current()
 
 async def unbind_chat(uid: str):
     if uid in db.chats:
-        chat_id = await db.remove_chat(uid)
-        await send_msg(chat_id, "✅ Чат успешно отвязан.")
+        data = await db.chats.remove(uid)
+        await send_msg(data["id"], "✅ Чат «{}» успешно отвязан.".format(
+            data.get("title", "null")
+        ))
 
 
 @bot.event.message_signal(

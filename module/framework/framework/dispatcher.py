@@ -45,6 +45,9 @@ class Dispatcher(AsyncHandleManager):
             login=login, password=password,
             expand_models=len(self._tokens) > 1
         )
+        if not secret:
+            print(f"Generated new secret word: {self._secret}")
+
         if user_id is None:
             self._user_id = self.__user.user_id
 
@@ -75,9 +78,6 @@ class Dispatcher(AsyncHandleManager):
                 format="[{time:YYYY-MM-DD HH:MM:SS +08:00} | {level}]: {message}",
                 rotation="5 MB"
             )
-
-        if not secret:
-            print(f"Generated new secret word: {self._secret}")
 
     async def emulate(self, event: dict) -> typing.Union[dict, str]:
         """ Process all signals

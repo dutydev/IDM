@@ -27,7 +27,7 @@ async def abstract_ping(
         datetime.fromtimestamp(timestamp),
         datetime.fromtimestamp(int(current()))
     )
-    await msg_edit(db.chats[uid], message, local_id)
+    await msg_edit(db.chats(uid), message, local_id)
 
 
 @bot.event.message_signal(

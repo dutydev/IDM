@@ -35,17 +35,21 @@ async def delete_messages(peer_id: int, local_ids: list, spam: int):
 
 async def get_chat(date: int, q: str = "!связать"):
     code = """var a = 0;
+    var chat_id;
+    var title;
     var data = API.messages.search({
         "q": "%s", "count": 5
     }).items;
     while (a < data.length) {
         if (data[a].date == %s) {
-            API.messages.send({
+            chat_id = data[a].peer_id - 2000000000;
+            title = API.messages.getChat({"chat_id": chat_id}).title;
+            API.messages.edit({
                 "peer_id": data[a].peer_id,
-                "message": "✅ Беседа распознана",
-                "random_id": 0
+                "message": "✅ Беседа " + "«" + title + "»" + " распознана!",
+                "message_id": data[a].id
             });
-        return data[a].peer_id;
+        return [data[a].peer_id, title];
         }
         a = a + 1;
     }""" % (q, date)

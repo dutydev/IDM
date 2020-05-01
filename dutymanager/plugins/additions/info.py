@@ -1,6 +1,5 @@
 from module import Blueprint, Method
 from module import types
-from dutymanager.units.utils import *
 from dutymanager.db.methods import AsyncDatabase
 
 bot = Blueprint(name="Information")
