@@ -17,7 +17,7 @@
 ## Как установить
 Для установки мы будем использовать сайт [pythonanywhere.com](https://www.pythonanywhere.com/)
 
-И так переходим по ссылке [pythonanywhere.com](https://www.pythonanywhere.com/registration/register/beginner/) заомлняем форму и нажимаем *Register*
+И так переходим по ссылке [pythonanywhere.com](https://www.pythonanywhere.com/registration/register/beginner/) заполняем форму и нажимаем *Register*
 
 Даллее кликаем на кнопку *Web*
 Кликаем на *Add a new web app*
