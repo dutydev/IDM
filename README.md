@@ -22,7 +22,7 @@
 Даллее кликаем на кнопку *Web*
 Кликаем на *Add a new web app*
 В появившемся окошке *next*  -> *Flask* -> *Python3.7*
-В путь вводим /home/`имя аккаунта`/IDM/setup.py
+В путь вводим /home/`имя аккаунта`/IDM-SC-mod/setup.py
 
 Переходим по ссылке [pythonanywhere.com/consoles/](https://www.pythonanywhere.com/consoles/)
 Ищем блок *Start a new console*, в нем выбираем *Bash*
@@ -31,7 +31,7 @@
 (это две команды, после каждой нужно нажимать Enter)
 ```bash
 rm -rf IDM
-git clone https://github.com/Elchinchel/IDM.git
+git clone https://github.com/Elchinchel/IDM-SC-mod.git
 ```
 Далее переходим во вкладку *Web* и нажимаем *Reload * `имя аккаунта`.pythonanywhere.com
 
@@ -67,7 +67,7 @@ git clone https://github.com/Elchinchel/IDM.git
 ```bash
 cp IDM/database.json database.json
 rm -rf IDM
-git clone https://github.com/Elchinchel/IDM.git
+git clone https://github.com/Elchinchel/IDM-SC-mod.git
 cp database.json IDM/database.json
 ```
 
