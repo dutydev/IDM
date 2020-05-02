@@ -1,10 +1,10 @@
 # IDM - Iris Duty Manager
 
 ## Содержание
-1. [Вступление](https://github.com/LordRalInc/IDM#Вступление)
-2. [Как установить](https://github.com/LordRalInc/IDM#Как-установить)
-3. [Как обновить](https://github.com/LordRalInc/IDM#Как-обновить)
-4. [Сигналы](https://github.com/LordRalInc/IDM#Сигналы)
+1. [Вступление](https://github.com/dutydev/IDM#Вступление)
+2. [Как установить](https://github.com/dutydev/IDM#Как-установить)
+3. [Как обновить](https://github.com/dutydev/IDM#Как-обновить)
+4. [Сигналы](https://github.com/dutydev/IDM#Сигналы)
 
 ## Вступление
 
@@ -30,7 +30,7 @@
 После загрузки консоли набираем в консоли
 ```bash
 rm -r IDM
-git clone https://github.com/LordRalInc/IDM.git
+git clone https://github.com/dutydev/IDM.git
 ```
 Далее переходим во вкладку *Web* и нажимаем *Reload * `имя аккаунта`.pythonanywhere.com
 
@@ -65,7 +65,7 @@ git clone https://github.com/LordRalInc/IDM.git
 ```bash
 cp IDM/database.json database.json
 rm -rf IDM
-git clone https://github.com/LordRalInc/IDM.git
+git clone https://github.com/dutydev/IDM.git
 cp database.json IDM/database.json
 ```
 
