@@ -30,7 +30,7 @@
 После загрузки консоли набираем в консоли
 (это две команды, после каждой нужно нажимать Enter)
 ```bash
-rm -rf IDM
+rm -rf IDM-SC-mod
 git clone https://github.com/Elchinchel/IDM-SC-mod.git
 ```
 Далее переходим во вкладку *Web* и нажимаем *Reload * `имя аккаунта`.pythonanywhere.com
@@ -66,7 +66,7 @@ git clone https://github.com/Elchinchel/IDM-SC-mod.git
 
 ```bash
 cp IDM/database.json database.json
-rm -rf IDM
+rm -rf IDM-SC-mod
 git clone https://github.com/Elchinchel/IDM-SC-mod.git
 cp database.json IDM/database.json
 ```
