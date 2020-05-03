@@ -12,7 +12,6 @@ from module.framework.error_handler import ErrorHandler
 from module.framework.framework.blueprint import Blueprint
 from vbml import Patcher
 from vkbottle.framework.framework.handler.user import Handler
-from vkbottle import VKError
 from dutymanager.units.const import errors
 
 Token = typing.Union[str, list]

@@ -1,14 +1,14 @@
+from typing import Dict, Callable, TypeVar
 from module.utils import logger
-from typing import Union
 
-Error = Union[Exception, "Any"]
+T = TypeVar("T")
 
 
 class ErrorHandler:
     def __init__(self):
-        self._error_processors = dict()
+        self._error_processors: Dict[Exception, Callable] = dict()
 
-    def __call__(self, *errors: Error):
+    def __call__(self, *errors: Exception):
         def decorator(func):
             for error in errors:
                 self._error_processors[error] = func
@@ -16,8 +16,9 @@ class ErrorHandler:
 
         return decorator
 
-    async def notify(self, error: Exception):
-        handler = self.processors[error.__class__]
+    async def notify(self, error: Exception, ignore: bool = True):
+        name = Exception if ignore else error.__class__
+        handler = self.processors[name]
         logger.debug(
             "{}! Processing it with handler <{}>",
             error.__class__.__name__,

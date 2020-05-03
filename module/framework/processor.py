@@ -31,16 +31,10 @@ class AsyncHandleManager:
 
     async def error_processor(self, error: Exception) -> bool:
         error_type = error.__class__
-        if "Any" in self.error_handler.processors:
+        if Exception in self.error_handler.processors:
             return await self.error_handler.notify(error)
 
         if error_type in self.error_handler.processors:
-            return await self.error_handler.notify(error)
+            return await self.error_handler.notify(error, ignore=False)
 
         return False
-
-
-
-
-
-
