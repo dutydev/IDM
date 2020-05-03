@@ -3,12 +3,12 @@ import traceback
 
 from dutymanager.core.config import default_data
 from module.utils import logger
-from vkbottle.user import User
+from vkbottle.user import User as Bot
 
 DEFAULT_WAIT: int = 25
 
 
-class Bot(User):
+class User(Bot):
     async def run(self, wait: int = DEFAULT_WAIT):
         self.__wait = wait
         logger.info("Polling will be started. Is it OK?")

@@ -8,6 +8,7 @@ from module.utils import generate_string
 from module.objects.events import Event
 from module.framework.framework.bot import User
 from module.framework.processor import AsyncHandleManager
+from module.framework.error_handler import ErrorHandler
 from module.framework.framework.blueprint import Blueprint
 from vbml import Patcher
 from vkbottle.framework.framework.handler.user import Handler
@@ -60,6 +61,7 @@ class Dispatcher(AsyncHandleManager):
         self.logger = LoggerLevel(debug)
         self.on: Handler = self.__user.on
         self.event: Event = Event()
+        self.error_handler: ErrorHandler = ErrorHandler()
 
         logger.remove()
         logger.add(
@@ -98,20 +100,22 @@ class Dispatcher(AsyncHandleManager):
 
         try:
             task = (await self._processor(event))
-        except (VKError, Exception):
-            logger.exception(traceback.format_exc(limit=5))
-            return traceback.format_exc(limit=5)
-
-        if task is not None:
-            return task
+            if task is not None:
+                return task
+        except Exception as e:
+            processing = await self.error_processor(e)
+            if processing is False:
+                logger.exception(traceback.format_exc(limit=5))
+                return traceback.format_exc(limit=5)
 
         return {"response": "ok"}
 
     def set_blueprints(self, *blueprints: Blueprint):
-        for blueprint in blueprints:
-            blueprint.create(self.api, self._user_id)
-            self.event.concatenate(blueprint.event)
-            self.on.concatenate(blueprint.on)
+        for bp in blueprints:
+            bp.create(self.api, self._user_id)
+            self.event.concatenate(bp.event)
+            self.error_handler.update(bp.error_handler.processors)
+            self.on.concatenate(bp.on)
         logger.debug("Blueprints have been successfully loaded")
 
     def loop_update(self, loop: asyncio.AbstractEventLoop = None):

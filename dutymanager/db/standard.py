@@ -2,7 +2,6 @@ from .abc import AbstractDict
 from .models import Chat, Trusted, Template
 from typing import Union
 
-
 __all__ = (
     'Chats', 'Chat',
     'Proxies', 'Trusted',
