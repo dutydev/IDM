@@ -17,7 +17,6 @@ class LoginForm:
 
     login: str
     password: str
-
     errors: dict
 
     def __init__(self, post: 'MultiDictProxy[Union[str, bytes, FileField]]' = None):

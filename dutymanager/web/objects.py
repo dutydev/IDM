@@ -15,11 +15,11 @@ class WebBlueprint:
 
 class UrlPath:
     def __init__(
-            self,
-            method: str,
-            path: str,
-            handler: typing.Callable,
-            name: str = None
+        self,
+        method: str,
+        path: str,
+        handler: typing.Callable,
+        name: str = None
     ):
         self.method = method
         self.path = path
@@ -28,17 +28,17 @@ class UrlPath:
 
     @staticmethod
     def add_post(
-            path: str,
-            handler: typing.Callable,
-            name: str = None
+        path: str,
+        handler: typing.Callable,
+        name: str = None
     ):
         return UrlPath('POST', path, handler, name)
 
     @staticmethod
     def add_get(
-            path: str,
-            handler: typing.Callable,
-            name: str = None
+        path: str,
+        handler: typing.Callable,
+        name: str = None
     ):
         return UrlPath('GET', path, handler, name)
 

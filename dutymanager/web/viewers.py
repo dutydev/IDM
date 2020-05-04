@@ -3,7 +3,7 @@ from aiohttp_jinja2 import render_template
 from dutymanager.web import forms, decorators
 from module.utils import logger
 from dutymanager.web.objects import WebBlueprint
-from dutymanager.web import utils
+from dutymanager.web.utils import get_user_hash
 
 bot = WebBlueprint()
 
@@ -31,7 +31,7 @@ async def login(request: web.Request) -> web.Response:
         if login_form.validate():
             logger.info('Форма валидна')
             response = web.HTTPFound('/')
-            response.set_cookie('hash', utils.get_user_hash(login_form.login, login_form.password))
+            response.set_cookie('hash', get_user_hash(login_form.login, login_form.password))
             return response
 
     else:
@@ -60,13 +60,12 @@ async def logout(request: web.Request) -> web.Response:
 @decorators.authenticated_only
 async def admin(request: web.Request) -> web.Response:
     assert isinstance(request, web.Request)
-
-    webform = None
+    web_form = None
 
     return render_template(
         'dutymanager/admin.html',
         request,
         {
-            "form": webform
+            "form": web_form
         }
     )

@@ -16,7 +16,7 @@ def setup_web(self):
         ]
     )
     self.app.router.add_static(
-        const.STATIC_URL, const.STATIC_URL,
+        const.STATIC_URL, const.STATIC_PATH,
         follow_symlinks=True
     )
     for url in urls.urlpatterns:
