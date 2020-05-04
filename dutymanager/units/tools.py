@@ -6,8 +6,9 @@ for duty-manager.
 """
 
 from ..core.config import default_data, intervals
-from module.utils import logger
 from dutymanager.units.const import SETTINGS_PATH
+from module.utils import logger
+from typing import Any
 
 import json
 import re
@@ -16,7 +17,6 @@ import re
 __all__ = (
     "display_time", "parse_interval",
     "load_values", "recreate",
-    "get_params"
 )
 
 
@@ -46,16 +46,14 @@ def parse_interval(text: str) -> int:
     return unix
 
 
-def get_params() -> dict:
-    load_values()
-    return dict(
-        tokens=default_data["access_tokens"],
-        secret=default_data["secret"],
-        user_id=default_data["user_id"],
-        debug=default_data["debug"],
-        errors_log=default_data["errors_log"],
-        polling=default_data["polling"]
-    )
+def update_fields(item: str, value: Any):
+    default_data[item] = value
+    try:
+        with open(SETTINGS_PATH, mode="w") as file:
+            file.write(json.dumps(default_data, indent=2))
+            logger.debug("{} == {}", item, value)
+    except FileNotFoundError:
+        recreate()
 
 
 def load_values():

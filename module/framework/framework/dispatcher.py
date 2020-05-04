@@ -12,10 +12,8 @@ from module.framework.error_handler import ErrorHandler
 from module.framework.framework.blueprint import Blueprint
 from vbml import Patcher
 from vkbottle.framework.framework.handler.user import Handler
-from dutymanager.units.const import errors
+from dutymanager.units.const import errors, Token
 from dutymanager.web.objects import WebBlueprint
-
-Token = typing.Union[str, list]
 
 
 class Dispatcher(AsyncHandleManager):
@@ -30,7 +28,7 @@ class Dispatcher(AsyncHandleManager):
         mobile: bool = False,
         patcher: Patcher = None,
         debug: typing.Union[str, bool] = True,
-        errors_log: bool = False
+        errors_log: bool = False,
     ):
         self.secret: str = secret or generate_string()
         self.user_id: int = user_id

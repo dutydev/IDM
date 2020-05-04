@@ -1,85 +1,69 @@
-from module import Dispatcher, TaskManager
-from tortoise import Tortoise
-from aiohttp import web
-from dutymanager.plugins import blueprints
-from dutymanager.core.config import default_data
-from dutymanager.db.methods import db
-from dutymanager.units.dataclasses.workers import Worker
+from module.utils.context import ContextInstanceMixin
 from dutymanager.units.dataclasses.validator import patcher
-from dutymanager.units.tools import *
-from dutymanager.web import urls
-from jinja2.loaders import FileSystemLoader
-from dutymanager.units import const
+from dutymanager.units.dataclasses.workers import Worker
 from dutymanager.web import blueprints as web_blueprints
-
-import aiohttp_jinja2
-from dutymanager.web.context_processors import auth_user_ctx_processor
+from dutymanager.core.config import default_data
+from module import Dispatcher, TaskManager
+from dutymanager.plugins import blueprints
+from dutymanager.units.const import Token
+from dutymanager.db.methods import db
+from dutymanager import setup_web
+from typing import Union
+from aiohttp import web
 
 try:
     from pyngrok import ngrok
 except ModuleNotFoundError:
     ngrok = None
 
-bot = Dispatcher(**get_params(), patcher=patcher)
-bot.set_blueprints(*blueprints)
-bot.set_web_blueprints(*web_blueprints)
 
-task = TaskManager(bot.loop)
-worker = Worker(bot.loop)
-
-
-class Core:
-    def __init__(self):
+class Core(ContextInstanceMixin):
+    def __init__(
+        self,
+        *,
+        secret: str = None,
+        user_id: int = None,
+        tokens: Token = None,
+        login: str = None,
+        password: str = None,
+        polling: bool = False,
+        mobile: bool = False,
+        debug: Union[str, bool] = True,
+        errors_log: bool = False
+    ):
+        # Main workers
+        self.bot = Dispatcher(**self.get_params(locals()), patcher=patcher)
         self.app = web.Application()
-        self.app.router.add_route("POST", "/", wrapper)
+        self.task = TaskManager(self.bot.loop)
+        self.worker = Worker(self.bot.loop)
+
+        # Sign assets
+        self.bot.set_blueprints(*blueprints)
+        self.bot.set_web_blueprints(*web_blueprints)
+        self.app.router.add_route("POST", "/", self.wrapper)
+        setup_web(self)
+
         self.port = default_data["port"]
-        self.setup_web()
 
-    def setup_web(self):
-        aiohttp_jinja2.setup(
-            self.app,
-            loader=FileSystemLoader(const.TEMPLATES_PATH),
-            context_processors=[
-                auth_user_ctx_processor,
-                aiohttp_jinja2.request_processor
-            ]
-        )
-        self.app.router.add_static(
-            const.STATIC_URL, const.STATIC_PATH,
-            follow_symlinks=True
-        )
-
-        for url in urls.urlpatterns:
-            url.register(self.app.router)
+    async def wrapper(self, request: web.Request):
+        event = await request.json()
+        emulation = await self.bot.emulate(event)
+        if isinstance(emulation, str):
+            return web.Response(text=emulation)
+        return web.json_response(data=emulation)
 
     def run(self, use_ngrok: bool = False):
         if use_ngrok:
-            url = self.get_url()
+            url = self.get_url(self.port)
             print("Using ngrok WSGI: {}", url)
-        task.add_task(web._run_app(self.app, port=self.port))
-        worker.start()
-        task.run(on_startup=init)
+        self.worker.start()
+        self.task.add_task(web._run_app(self.app, port=self.port))  # noqa
+        self.task.run(on_startup=db.init)
 
-    def get_url(self) -> str:
+    @staticmethod
+    def get_url(port: int) -> str:
         if ngrok is None:
             raise ModuleNotFoundError(
                 "First install pyngrok - pip install pyngrok"
             )
-        return ngrok.connect(port=self.port)
-
-
-async def wrapper(request: web.Request):
-    event = await request.json()
-    emulation = await bot.emulate(event)
-    if isinstance(emulation, str):
-        return web.Response(text=emulation)
-    return web.json_response(data=emulation)
-
-
-async def init():
-    await Tortoise.init(
-        db_url="sqlite://dutymanager/core/duty.db",
-        modules={"models": ["dutymanager.db.models"]}
-    )
-    await Tortoise.generate_schemas()
-    await db.load_values()
+        return ngrok.connect(port=port)

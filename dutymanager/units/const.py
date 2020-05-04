@@ -1,3 +1,7 @@
+from typing import Union
+
+Token = Union[str, list]
+
 errors = {
     1: {"error_code": 1},
     2: {"error_code": 2},

@@ -1,4 +1,5 @@
-from vkbottle.utils import ContextInstanceMixin
+from module.utils.context import ContextInstanceMixin
+from tortoise import Tortoise
 from .standard import *
 
 
@@ -7,6 +8,14 @@ class AsyncDatabase(ContextInstanceMixin):
         self.chats = Chats()
         self.trusted = Proxies()
         self.templates = Templates()
+
+    async def init(self):
+        await Tortoise.init(
+            db_url="sqlite://dutymanager/core/duty.db",
+            modules={"models": ["dutymanager.db.models"]}
+        )
+        await Tortoise.generate_schemas()
+        await self.load_values()
 
     async def load_values(self):
         async for i in Chat.all():

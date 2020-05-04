@@ -15,8 +15,8 @@ def get_user_hash(user_id: int, user_secret: str) -> str:
 
 def is_authenticated(request: web.Request) -> bool:
     # hash is md5(uid + secret_code)
-    hash = request.cookies.get('hash', None)
-    return hash == get_user_hash(bot.user_id, bot.secret)
+    _hash = request.cookies.get('hash', None)
+    return _hash == get_user_hash(bot.user_id, bot.secret)
 
 
 def is_anonymous(request: web.Request) -> bool:

@@ -33,9 +33,9 @@ class Worker:
         while workers_state["friends"]:
             requests = user.method("friends.getRequests", {
                 "count": 1000, "extended": 1
-            })["items"]
+            })
             with vk_api.VkRequestsPool(user) as p:
-                for i in requests:
+                for i in requests["items"]:
                     if "deactivated" not in i:
                         p.method("friends.add", {
                             "user_id": i["user_id"],
@@ -49,9 +49,9 @@ class Worker:
         while workers_state["deleter"]:
             requests = user.method("friends.getRequests", {
                 "count": 1000, "out": 1
-            })["items"]
+            })
             with vk_api.VkRequestsPool(user) as p:
-                for i in requests:
+                for i in requests["items"]:
                     p.method("friends.delete", {"user_id": i})
 
             await asyncio.sleep(3600)
