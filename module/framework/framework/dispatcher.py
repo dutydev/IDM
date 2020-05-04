@@ -13,6 +13,7 @@ from module.framework.framework.blueprint import Blueprint
 from vbml import Patcher
 from vkbottle.framework.framework.handler.user import Handler
 from dutymanager.units.const import errors
+from dutymanager.web.objects import WebBlueprint
 
 Token = typing.Union[str, list]
 
@@ -31,8 +32,8 @@ class Dispatcher(AsyncHandleManager):
         debug: typing.Union[str, bool] = True,
         errors_log: bool = False
     ):
-        self._secret: str = secret or generate_string()
-        self._user_id: int = user_id
+        self.secret: str = secret or generate_string()
+        self.user_id: int = user_id
         self._tokens = [tokens] if isinstance(tokens, str) else tokens
 
         self._debug: bool = debug
@@ -40,16 +41,20 @@ class Dispatcher(AsyncHandleManager):
         Patcher.set_current(self._patcher)
 
         self.__loop = asyncio.get_event_loop()
+
+        # FIXME: Оно должно запускаться без токенов
+        # TODO: инфу есть ли токены\секретки и тд дабы запустить веб-интервейс в режиме установки
+
         self.__user: User = User(
             tokens=self._tokens, user_id=user_id,
             login=login, password=password,
             expand_models=len(self._tokens) > 1
         )
         if not secret:
-            print(f"Generated new secret word: {self._secret}")
+            print(f"Generated new secret word: {self.secret}")
 
         if user_id is None:
-            self._user_id = self.__user.user_id
+            self.user_id = self.__user.user_id
 
         if isinstance(debug, bool):
             debug = "INFO" if debug else "ERROR"
@@ -76,7 +81,7 @@ class Dispatcher(AsyncHandleManager):
             logger.add(
                 "logs/errors.log",
                 level="ERROR",
-                format="[{time:YYYY-MM-DD HH:MM:SS +08:00} | {level}]: {message}",
+                format="[{time:YYYY-MM-DD HH:MM:SS} | {level}]: {message}",
                 rotation="5 MB"
             )
 
@@ -91,10 +96,10 @@ class Dispatcher(AsyncHandleManager):
         if event is None:
             return {"response": "error", **errors[1]}
 
-        if event.get("secret") != self._secret:
+        if event.get("secret") != self.secret:
             return {"response": "error", **errors[3]}
 
-        if event.get("user_id") != self._user_id:
+        if event.get("user_id") != self.user_id:
             return {"response": "error", **errors[3]}
 
         try:
@@ -111,11 +116,16 @@ class Dispatcher(AsyncHandleManager):
 
     def set_blueprints(self, *blueprints: Blueprint):
         for bp in blueprints:
-            bp.create(self.api, self._user_id)
+            bp.create(self.api, self.user_id)
             self.event.concatenate(bp.event)
             self.error_handler.update(bp.error_handler.processors)
             self.on.concatenate(bp.on)
         logger.debug("Blueprints have been successfully loaded")
+
+    def set_web_blueprints(self, *blueprints: WebBlueprint):
+        for blueprint in blueprints:
+            blueprint.create(self.user_id, self.secret)
+        logger.debug("WebBlueprints have been successfully loaded")
 
     def loop_update(self, loop: asyncio.AbstractEventLoop = None):
         """ Update event loop

@@ -1,7 +1,5 @@
-from typing import Dict, Callable, TypeVar
+from typing import Dict, Callable
 from module.utils import logger
-
-T = TypeVar("T")
 
 
 class ErrorHandler:

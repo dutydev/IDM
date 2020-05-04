@@ -6,7 +6,6 @@ Tools for vk-bot
 
 from module import Blueprint
 from typing import Optional, Union
-
 bp = Blueprint()
 
 __all__ = (

@@ -80,6 +80,14 @@ table {
     display: none;
 }
 
+.invalid-feedback {
+    display: block !important;
+}
+
+.invalid-feedback>li {
+    list-style: none;
+}
+
 input.input-validation-error {
     border: 1px solid #b94a48;
 }

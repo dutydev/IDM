@@ -9,8 +9,11 @@ from dutymanager.units.dataclasses.validator import patcher
 from dutymanager.units.tools import *
 from dutymanager.web import urls
 from jinja2.loaders import FileSystemLoader
-from aiohttp_jinja2 import setup
 from dutymanager.units import const
+from dutymanager.web import blueprints as web_blueprints
+
+import aiohttp_jinja2
+from dutymanager.web.context_processors import auth_user_ctx_processor
 
 try:
     from pyngrok import ngrok
@@ -19,6 +22,8 @@ except ModuleNotFoundError:
 
 bot = Dispatcher(**get_params(), patcher=patcher)
 bot.set_blueprints(*blueprints)
+bot.set_web_blueprints(*web_blueprints)
+
 task = TaskManager(bot.loop)
 worker = Worker(bot.loop)
 
@@ -31,9 +36,13 @@ class Core:
         self.setup_web()
 
     def setup_web(self):
-        setup(
+        aiohttp_jinja2.setup(
             self.app,
-            loader=FileSystemLoader(const.TEMPLATES_PATH)
+            loader=FileSystemLoader(const.TEMPLATES_PATH),
+            context_processors=[
+                auth_user_ctx_processor,
+                aiohttp_jinja2.request_processor
+            ]
         )
         self.app.router.add_static(
             const.STATIC_URL, const.STATIC_PATH,

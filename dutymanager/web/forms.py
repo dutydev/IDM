@@ -1,9 +1,12 @@
 from jinja2 import Environment, FileSystemLoader
 from dutymanager.units import const
+from dutymanager.web.objects import WebBlueprint
 
 environment = Environment(
     loader=FileSystemLoader(const.TEMPLATES_PATH)
 )
+
+bot = WebBlueprint()
 
 
 class LoginForm:
@@ -18,7 +21,6 @@ class LoginForm:
     errors: dict
 
     def __init__(self, post: 'MultiDictProxy[Union[str, bytes, FileField]]' = None):
-        print(post)
         self.login = post.get('login', None) if post else None
         self.password = post.get('password', None) if post else None
         self.errors = {
@@ -46,6 +48,10 @@ class LoginForm:
 
         if not self.password:
             self.errors['password'].append("Пустой пароль")
+            is_valid = False
+
+        if self.login != str(bot.user_id) or self.password != bot.secret:
+            self.errors['form'].append('Не верный логин/пароль')
             is_valid = False
 
         return is_valid

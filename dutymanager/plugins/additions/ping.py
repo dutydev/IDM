@@ -6,7 +6,6 @@ from dutymanager.units.vk_script import msg_edit
 from time import time as current
 from datetime import datetime
 
-
 bot = Blueprint()
 db = AsyncDatabase.get_current()
 responses = {
@@ -15,24 +14,37 @@ responses = {
     'пиф': 'паф',
     'пиу': 'пау'
 }
+patterns = [
+    "пинг", "пинг %time",
+    "кинг", "кинг %time",
+    "пиу", "пиу %time",
+    "пиф", "пиф %time"
+]
 
 
 async def abstract_ping(
     uid: str, text: str,
     timestamp: int, local_id: int
 ):
-    message = ping_state.format(
-        responses[text].upper(),
-        round(current() - timestamp, 2),
-        datetime.fromtimestamp(timestamp),
-        datetime.fromtimestamp(int(current()))
-    )
+    text = text.split()
+    if text[-1] == "%time":
+        message = ping_state.format(
+            responses[text[0]].upper(),
+            round(current() - timestamp, 2),
+            datetime.fromtimestamp(timestamp),
+            datetime.fromtimestamp(int(current()))
+        )
+    else:
+        message = "{}\nОтвет через: {} сек.".format(
+            responses[text[0]].upper(),
+            round(current() - timestamp, 2)
+        )
     await msg_edit(db.chats(uid), message, local_id)
 
 
 @bot.event.message_signal(
     Method.SEND_MY_SIGNAL,
-    list(responses.keys()),
+    patterns,
     lower=True
 )
 async def send_my_signal(event: types.SendMySignal):
@@ -46,7 +58,7 @@ async def send_my_signal(event: types.SendMySignal):
 
 @bot.event.message_signal(
     Method.SEND_SIGNAL,
-    list(responses.keys()),
+    patterns,
     lower=True
 )
 async def send_signal(event: types.SendSignal):

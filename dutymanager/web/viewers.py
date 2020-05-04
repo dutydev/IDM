@@ -1,8 +1,14 @@
 from aiohttp import web
 from aiohttp_jinja2 import render_template
-from dutymanager.web import forms
+from dutymanager.web import forms, decorators
 from module.utils import logger
+from dutymanager.web.objects import WebBlueprint
+from dutymanager.web import utils
 
+bot = WebBlueprint()
+
+
+# TODO: добавить странички 403 404 5xx
 
 async def index(request: web.Request) -> web.Response:
     assert isinstance(request, web.Request)
@@ -24,7 +30,10 @@ async def login(request: web.Request) -> web.Response:
         login_form = forms.LoginForm(post_data)
         if login_form.validate():
             logger.info('Форма валидна')
-            raise web.HTTPFound('/')
+            response = web.HTTPFound('/')
+            response.set_cookie('hash', utils.get_user_hash(login_form.login, login_form.password))
+            return response
+
     else:
         login_form = forms.LoginForm()
 
@@ -36,5 +45,28 @@ async def login(request: web.Request) -> web.Response:
         {
             'title': "Вход",
             "login_form": login_form
+        }
+    )
+
+
+@decorators.authenticated_only
+async def logout(request: web.Request) -> web.Response:
+    assert isinstance(request, web.Request)
+    response = web.HTTPFound('/')
+    response.del_cookie('hash')
+    return response
+
+
+@decorators.authenticated_only
+async def admin(request: web.Request) -> web.Response:
+    assert isinstance(request, web.Request)
+
+    webform = None
+
+    return render_template(
+        'dutymanager/admin.html',
+        request,
+        {
+            "form": webform
         }
     )
