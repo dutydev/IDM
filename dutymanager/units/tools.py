@@ -6,7 +6,8 @@ for duty-manager.
 """
 
 from ..core.config import default_data, intervals
-from dutymanager.units.const import SETTINGS_PATH
+from ..units.const import SETTINGS_PATH
+from inspect import signature as sign
 from module.utils import logger
 from typing import Any
 
@@ -17,6 +18,7 @@ import re
 __all__ = (
     "display_time", "parse_interval",
     "load_values", "recreate",
+    'get_values'
 )
 
 
@@ -46,6 +48,15 @@ def parse_interval(text: str) -> int:
     return unix
 
 
+def get_values(cls) -> dict:
+    data = load_values()
+    return {
+        k: data[k]
+        for k in sign(cls.__init__).parameters
+        if k in data
+    }
+
+
 def update_fields(item: str, value: Any):
     default_data[item] = value
     try:
@@ -56,13 +67,13 @@ def update_fields(item: str, value: Any):
         recreate()
 
 
-def load_values():
+def load_values() -> dict:
     copy = default_data.copy()
     default_data.clear()
     try:
         with open(SETTINGS_PATH) as file:
-            dumps = json.loads(file.read())
-            default_data.update(**dumps)
+            default_data.update(**json.loads(file.read()))
+            return default_data
     except FileNotFoundError:
         logger.warning(
             "Can't find file \"settings.json\"! "

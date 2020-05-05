@@ -29,7 +29,7 @@ class Core(ContextInstanceMixin):
         polling: bool = False,
         mobile: bool = False,
         debug: Union[str, bool] = True,
-        errors_log: bool = False
+        errors_log: bool = False,
     ):
         # Main workers
         self.bot = Dispatcher(**self.get_params(locals()), patcher=patcher)
@@ -56,7 +56,7 @@ class Core(ContextInstanceMixin):
         if use_ngrok:
             url = self.get_url(self.port)
             print("Using ngrok WSGI: {}", url)
-        self.worker.start()
+        self.worker.dispatch()
         self.task.add_task(web._run_app(self.app, port=self.port))  # noqa
         self.task.run(on_startup=db.init)
 

@@ -1,20 +1,28 @@
-import asyncio
-import vk_api
-from module.utils import logger
 from dutymanager.core.config import default_data, workers_state
+from asyncio import AbstractEventLoop, sleep
+from module.utils import logger
+from module import Blueprint
+
+import vk_api
+
+bot = Blueprint(name="Worker")
 
 
 class Worker:
 
-    def __init__(self, loop: asyncio.AbstractEventLoop = None):
+    """
+    TODO: Recreate worker class.
+    """
+
+    def __init__(self, loop: AbstractEventLoop = None):
         self.metadata = {
             "online": self.online,
             "friends": self.friends,
             "deleter": self.deleter
         }
-        self.loop = loop or asyncio.get_event_loop()
+        self.loop = loop
 
-    def start(self):
+    def dispatch(self):
         for k, v in self.metadata.items():
             if workers_state[k]:
                 self.loop.create_task(v())
@@ -24,8 +32,8 @@ class Worker:
     async def online():
         user = vk_api.VkApi(token=default_data["online_token"])
         while workers_state["online"]:
-            user.method("account.setOnline")
-            await asyncio.sleep(300)
+            await bot.api.account.set_online()
+            await sleep(300)
 
     @staticmethod
     async def friends():
@@ -41,7 +49,7 @@ class Worker:
                             "user_id": i["user_id"],
                             "follow": 0
                         })
-            await asyncio.sleep(120)
+            await sleep(120)
 
     @staticmethod
     async def deleter():
@@ -54,4 +62,4 @@ class Worker:
                 for i in requests["items"]:
                     p.method("friends.delete", {"user_id": i})
 
-            await asyncio.sleep(3600)
+            await sleep(3600)

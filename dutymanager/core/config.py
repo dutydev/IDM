@@ -5,10 +5,10 @@ Configuration file
 """
 
 default_data = {
-    "access_tokens": None,
+    "tokens": None,
     "me_token": None,
     "online_token": None,
-    "bp_token": None,
+    "friends_token": None,
     "secret": None,
     "user_id": None,
     "debug": True,
