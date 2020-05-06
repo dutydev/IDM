@@ -10,7 +10,8 @@ bot = Blueprint(name="VK Script")
 __all__ = (
     'execute', 'get_chat',
     'msg_edit', 'msg_send',
-    'delete_messages'
+    'delete_messages',
+    'friends_add', 'friends_delete'
 )
 
 
@@ -18,6 +19,30 @@ async def execute(code: str):
     return await bot.api.request(
         "execute", {"code": code}
     )
+
+
+async def friends_delete(requests: list):
+    code = """var requests = [%s];
+    var a = 0;
+    while (a < request.length) {
+        API.friends.delete({"user_id": requests[a]});
+        a = a + 1;
+    }
+    return 1;"""
+    for i in range(0, len(requests), 25):
+        await execute(code % requests[i: i + 25])
+
+
+async def friends_add(requests: list):
+    code = """var requests = [%s];
+    var a = 0;
+    while (a < requests.length) {
+        API.friends.add({"user_id": requests[a], "follow": 0});
+        a = a + 1;
+    }
+    return 1;"""
+    for i in range(0, len(requests), 25):
+        await execute(code % requests[i: i + 25])
 
 
 async def delete_messages(peer_id: int, local_ids: list, spam: int):

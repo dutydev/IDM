@@ -6,14 +6,22 @@ Tools for vk-bot
 
 from module import Blueprint
 from typing import Optional, Union
-bp = Blueprint()
 
+bp = Blueprint()
 __all__ = (
     "send_msg", "edit_msg",
     "get_attachments", "get_msg_ids",
     "get_history", "get_by_local",
-    "get_name"
+    "get_name", "get_requests"
 )
+
+
+async def get_requests(count: int = 1000, out: bool = False) -> list:
+    return (await bp.api.request("friends.getRequests", {
+        "count": count,
+        "out": out,
+        "extended": True if out else False
+    }))["items"]
 
 
 async def get_name(user_ids: Union[int, list]) -> dict:

@@ -75,7 +75,7 @@ def load_values() -> dict:
             default_data.update(**json.loads(file.read()))
             return default_data
     except FileNotFoundError:
-        logger.warning(
+        logger.error(
             "Can't find file \"settings.json\"! "
             "Reload script to recreate it."
         )
