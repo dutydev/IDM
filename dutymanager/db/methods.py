@@ -8,6 +8,17 @@ class AsyncDatabase(ContextInstanceMixin):
         self.chats = Chats()
         self.trusted = Proxies()
         self.templates = Templates()
+        self.settings = Settings()
+
+        self.pages = dict()
+
+    def create_pages(self, limit: int):
+        current = 1
+        self.pages.clear()
+        tags = list(self.templates)
+        for i in range(0, len(tags), limit):
+            self.pages[current] = tags[i: i + limit]
+            current += 1
 
     async def init(self):
         await Tortoise.init(
@@ -31,6 +42,9 @@ class AsyncDatabase(ContextInstanceMixin):
                 "message": y.text,
                 "attachment": y.attachments
             }
+        async for z in Setting.all():
+            self.settings["page_limit"] = z.page_limit
+        self.create_pages(self.settings())
 
 
 db = AsyncDatabase()

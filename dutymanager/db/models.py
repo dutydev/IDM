@@ -1,6 +1,11 @@
 from tortoise import fields
 from tortoise import Model
 
+__all__ = (
+    "Chat", "Setting",
+    "Template", "Trusted"
+)
+
 
 class Chat(Model):
     uid = fields.CharField(max_length=50, pk=True)
@@ -8,6 +13,10 @@ class Chat(Model):
     title = fields.CharField(max_length=250)
     is_duty = fields.BooleanField(default=False)
     date = fields.DatetimeField(auto_now_add=True)
+
+
+class Setting(Model):
+    page_limit = fields.IntField(default=30)
 
 
 class Template(Model):

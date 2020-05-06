@@ -16,6 +16,7 @@ __all__ = (
 
 
 async def execute(code: str):
+    logger.debug("Formatting result:\n{}", code)
     return await bot.api.request(
         "execute", {"code": code}
     )
@@ -27,9 +28,9 @@ async def friends_method(requests: list, add: bool = True):
         if not add else
         'API.friends.add({"user_id": requests[a], "follow": 0});'
     )
-    code = """var requests = [%s];
+    code = """var requests = %s;
     var a = 0;
-    while (a < request.length) {
+    while (a < requests.length) {
         %s
         a = a + 1;
     }
@@ -75,7 +76,10 @@ async def get_chat(date: int, q: str = "!связать"):
     return await execute(code)
 
 
-async def msg_edit(peer_id: int, message: str, local_id: int):
+async def msg_edit(
+    peer_id: int, message: str,
+    local_id: int, attachment: str = ""
+):
     """
     Two methods in one request.
     messages.edit + messages.getByConversationMessageId
@@ -84,15 +88,19 @@ async def msg_edit(peer_id: int, message: str, local_id: int):
     code = """return API.messages.edit({
     "peer_id": %s,
     "message": "%s",
+    "attachment": "%s",
     "message_id": API.messages.getByConversationMessageId({
         "peer_id": %s, "conversation_message_ids": %s
     }).items@.id
-    });""" % (peer_id, text, peer_id, local_id)
+    });""" % (peer_id, text, attachment, peer_id, local_id)
     logger.debug("Formatting result:\n{}", code)
     return await execute(code)
 
 
-async def msg_send(peer_id: int, message: str, local_id: int):
+async def msg_send(
+    peer_id: int, message: str,
+    local_id: int, attachment: str = ""
+):
     """
     Two methods in one request
     messages.send + messages.getByConversationMessageId
@@ -101,10 +109,11 @@ async def msg_send(peer_id: int, message: str, local_id: int):
     code = """return API.messages.send({
     "peer_id": %s,
     "message": "%s",
+    "attachment": "%s",
     "random_id": 0,
     "reply_to": API.messages.getByConversationMessageId({
         "peer_id": %s, "conversation_message_ids": %s
     }).items@.id
-    });""" % (peer_id, text, peer_id, local_id)
+    });""" % (peer_id, text, attachment, peer_id, local_id)
     logger.debug("Formatting result:\n{}", code)
     return await execute(code)

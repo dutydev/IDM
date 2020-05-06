@@ -1,11 +1,12 @@
 from .abc import AbstractDict
-from .models import Chat, Trusted, Template
+from .models import *
 from typing import Union
 
 __all__ = (
     'Chats', 'Chat',
     'Proxies', 'Trusted',
-    'Templates', 'Template'
+    'Templates', 'Template',
+    'Setting', 'Settings'
 )
 
 
@@ -75,3 +76,19 @@ class Proxies(AbstractDict):
         uid, name = args
         await Trusted.filter(id=uid).update(name=name)
         self[uid] = name
+
+
+class Settings(AbstractDict):
+    dataclass = Setting
+
+    def __call__(self, tag: str = "page_limit") -> int:
+        return self[tag]
+
+    async def create(self, *args):
+        if not await Setting.get_or_none(id=1):
+            setting = await Setting.create()
+            self["page_limit"] = setting.page_limit
+
+    async def change(self, **kwargs):
+        await Setting.filter(id=1).update(**kwargs)
+        self.update(**kwargs)

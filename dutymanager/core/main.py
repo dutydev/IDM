@@ -1,8 +1,8 @@
 from module.utils.context import ContextInstanceMixin
 from dutymanager.units.dataclasses.validator import patcher
 from dutymanager.units.dataclasses.workers import Worker
-from dutymanager.web import blueprints as web_blueprints
 from dutymanager.core.config import default_data
+from dutymanager.web import web_blueprints
 from module import Dispatcher, TaskManager
 from dutymanager.plugins import blueprints
 from dutymanager.units.const import Token
@@ -58,7 +58,8 @@ class Core(ContextInstanceMixin):
             print("Using ngrok WSGI: {}", url)
         self.worker.dispatch()
         self.task.add_task(web._run_app(self.app, port=self.port))  # noqa
-        self.task.run(on_startup=db.init)
+        self.task.add_task(db.init)
+        self.task.run()
 
     @staticmethod
     def get_url(port: int) -> str:

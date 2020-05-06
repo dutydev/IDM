@@ -12,11 +12,6 @@ bot = Blueprint(name="Base")
 db = AsyncDatabase.get_current()
 
 
-@bot.error_handler(Exception)
-async def error_handler(e: Exception):
-    print(e.__class__.__name__)
-
-
 @bot.event.print_bookmark()
 async def print_bookmark(event: types.PrintBookmark):
     peer_id = db.chats(event.object.chat)
