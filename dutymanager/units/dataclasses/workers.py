@@ -1,4 +1,4 @@
-from dutymanager.units.vk_script import friends_add, friends_delete
+from dutymanager.units.vk_script import friends_method
 from dutymanager.core.config import workers_state
 from dutymanager.units.utils import get_requests
 from asyncio import AbstractEventLoop, sleep
@@ -36,7 +36,7 @@ class Worker:
     @staticmethod
     async def friends():
         while workers_state["friends"]:
-            await friends_add([
+            await friends_method([
                 i["user_id"] for i in await get_requests()
                 if "deactivated" not in i
             ])
@@ -45,5 +45,7 @@ class Worker:
     @staticmethod
     async def deleter():
         while workers_state["deleter"]:
-            await friends_delete(await get_requests(out=True))
+            await friends_method(
+                await get_requests(out=True), add=False
+            )
             await sleep(3600)
