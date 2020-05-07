@@ -1,6 +1,6 @@
 from module import Blueprint
 from module import VKError, types
-from dutymanager.units.const import errors
+from dutymanager.files.errors import *
 from dutymanager.units.utils import *
 from dutymanager.units.vk_script import delete_messages
 from dutymanager.db.methods import AsyncDatabase

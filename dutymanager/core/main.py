@@ -1,11 +1,11 @@
 from module.utils.context import ContextInstanceMixin
 from dutymanager.units.dataclasses.validator import patcher
 from dutymanager.units.dataclasses.workers import Worker
-from dutymanager.core.config import default_data
+from dutymanager.files.dicts import default_data
 from dutymanager.web import web_blueprints
 from module import Dispatcher, TaskManager
 from dutymanager.plugins import blueprints
-from dutymanager.units.const import Token
+from dutymanager.files.const import Token
 from dutymanager.db.methods import db
 from dutymanager import setup_web
 from typing import Union

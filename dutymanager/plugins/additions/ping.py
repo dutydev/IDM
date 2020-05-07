@@ -1,6 +1,6 @@
 from module import Blueprint, Method
 from module import types
-from dutymanager.core.config import ping_state
+from dutymanager.files.msgs import ping_state
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.vk_script import msg_edit
 from time import time as current

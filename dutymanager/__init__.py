@@ -1,6 +1,6 @@
 from dutymanager.web.context_processors import auth_user_ctx_processor
 from jinja2.loaders import FileSystemLoader
-from dutymanager.units import const
+from dutymanager.files import const
 from dutymanager.web import urls
 
 import aiohttp_jinja2

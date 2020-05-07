@@ -31,10 +31,8 @@ async def add_template(event: types.SendMySignal, tag: str, text: str = None):
     ))
     attachments = await get_attachments(data)
     if tag.lower() in db.templates:
-        print(True)
         return await edit_msg(
-            peer_id=peer_id,
-            message_id=data["id"],
+            peer_id=peer_id, message_id=data["id"],
             message=await edit_template(tag, text, attachments)
         )
 

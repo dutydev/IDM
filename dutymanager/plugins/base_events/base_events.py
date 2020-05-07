@@ -5,7 +5,7 @@ from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.vk_script import msg_send
 from dutymanager.units.utils import *
 from dutymanager.units.vk_script import get_chat, msg_edit
-from dutymanager.units.const import errors
+from dutymanager.files.errors import *
 from tortoise.exceptions import BaseORMException
 
 bot = Blueprint(name="Base")
@@ -75,4 +75,4 @@ async def subscribe_signals(event: types.SubscribeSignals):
         await db.chats.change(uid, is_duty=True)
     except (BaseORMException, Exception) as e:
         logger.error(e)
-        return {"response": "error", **errors[10]}
+        return {"response": "error", "error_code": CANT_BIND_CHAT}

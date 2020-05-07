@@ -12,7 +12,8 @@ from module.framework.error_handler import ErrorHandler
 from module.framework.framework.blueprint import Blueprint
 from vbml import Patcher
 from vkbottle.framework.framework.handler.user import Handler
-from dutymanager.units.const import errors, Token
+from dutymanager.files.const import Token
+from dutymanager.files.errors import *
 from dutymanager.web.objects import WebBlueprint
 
 
@@ -92,13 +93,13 @@ class Dispatcher(AsyncHandleManager):
         logger.debug("Event: {event}", event=event)
 
         if event is None:
-            return {"response": "error", **errors[1]}
+            return {"response": "error", "error_code": NO_DATA}
 
         if event.get("secret") != self.secret:
-            return {"response": "error", **errors[3]}
+            return {"response": "error", "error_code": INVALID_DATA}
 
         if event.get("user_id") != self.user_id:
-            return {"response": "error", **errors[3]}
+            return {"response": "error", "error_code": INVALID_DATA}
 
         try:
             task = (await self._processor(event))

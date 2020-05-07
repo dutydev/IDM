@@ -1,9 +1,9 @@
 from jinja2 import Environment, FileSystemLoader
-from dutymanager.units import const
+from dutymanager.files.config import TEMPLATES_PATH
 from dutymanager.web.objects import WebBlueprint
 
 environment = Environment(
-    loader=FileSystemLoader(const.TEMPLATES_PATH)
+    loader=FileSystemLoader(TEMPLATES_PATH)
 )
 
 bot = WebBlueprint()

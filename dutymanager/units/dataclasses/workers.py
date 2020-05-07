@@ -1,5 +1,5 @@
 from dutymanager.units.vk_script import friends_method
-from dutymanager.core.config import workers_state
+from dutymanager.files.dicts import workers_state
 from dutymanager.units.utils import get_requests
 from asyncio import AbstractEventLoop, sleep
 from module.utils import logger

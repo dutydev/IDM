@@ -5,11 +5,11 @@ for duty-manager.
 
 """
 
-from ..core.config import default_data, intervals
-from ..units.const import SETTINGS_PATH
+from dutymanager.files.dicts import default_data, intervals
+from dutymanager.files.config import SETTINGS_PATH
 from inspect import signature as sign
 from module.utils import logger
-from typing import Any
+from typing import Any, Optional
 
 import json
 import re
@@ -64,10 +64,10 @@ def update_fields(item: str, value: Any):
             file.write(json.dumps(default_data, indent=2))
             logger.debug("{} == {}", item, value)
     except FileNotFoundError:
-        recreate()
+        return recreate()
 
 
-def load_values() -> dict:
+def load_values() -> Optional[dict]:
     copy = default_data.copy()
     default_data.clear()
     try:
@@ -79,7 +79,7 @@ def load_values() -> dict:
             "Can't find file \"settings.json\"! "
             "Reload script to recreate it."
         )
-        recreate(copy)
+        return recreate(copy)
 
 
 def recreate(data: dict = None):
