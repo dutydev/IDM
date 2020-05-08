@@ -1,9 +1,9 @@
-from module import Blueprint
-from module import VKError, types
-from dutymanager.files.errors import *
-from dutymanager.units.utils import *
 from dutymanager.units.vk_script import delete_messages
 from dutymanager.db.methods import AsyncDatabase
+from dutymanager.files.errors import VK_ERROR
+from dutymanager.units.utils import *
+from module import VKError, types
+from module import Blueprint
 
 bot = Blueprint()
 db = AsyncDatabase.get_current()
@@ -31,7 +31,7 @@ async def delete_from_user(event: types.DeleteMessagesFromUser):
         await send_msg(peer_id, "✅ Сообщения удалены.")
     except VKError as e:
         e = list(e.args)[0][0]
-        await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
+        await send_msg(peer_id, VK_ERROR.get(e, "❗ Произошла неизвестная ошибка."))
 
 
 @bot.event.delete_messages()
@@ -43,6 +43,5 @@ async def _delete_messages(event: types.DeleteMessages):
         await delete_messages(peer_id, local_ids, spam)
         await send_msg(peer_id, "✅ Сообщения удалены.")
     except VKError as e:
-        print(e)
         e = list(e.args)[0][0]
-        await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
+        await send_msg(peer_id, VK_ERROR.get(e, "❗ Произошла неизвестная ошибка."))

@@ -1,12 +1,12 @@
-from module import Blueprint
-from module import VKError, types
-from module.utils import logger
+from dutymanager.files.errors import VK_ERROR, CANT_BIND_CHAT
+from dutymanager.units.vk_script import get_chat, msg_edit
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.vk_script import msg_send
-from dutymanager.units.utils import *
-from dutymanager.units.vk_script import get_chat, msg_edit
-from dutymanager.files.errors import *
 from tortoise.exceptions import BaseORMException
+from dutymanager.units.utils import *
+from module import VKError, types
+from module.utils import logger
+from module import Blueprint
 
 bot = Blueprint(name="Base")
 db = AsyncDatabase.get_current()
@@ -25,7 +25,7 @@ async def print_bookmark(event: types.PrintBookmark):
         )
     except (IndexError, VKError) as e:
         e = list(e.args)[0][0]
-        await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
+        await send_msg(peer_id, VK_ERROR.get(e, "❗ Произошла неизвестная ошибка."))
 
 
 @bot.event.ban_get_reason()
@@ -36,7 +36,7 @@ async def ban_get_reason(event: types.BanGetReason):
         await msg_send(peer_id, "🔼 Перейти к месту бана", local_id)
     except (IndexError, VKError) as e:
         e = list(e.args)[0][0]
-        await send_msg(peer_id, errors.get(e, "❗ Произошла неизвестная ошибка."))
+        await send_msg(peer_id, VK_ERROR.get(e, "❗ Произошла неизвестная ошибка."))
 
 
 async def abstract_bind(

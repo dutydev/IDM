@@ -1,5 +1,5 @@
-from jinja2 import Environment, FileSystemLoader
 from dutymanager.files.config import TEMPLATES_PATH
+from jinja2 import Environment, FileSystemLoader
 from dutymanager.web.objects import WebBlueprint
 
 environment = Environment(

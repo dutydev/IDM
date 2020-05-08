@@ -1,6 +1,6 @@
+from dutymanager.web.objects import WebBlueprint
 from aiohttp import web
 from hashlib import md5
-from dutymanager.web.objects import WebBlueprint
 
 bot = WebBlueprint()
 

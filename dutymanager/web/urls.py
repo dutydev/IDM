@@ -1,5 +1,5 @@
-from dutymanager.web import viewers
 from dutymanager.web.objects import UrlPath
+from dutymanager.web import viewers
 
 urlpatterns = [
     UrlPath.add_get('', viewers.index, name='index'),

@@ -1,8 +1,8 @@
-from module import Blueprint, Method
-from module import types
-from dutymanager.units.utils import *
 from dutymanager.units.vk_script import msg_edit
 from dutymanager.db.methods import AsyncDatabase
+from dutymanager.units.utils import *
+from module import Blueprint, Method
+from module import types
 
 import typing
 

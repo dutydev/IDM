@@ -11,6 +11,7 @@ class AsyncDatabase(ContextInstanceMixin):
         self.trusted = Proxies()
         self.templates = Templates()
         self.settings = Settings()
+
         self.pages = dict()
 
     def create_pages(self, limit: int):
@@ -27,9 +28,9 @@ class AsyncDatabase(ContextInstanceMixin):
             modules={"models": [MODELS_PATH]}
         )
         await Tortoise.generate_schemas()
-        await self.load_values()
+        await self.compose()
 
-    async def load_values(self):
+    async def compose(self):
         await AbstractDict.load()
         self.create_pages(self.settings())
 

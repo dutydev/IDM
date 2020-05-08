@@ -1,7 +1,7 @@
-from module import Blueprint, Method
-from module import types
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.vk_script import msg_edit
+from module import Blueprint, Method
+from module import types
 
 bot = Blueprint(name="Settings")
 db = AsyncDatabase.get_current()

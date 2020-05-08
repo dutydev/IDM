@@ -1,7 +1,7 @@
+from dutymanager.db.methods import AsyncDatabase
+from dutymanager.units.utils import send_msg
 from module import Blueprint, Method
 from module import types
-from dutymanager.units.utils import send_msg
-from dutymanager.db.methods import AsyncDatabase
 
 bot = Blueprint()
 db = AsyncDatabase.get_current()

@@ -1,7 +1,7 @@
-from module import Blueprint, Method
-from module import VKError, types
-from dutymanager.units.utils import *
 from dutymanager.db.methods import AsyncDatabase
+from module import Blueprint, Method
+from dutymanager.units.utils import *
+from module import VKError, types
 
 bot = Blueprint()
 db = AsyncDatabase.get_current()

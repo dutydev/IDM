@@ -1,6 +1,6 @@
-from aiohttp import web
 from dutymanager.web.utils import is_authenticated as is_auth
 from dutymanager.web.objects import WebBlueprint
+from aiohttp import web
 
 bot = WebBlueprint()
 

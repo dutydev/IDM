@@ -1,10 +1,10 @@
-from module import Blueprint, Method
-from module import types
-from dutymanager.files.msgs import ping_state
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.vk_script import msg_edit
+from dutymanager.files.msgs import ping_state
+from module import Blueprint, Method
 from time import time as current
 from datetime import datetime
+from module import types
 
 bot = Blueprint()
 db = AsyncDatabase.get_current()

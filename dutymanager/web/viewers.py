@@ -1,10 +1,10 @@
-from aiohttp import web
-from aiohttp_jinja2 import render_template
-from dutymanager.web.forms import LoginForm
 from dutymanager.web.decorators import authenticated_only
-from module.utils import logger
 from dutymanager.web.objects import WebBlueprint
 from dutymanager.web.utils import get_user_hash
+from dutymanager.web.forms import LoginForm
+from aiohttp_jinja2 import render_template
+from module.utils import logger
+from aiohttp import web
 
 bot = WebBlueprint()
 

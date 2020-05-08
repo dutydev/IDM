@@ -4,8 +4,8 @@ Tools for vk-bot
 
 """
 
-from module import Blueprint
 from typing import Optional, Union
+from module import Blueprint
 
 bp = Blueprint()
 __all__ = (

@@ -3,8 +3,8 @@
 File to work with VK Script compilation
 
 """
-from module import Blueprint
 from module.utils import logger
+from module import Blueprint
 
 bot = Blueprint(name="VK Script")
 __all__ = (

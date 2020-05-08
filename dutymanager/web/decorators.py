@@ -1,5 +1,5 @@
-from aiohttp import web
 from dutymanager.web.utils import is_authenticated
+from aiohttp import web
 
 __all__ = (
     'authenticated_only',
