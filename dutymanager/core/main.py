@@ -1,6 +1,6 @@
-from module.utils.context import ContextInstanceMixin
 from dutymanager.units.dataclasses.validator import patcher
 from dutymanager.units.dataclasses.workers import Worker
+from module.utils.context import ContextInstanceMixin
 from dutymanager.files.dicts import default_data
 from dutymanager.web import web_blueprints
 from module import Dispatcher, TaskManager

@@ -1,5 +1,7 @@
+from dutymanager.files.config import MODELS_PATH, DB_URL
 from module.utils.context import ContextInstanceMixin
 from tortoise import Tortoise
+from .abc import AbstractDict
 from .standard import *
 
 
@@ -9,7 +11,6 @@ class AsyncDatabase(ContextInstanceMixin):
         self.trusted = Proxies()
         self.templates = Templates()
         self.settings = Settings()
-
         self.pages = dict()
 
     def create_pages(self, limit: int):
@@ -22,28 +23,14 @@ class AsyncDatabase(ContextInstanceMixin):
 
     async def init(self):
         await Tortoise.init(
-            db_url="sqlite://dutymanager/core/duty.db",
-            modules={"models": ["dutymanager.db.models"]}
+            db_url=DB_URL,
+            modules={"models": [MODELS_PATH]}
         )
         await Tortoise.generate_schemas()
         await self.load_values()
 
     async def load_values(self):
-        async for i in Chat.all():
-            self.chats[i.uid] = {
-                "id": i.id, "title": i.title
-            }
-
-        async for x in Trusted.all():
-            self.trusted[x.id] = x.name
-
-        async for y in Template.all():
-            self.templates[y.tag] = {
-                "message": y.text,
-                "attachment": y.attachments
-            }
-        async for z in Setting.all():
-            self.settings["page_limit"] = z.page_limit
+        await AbstractDict.load()
         self.create_pages(self.settings())
 
 

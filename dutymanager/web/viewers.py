@@ -1,6 +1,7 @@
 from aiohttp import web
 from aiohttp_jinja2 import render_template
-from dutymanager.web import forms, decorators
+from dutymanager.web.forms import LoginForm
+from dutymanager.web.decorators import authenticated_only
 from module.utils import logger
 from dutymanager.web.objects import WebBlueprint
 from dutymanager.web.utils import get_user_hash
@@ -27,7 +28,7 @@ async def login(request: web.Request) -> web.Response:
     logger.info(f'{request.method} -> {request.path}')
     if request.method == 'POST':
         post_data = await request.post()
-        login_form = forms.LoginForm(post_data)
+        login_form = LoginForm(post_data)
         if login_form.validate():
             logger.info('Форма валидна')
             response = web.HTTPFound('/')
@@ -35,7 +36,7 @@ async def login(request: web.Request) -> web.Response:
             return response
 
     else:
-        login_form = forms.LoginForm()
+        login_form = LoginForm()
 
     logger.info(f'{(login_form.errors, login_form.login, login_form.password)}')
 
@@ -49,7 +50,7 @@ async def login(request: web.Request) -> web.Response:
     )
 
 
-@decorators.authenticated_only
+@authenticated_only
 async def logout(request: web.Request) -> web.Response:
     assert isinstance(request, web.Request)
     response = web.HTTPFound('/')
@@ -57,7 +58,7 @@ async def logout(request: web.Request) -> web.Response:
     return response
 
 
-@decorators.authenticated_only
+@authenticated_only
 async def admin(request: web.Request) -> web.Response:
     assert isinstance(request, web.Request)
     web_form = None

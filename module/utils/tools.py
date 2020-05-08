@@ -15,7 +15,7 @@ class Logger:
     def __call__(self, message: str, *args, **kwargs):
         t = time.strftime("%m-%d %H:%M:%S", time.localtime())
         sys.stdout.write(
-            "\n[IrisPY] " + message.format(*args, **kwargs) + " [TIME {}]".format(t)
+            "\n[IDM] " + message.format(*args, **kwargs) + " [TIME {}]".format(t)
         )
 
 
@@ -37,6 +37,7 @@ class DotDict(dict):
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
+
 
 def chunks(x, y):
     """Yield successive n-sized chunks from l."""

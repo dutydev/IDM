@@ -1,6 +1,6 @@
 from module import Blueprint, Message
 from ..additions.ping import responses
-from dutymanager.files.dicts import ping_state
+from dutymanager.files.msgs import ping_state
 from time import time as current
 from datetime import datetime
 

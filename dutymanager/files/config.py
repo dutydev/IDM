@@ -9,5 +9,5 @@ TEMPLATES_PATH = "dutymanager/web/templates"
 STATIC_PATH = "dutymanager/web/static"
 STATIC_URL = "/static"
 
-DB_URL_PATH = "sqlite://dutymanager/core/duty.db"
-DB_MODELS_PATH = "dutymanager.db.models"
+DB_URL = "sqlite://dutymanager/core/duty.db"
+MODELS_PATH = "dutymanager.db.models"

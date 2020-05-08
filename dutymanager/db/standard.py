@@ -12,10 +12,14 @@ __all__ = (
 
 class Chats(AbstractDict):
 
-    dataclass = Chat
-
     def __call__(self, uid: str, field: str = "id") -> Union[str, int]:
         return self[uid].get(field, "null")
+
+    async def load_values(self):
+        async for i in Chat.all():
+            self[i.uid] = {
+                "id": i.id, "title": i.title
+            }
 
     async def create(self, *args):
         uid, chat_id, title = args
@@ -33,10 +37,15 @@ class Chats(AbstractDict):
 
 class Templates(AbstractDict):
 
-    dataclass = Template
-
     def __call__(self, tag: str) -> dict:
         return self[tag.lower()]
+
+    async def load_values(self):
+        async for i in Template.all():
+            self[i.tag] = {
+                "message": i.text,
+                "attachment": i.attachments
+            }
 
     async def create(self, *args):
         tag, text, attachments = args
@@ -58,10 +67,12 @@ class Templates(AbstractDict):
 
 class Proxies(AbstractDict):
 
-    dataclass = Trusted
-
     def __call__(self, uid: int) -> str:
         return self[uid]
+
+    async def load_values(self):
+        async for i in Trusted.all():
+            self[i.id] = i.name
 
     async def create(self, *args):
         uid, name = args
@@ -79,10 +90,13 @@ class Proxies(AbstractDict):
 
 
 class Settings(AbstractDict):
-    dataclass = Setting
 
     def __call__(self, tag: str = "page_limit") -> int:
         return self[tag]
+
+    async def load_values(self):
+        async for i in Setting.all():
+            self["page_limit"] = i.page_limit
 
     async def create(self, *args):
         if not await Setting.get_or_none(id=1):
