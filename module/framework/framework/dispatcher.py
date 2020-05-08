@@ -3,18 +3,19 @@ import typing
 import traceback
 import sys
 
-from module.utils import LoggerLevel, logger
-from module.utils import generate_string
-from module.objects.events import Event
-from module.framework.framework.bot import User
+from vkbottle.framework.framework.handler.user import Handler
+from module.framework.framework.blueprint import Blueprint
 from module.framework.processor import AsyncHandleManager
 from module.framework.error_handler import ErrorHandler
-from module.framework.framework.blueprint import Blueprint
-from vbml import Patcher
-from vkbottle.framework.framework.handler.user import Handler
-from dutymanager.files.const import Token
-from dutymanager.files.errors import *
 from dutymanager.web.objects import WebBlueprint
+from module.framework.framework.bot import User
+from dutymanager.units.tools import get_values
+from module.utils import LoggerLevel, logger
+from dutymanager.files.const import Token
+from module.utils import generate_string
+from module.objects.events import Event
+from dutymanager.files.errors import *
+from vbml import Patcher
 
 
 class Dispatcher(AsyncHandleManager):
@@ -33,33 +34,28 @@ class Dispatcher(AsyncHandleManager):
     ):
         self.secret: str = secret or generate_string()
         self.user_id: int = user_id
-        self._tokens = [tokens] if isinstance(tokens, str) else tokens
 
+        self._tokens = [tokens] if isinstance(tokens, str) else tokens
         self._debug: bool = debug
         self._patcher = patcher or Patcher()
         Patcher.set_current(self._patcher)
 
         self.__loop = asyncio.get_event_loop()
-
-        # FIXME: Оно должно запускаться без токенов
-        # TODO: инфу есть ли токены\секретки и тд дабы запустить веб-интервейс в режиме установки
-
         self.__user: User = User(
-            tokens=self._tokens, user_id=user_id,
-            login=login, password=password,
+            **get_values(User, locals()),
             expand_models=len(self._tokens) > 1
         )
         if not secret:
-            print(f"Generated new secret word: {self.secret}")
+            print("Generated new secret word: ", self.secret)
 
         if user_id is None:
             self.user_id = self.__user.user_id
 
+        if polling:
+            self.run_polling()
+
         if isinstance(debug, bool):
             debug = "INFO" if debug else "ERROR"
-
-        if polling:
-            self.__loop.create_task(self.__user.run())
 
         self.logger = LoggerLevel(debug)
         self.on: Handler = self.__user.on
@@ -106,10 +102,13 @@ class Dispatcher(AsyncHandleManager):
             if task is not None:
                 return task
         except Exception as e:
-            processing = await self.error_processor(e)
+            processing = await self.error_processor(e, event)
             if processing is False:
-                logger.exception(traceback.format_exc(limit=5))
+                logger.error(traceback.format_exc(limit=5))
                 return traceback.format_exc(limit=5)
+
+            if processing is not None:
+                return processing
 
         return {"response": "ok"}
 
@@ -124,7 +123,7 @@ class Dispatcher(AsyncHandleManager):
     def set_web_blueprints(self, *blueprints: WebBlueprint):
         for blueprint in blueprints:
             blueprint.create(self.user_id, self.secret)
-        logger.debug("WebBlueprints have been successfully loaded")
+        logger.debug("Web-Blueprints have been successfully loaded")
 
     def loop_update(self, loop: asyncio.AbstractEventLoop = None):
         """ Update event loop
@@ -133,6 +132,10 @@ class Dispatcher(AsyncHandleManager):
         """
         self.__loop = loop or asyncio.get_event_loop()
         return self.__loop
+
+    def run_polling(self):
+        loop = self.__loop
+        loop.create_task(self.__user.run())
 
     @property
     def loop(self):

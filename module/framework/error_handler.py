@@ -14,7 +14,12 @@ class ErrorHandler:
 
         return decorator
 
-    async def notify(self, error: Exception, ignore: bool = True):
+    async def notify(
+        self,
+        error: Exception,
+        event: dict,
+        ignore: bool = True
+    ):
         name = Exception if ignore else error.__class__
         handler = self.processors[name]
         logger.debug(
@@ -22,7 +27,7 @@ class ErrorHandler:
             error.__class__.__name__,
             handler.__name__
         )
-        return await handler(error)
+        return await handler(error, event)
 
     @property
     def processors(self) -> dict:

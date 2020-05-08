@@ -30,7 +30,7 @@ async def delete_from_user(event: types.DeleteMessagesFromUser):
         )
         await send_msg(peer_id, "✅ Сообщения удалены.")
     except VKError as e:
-        e = list(e.args)[0][0]
+        e = list(e.args)[0]
         await send_msg(peer_id, VK_ERROR.get(e, "❗ Произошла неизвестная ошибка."))
 
 
@@ -43,5 +43,5 @@ async def _delete_messages(event: types.DeleteMessages):
         await delete_messages(peer_id, local_ids, spam)
         await send_msg(peer_id, "✅ Сообщения удалены.")
     except VKError as e:
-        e = list(e.args)[0][0]
+        e = list(e.args)[0]
         await send_msg(peer_id, VK_ERROR.get(e, "❗ Произошла неизвестная ошибка."))

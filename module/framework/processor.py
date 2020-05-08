@@ -29,12 +29,14 @@ class AsyncHandleManager:
                     if self.patcher.check(text, pattern) is not None:
                         return await handler(event, **pattern.dict())
 
-    async def error_processor(self, error: Exception) -> bool:
+    async def error_processor(self, error: Exception, event: dict):
         error_type = error.__class__
         if Exception in self.error_handler.processors:
-            return await self.error_handler.notify(error)
+            return await self.error_handler.notify(error, event)
 
         if error_type in self.error_handler.processors:
-            return await self.error_handler.notify(error, ignore=False)
+            return await self.error_handler.notify(
+                error, event, False
+            )
 
         return False

@@ -1,4 +1,5 @@
 from dutymanager.db.methods import AsyncDatabase
+from dutymanager.files.errors import VK_ERROR
 from dutymanager.units.utils import *
 from module import VKError, types
 from module import Blueprint
@@ -36,9 +37,9 @@ async def add_user(event: types.AddUser):
             user_id=user_id
         )
     except VKError as e:
-        e = list(e.args)[0]
+        e = list(e.args)
         await send_msg(
             peer_id=peer_id,
             message=f"⚠ Произошла ошибка на этапе добавления [id{user_id}|пользователя]."
-                    f"\nВК ответил: {e[1]} ({e[0]})"
+                    f"\nВК ответил: {VK_ERROR.get(e[0])}"
         )

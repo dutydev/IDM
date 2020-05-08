@@ -24,7 +24,7 @@ async def print_bookmark(event: types.PrintBookmark):
             local_id
         )
     except (IndexError, VKError) as e:
-        e = list(e.args)[0][0]
+        e = list(e.args)[0]
         await send_msg(peer_id, VK_ERROR.get(e, "❗ Произошла неизвестная ошибка."))
 
 
@@ -35,7 +35,7 @@ async def ban_get_reason(event: types.BanGetReason):
     try:
         await msg_send(peer_id, "🔼 Перейти к месту бана", local_id)
     except (IndexError, VKError) as e:
-        e = list(e.args)[0][0]
+        e = list(e.args)[0]
         await send_msg(peer_id, VK_ERROR.get(e, "❗ Произошла неизвестная ошибка."))
 
 
@@ -46,9 +46,8 @@ async def abstract_bind(
         chat_id, title = await get_chat(date, text)
         return await db.chats.create(uid, chat_id, title[:250])
     await msg_edit(
-        db.chats(uid),
-        f"✅ Беседа «{db.chats(uid, 'title')}» распознана!",
-        local_id
+        peer_id=db.chats(uid), local_id=local_id,
+        message=f"✅ Беседа «{db.chats(uid, 'title')}» распознана!",
     )
 
 

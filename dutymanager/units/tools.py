@@ -48,12 +48,12 @@ def parse_interval(text: str) -> int:
     return unix
 
 
-def get_values(cls) -> dict:
-    data = load_values()
+def get_values(cls, data: dict = None) -> dict:
+    data = data or load_values()
     return {
         k: data[k]
         for k in sign(cls.__init__).parameters
-        if k in data
+        if k in data and k != "self"
     }
 
 
