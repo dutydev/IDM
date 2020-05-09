@@ -7,6 +7,7 @@ from .additions.ping import bot as ping_bp
 from .additions.settings import bot as limit_bp
 from ..units.utils import bp as util_bp
 from ..units.vk_script import bot as script_bp
+from ..core.error_handler import bot as error_bp
 
 # LongPoll
 from .longpoll.ping import bot as lp_ping
@@ -16,5 +17,5 @@ blueprints = (
     delete_bp, return_bp,
     template_bp, ping_bp,
     lp_ping, script_bp,
-    limit_bp
+    limit_bp, error_bp
 )

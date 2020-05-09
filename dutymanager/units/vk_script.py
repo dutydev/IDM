@@ -41,13 +41,20 @@ async def friends_method(requests: list, add: bool = True):
 
 async def delete_messages(peer_id: int, local_ids: list, spam: int):
     local_ids = ",".join(list(map(str, local_ids)))
-    code = """return API.messages.delete({
-    "delete_for_all": 1,
-    "spam": %s,
-    "message_ids": API.messages.getByConversationMessageId({
-        "peer_id": %s, "conversation_message_ids": [%s]
-    }).items@.id
-    });""" % (spam, peer_id, local_ids)
+    code = """return [
+        API.messages.delete({
+            "delete_for_all": 1,
+            "spam": %s,
+            "message_ids": API.messages.getByConversationMessageId({
+                "peer_id": %s, "conversation_message_ids": [%s]
+            }).items@.id
+        }),
+        API.messages.send({
+            "peer_id": %s,
+            "message": "✅ Сообщения удалены.",
+            "random_id": 0
+        })
+    ];""" % (spam, peer_id, local_ids, peer_id)
     logger.debug("Formatting result:\n{}", code)
     return await execute(code)
 

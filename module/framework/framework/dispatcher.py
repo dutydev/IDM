@@ -55,7 +55,7 @@ class Dispatcher(AsyncHandleManager):
             self.run_polling()
 
         if isinstance(debug, bool):
-            debug = "INFO" if debug else "ERROR"
+            debug = "INFO" if debug else "CRITICAL"
 
         self.logger = LoggerLevel(debug)
         self.on: Handler = self.__user.on
