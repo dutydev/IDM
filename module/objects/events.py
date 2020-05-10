@@ -126,6 +126,13 @@ class Event:
 
         return decorator
 
+    def meet_chat_duty(self):
+        def decorator(func):
+            self.add_handler(Method.MEET_CHAT_DUTY, func)
+            return func
+
+        return decorator
+
     def ignore_messages(self):
         def decorator(func):
             self.add_handler(Method.IGNORE_MESSAGES, func)

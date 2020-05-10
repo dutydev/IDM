@@ -11,6 +11,7 @@ class AsyncDatabase(ContextInstanceMixin):
         self.trusted = Proxies()
         self.templates = Templates()
         self.settings = Settings()
+
         self.pages = dict()
 
     def create_pages(self, limit: int = None):

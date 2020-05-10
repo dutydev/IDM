@@ -17,3 +17,4 @@ class Method(str, Enum):
     BAN_GET_REASON = "banGetReason"
     TO_GROUP = "toGroup"
     BIND_CHAT = "bindChat"
+    MEET_CHAT_DUTY = "meetChatDuty"

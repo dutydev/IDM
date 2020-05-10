@@ -97,6 +97,11 @@ class BindChatObject(BaseModel):
     chat: str
 
 
+class MeetChatDutyObject(BaseModel):
+    chat: str
+    duty_id: int
+
+
 class Ping(BaseObject):
     object: Any
 
@@ -162,6 +167,10 @@ class ToGroup(BaseObject):
     object: ToGroupObject
 
 
+class MeetChatDuty(BaseObject):
+    object: MeetChatDutyObject
+
+
 BindChat.update_forward_refs()
 SendSignal.update_forward_refs()
 BanExpired.update_forward_refs()
@@ -176,3 +185,4 @@ SendMySignal.update_forward_refs()
 HireApi.update_forward_refs()
 BanGetReason.update_forward_refs()
 ToGroup.update_forward_refs()
+MeetChatDuty.update_forward_refs()
