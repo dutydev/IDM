@@ -20,9 +20,14 @@ class Worker(ContextInstanceMixin):
             "deleter": self.deleter
         }
 
-    def run_worker(self, state: str):
-        workers_state[state] = True
-        self.loop.create_task(self.metadata[state]())
+    def manage_worker(self, state: str, start: bool):
+        workers_state[state] = start
+        if start:
+            self.loop.create_task(self.metadata[state]())
+        logger.info(
+            "Worker <{}> has been {}!",
+            state, ("stopped", "started")[start]
+        )
 
     def dispatch(self, loop: AbstractEventLoop):
         self.loop = loop

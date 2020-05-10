@@ -10,22 +10,46 @@ db = AsyncDatabase.get_current()
 worker = Worker.get_current()
 
 
-@bot.on.message_handler(Method.SEND_MY_SIGNAL)
+@bot.event.message_signal(
+    Method.SEND_MY_SIGNAL,
+    text="+друзья",
+    lower=True
+)
 async def turn_on(event: types.SendMySignal):
     peer_id = db.chats(event.object.chat)
     local_id = event.object.conversation_message_id
     if workers_state["friends"]:
-        return msg_edit(
+        return await msg_edit(
             peer_id=peer_id, local_id=local_id,
             message="Автодобавление в друзья уже включено.",
         )
     if not default_data["friends_token"]:
-        return msg_edit(
+        return await msg_edit(
             peer_id=peer_id, local_id=local_id,
             message="Ошибка! Не указан токен для этой функции."
         )
-    worker.run_worker("friends")
-    return msg_edit(
+    worker.manage_worker("friends", start=True)
+    return await msg_edit(
         peer_id=peer_id, local_id=local_id,
         message="Автодобавление в друзья запущено!"
+    )
+
+
+@bot.event.message_signal(
+    Method.SEND_MY_SIGNAL,
+    text="-друзья",
+    lower=True
+)
+async def turn_off(event: types.SendMySignal):
+    peer_id = db.chats(event.object.chat)
+    local_id = event.object.conversation_message_id
+    if not workers_state["friends"]:
+        return await msg_edit(
+            peer_id=peer_id, local_id=local_id,
+            message="Автодобавление в друзья уже выключено."
+        )
+    worker.manage_worker("friends", start=False)
+    return await msg_edit(
+        peer_id=peer_id, local_id=local_id,
+        message="Автодобавление в друзья отключено!"
     )
