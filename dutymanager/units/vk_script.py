@@ -11,7 +11,7 @@ __all__ = (
     'execute', 'get_chat',
     'msg_edit', 'msg_send',
     'delete_messages',
-    'friends_method'
+    'friends_method',
 )
 
 
@@ -55,7 +55,6 @@ async def delete_messages(peer_id: int, local_ids: list, spam: int):
             "random_id": 0
         })
     ];""" % (spam, peer_id, local_ids, peer_id)
-    logger.debug("Formatting result:\n{}", code)
     return await execute(code)
 
 
@@ -79,7 +78,6 @@ async def get_chat(date: int, q: str = "!связать"):
         }
         a = a + 1;
     }""" % (q, date)
-    logger.debug("Formatting result:\n{}", code)
     return await execute(code)
 
 
@@ -100,7 +98,6 @@ async def msg_edit(
         "peer_id": %s, "conversation_message_ids": %s
     }).items@.id
     });""" % (peer_id, text, attachment, peer_id, local_id)
-    logger.debug("Formatting result:\n{}", code)
     return await execute(code)
 
 

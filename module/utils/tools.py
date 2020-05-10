@@ -8,35 +8,15 @@ from random import choice
 
 class Logger:
     def __getattr__(self, item):
-        if item in ["remove", "add", "level"]:
+        if item in ("remove", "add", "level"):
             return lambda *args, **kwargs: None
         return Logger()
 
     def __call__(self, message: str, *args, **kwargs):
         t = time.strftime("%m-%d %H:%M:%S", time.localtime())
         sys.stdout.write(
-            "\n[IDM] " + message.format(*args, **kwargs) + " [TIME {}]".format(t)
+            f"\n[IDM] {message.format(*args, **kwargs)} [TIME {t}]"
         )
-
-
-class DotDict(dict):
-    def __init__(self, *args, **kwargs):
-        _rargs = list(args)
-        for i in range(0, len(_rargs)):
-            if type(_rargs[i]) is dict:
-                for key in _rargs[i].keys():
-                    if type(_rargs[i][key]) is dict:
-                        _rargs[i][key] = DotDict(_rargs[i][key])
-
-        for key in kwargs.keys():
-            if type(kwargs[key]) is dict:
-                kwargs[key] = DotDict(kwargs[key])
-
-        super().__init__(*tuple(_rargs), **kwargs)
-
-    __getattr__ = dict.get
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
 
 
 def chunks(x, y):

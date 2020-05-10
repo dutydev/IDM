@@ -11,10 +11,10 @@ class AsyncDatabase(ContextInstanceMixin):
         self.trusted = Proxies()
         self.templates = Templates()
         self.settings = Settings()
-
         self.pages = dict()
 
-    def create_pages(self, limit: int):
+    def create_pages(self, limit: int = None):
+        limit = limit or self.settings()
         current = 1
         self.pages.clear()
         tags = list(self.templates)
@@ -32,7 +32,7 @@ class AsyncDatabase(ContextInstanceMixin):
 
     async def compose(self):
         await AbstractDict.load()
-        self.create_pages(self.settings())
+        self.create_pages()
 
 
 db = AsyncDatabase()

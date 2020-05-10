@@ -6,8 +6,7 @@ from module import VKError
 from module import Blueprint
 from module.utils import logger
 from traceback import format_exc
-
-import re
+from re import findall
 
 bot = Blueprint(name="Error Handler")
 db = AsyncDatabase.get_current()
@@ -15,7 +14,7 @@ db = AsyncDatabase.get_current()
 
 @bot.error_handler(KeyError)
 async def key_error(e: KeyError, event: dict):
-    if re.findall("[0-9a-zA-Z]{8}", str(e)):
+    if findall("[0-9a-zA-Z]{8}", str(e)):
         logger.error(
             "Чат {} всё еще не был связан.",
             event["object"]["chat"]
