@@ -33,7 +33,10 @@ class AsyncDatabase(ContextInstanceMixin):
 
     async def compose(self):
         await AbstractDict.load()
-        self.create_pages()
+        try:
+            self.create_pages()
+        except KeyError:
+            await self.settings.create()
 
 
 db = AsyncDatabase()

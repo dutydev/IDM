@@ -14,6 +14,7 @@ from ..core.error_handler import bot as error_bp
 from .longpoll.ping import bot as lp_ping
 
 # Workers
+from ..units.dataclasses.workers import bot as worker_bp
 from .additions.workers.friends import bot as friends_bp
 from .additions.workers.online import bot as online_bp
 
@@ -24,5 +25,5 @@ blueprints = (
     lp_ping, script_bp,
     limit_bp, error_bp,
     repeat_bp, friends_bp,
-    online_bp
+    online_bp, worker_bp
 )

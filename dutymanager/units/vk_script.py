@@ -40,7 +40,6 @@ async def friends_method(requests: list, add: bool = True):
 
 
 async def delete_messages(peer_id: int, local_ids: list, spam: int):
-    local_ids = ",".join(list(map(str, local_ids)))
     code = """return [
         API.messages.delete({
             "delete_for_all": 1,

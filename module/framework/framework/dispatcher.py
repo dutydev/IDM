@@ -40,7 +40,7 @@ class Dispatcher(AsyncHandleManager):
         self._patcher = patcher or Patcher()
         Patcher.set_current(self._patcher)
 
-        if polling and len(tokens) < 2:
+        if polling and len(self._tokens) < 2:
             raise RuntimeError(
                 "Для работы LongPoll необходимы, как минимум 2 токена."
             )
