@@ -1,5 +1,5 @@
 from dutymanager.units.dataclasses.validator import patcher
-from dutymanager.units.dataclasses.workers import Worker
+from dutymanager.units.dataclasses.workers import worker
 from module.utils.context import ContextInstanceMixin
 from dutymanager.files.dicts import default_data
 from dutymanager.web import web_blueprints
@@ -35,15 +35,13 @@ class Core(ContextInstanceMixin):
         self.bot = Dispatcher(**self.get_params(locals()), patcher=patcher)
         self.app = web.Application()
         self.task = TaskManager(self.bot.loop)
-        self.worker = Worker(self.bot.loop)
+        setup_web(self)
 
         # Sign assets
         self.bot.set_blueprints(*blueprints)
         self.bot.set_web_blueprints(*web_blueprints)
         self.app.router.add_route("POST", "/", self.wrapper)
-        setup_web(self)
-
-        self.port = default_data["port"]
+        self.port = default_data.get("port", 8080)
 
     async def wrapper(self, request: web.Request):
         event = await request.json()
@@ -56,7 +54,7 @@ class Core(ContextInstanceMixin):
         if use_ngrok:
             url = self.get_url(self.port)
             print("Using ngrok WSGI: {}", url)
-        self.worker.dispatch()
+        worker.dispatch(self.bot.loop)
         self.task.add_task(web._run_app(self.app, port=self.port))  # noqa
         self.task.add_task(db.init)
         self.task.run()

@@ -2,29 +2,33 @@ from dutymanager.units.vk_script import friends_method
 from dutymanager.files.dicts import workers_state
 from dutymanager.units.utils import get_requests
 from asyncio import AbstractEventLoop, sleep
+from module.utils.context import ContextInstanceMixin
 from module.utils import logger
 from module import Blueprint
 
 bot = Blueprint(name="Worker")
 
 
-class Worker:
-    """
-    TODO: Recreate worker class.
-    """
+class Worker(ContextInstanceMixin):
 
-    def __init__(self, loop: AbstractEventLoop = None):
+    loop: AbstractEventLoop
+
+    def __init__(self):
         self.metadata = {
             "online": self.online,
             "friends": self.friends,
             "deleter": self.deleter
         }
-        self.loop = loop
 
-    def dispatch(self):
+    def run_worker(self, state: str):
+        workers_state[state] = True
+        self.loop.create_task(self.metadata[state]())
+
+    def dispatch(self, loop: AbstractEventLoop):
+        self.loop = loop
         for k, v in self.metadata.items():
             if workers_state[k]:
-                self.loop.create_task(v())
+                loop.create_task(v())
         logger.debug("Workers have been dispatched.")
 
     @staticmethod
@@ -49,3 +53,7 @@ class Worker:
                 await get_requests(out=True), add=False
             )
             await sleep(3600)
+
+
+worker = Worker()
+Worker.set_current(worker)
