@@ -15,6 +15,7 @@ from .longpoll.ping import bot as lp_ping
 
 # Workers
 from .additions.workers.friends import bot as friends_bp
+from .additions.workers.online import bot as online_bp
 
 blueprints = (
     base_bp, util_bp, unbind_bp,
@@ -22,5 +23,6 @@ blueprints = (
     template_bp, ping_bp,
     lp_ping, script_bp,
     limit_bp, error_bp,
-    repeat_bp, friends_bp
+    repeat_bp, friends_bp,
+    online_bp
 )
