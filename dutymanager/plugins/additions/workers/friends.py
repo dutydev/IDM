@@ -18,8 +18,8 @@ worker = Worker.get_current()
 async def check_state(event: types.SendMySignal):
     message = "Автодобавление в друзья {}.".format(
         "работает"
-        if workers_state["friends"]
-        else "не работает"
+        if workers_state["friends"] else
+        "не работает"
     )
     return await msg_edit(
         db.chats(event.object.chat),

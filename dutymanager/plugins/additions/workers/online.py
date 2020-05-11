@@ -5,7 +5,7 @@ from dutymanager.db.methods import AsyncDatabase
 from module import Blueprint, Method
 from module import types
 
-bot = Blueprint(name="Friends worker")
+bot = Blueprint(name="Eternal online worker")
 db = AsyncDatabase.get_current()
 worker = Worker.get_current()
 
@@ -18,8 +18,8 @@ worker = Worker.get_current()
 async def check_state(event: types.SendMySignal):
     message = "Вечный онлайн {}.".format(
         "включен"
-        if workers_state["online"]
-        else "отключен"
+        if workers_state["online"] else
+        "отключен"
     )
     return await msg_edit(
         db.chats(event.object.chat),
