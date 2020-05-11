@@ -14,8 +14,13 @@ class Logger:
 
     def __call__(self, message: str, *args, **kwargs):
         t = time.strftime("%m-%d %H:%M:%S", time.localtime())
+        try:
+            # TODO: Придумать что-нибудь по лучше
+            message = message.format(*args, **kwargs)
+        except KeyError:
+            pass
         sys.stdout.write(
-            f"\n[IDM] {message.format(*args, **kwargs)} [TIME {t}]"
+            f"\n[IDM] {message} [TIME {t}]"
         )
 
 
