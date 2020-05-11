@@ -1,7 +1,9 @@
+from dutymanager.units.dataclasses.generator import Generator
 from dutymanager.units.dataclasses.validator import patcher
 from dutymanager.units.dataclasses.workers import worker
 from module.utils.context import ContextInstanceMixin
 from dutymanager.files.dicts import default_data
+from dutymanager.units.tools import get_values
 from dutymanager.web import web_blueprints
 from module import Dispatcher, TaskManager
 from dutymanager.plugins import blueprints
@@ -33,6 +35,7 @@ class Core(ContextInstanceMixin):
     ):
         # Main workers
         self.bot = Dispatcher(**self.get_params(locals()), patcher=patcher)
+        self.bot.api.token_generator = Generator(**get_values(Generator))
         self.app = web.Application()
         self.task = TaskManager(self.bot.loop)
         setup_web(self)

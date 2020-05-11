@@ -20,7 +20,7 @@ async def get_requests(count: int = 1000, out: bool = False) -> list:
     return (await bp.api.request("friends.getRequests", {
         "count": count,
         "out": out,
-        "extended": False if out else True
+        "extended": 0 if out else 1
     }))["items"]
 
 

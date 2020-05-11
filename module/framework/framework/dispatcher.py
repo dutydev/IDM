@@ -46,10 +46,7 @@ class Dispatcher(AsyncHandleManager):
             )
 
         self.__loop = asyncio.get_event_loop()
-        self.__user: User = User(
-            **get_values(User, locals()),
-            expand_models=len(self._tokens) > 1
-        )
+        self.__user: User = User(**get_values(User, locals()))
         if not secret:
             print("Generated new secret word: ", self.secret)
 
