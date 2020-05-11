@@ -1,8 +1,7 @@
 jinja2
 https://github.com/timoniq/vkbottle/archive/master.zip
-uvloop
 aiohttp==3.6.2
-aiosqlite==0.12.0
+aiosqlite==0.13.0
 async-timeout==3.0.1
 attrs==19.3.0
 chardet==3.0.4
@@ -13,11 +12,11 @@ immutables==0.12
 iso8601==0.1.12
 multidict==4.7.5
 pydantic==1.5.1
-PyPika==0.37.1
+PyPika==0.37.6
 PyYAML==5.3.1
-tortoise-orm==0.16.8
+tortoise-orm==0.16.10
 typing-extensions==3.7.4.2
-vbml==0.5.92
+vbml==0.5.93
 watchgod==0.6
 yarl==1.4.2
 aiohttp-jinja2==1.2.0

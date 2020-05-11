@@ -2,8 +2,8 @@ from dutymanager.units.utils import get_by_local, get_name
 from dutymanager.db.methods import AsyncDatabase, Trusted
 from dutymanager.units.vk_script import msg_edit
 from dutymanager.units.utils import get_users
-from module import Blueprint, Method
 from module.objects.types import SendMySignal
+from module import Blueprint, Method
 
 bot = Blueprint(name="Trusted")
 db = AsyncDatabase.get_current()

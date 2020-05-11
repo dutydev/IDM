@@ -11,6 +11,10 @@ from re import findall
 bot = Blueprint(name="Error Handler")
 db = AsyncDatabase.get_current()
 
+MESSAGE = """❗ Произошла ошибка.
+Метод: {method}
+ВК Ответил: {description} ({code})."""
+
 
 @bot.error_handler(KeyError)
 async def key_error(e: KeyError, event: dict):
@@ -46,5 +50,9 @@ async def swear(e: VKError, event: dict):
             event["message"]["conversation_message_id"]
         )
     return await send_msg(
-        db.chats(uid), f"❗ {VK_ERROR.get(e.error_code)}"
+        db.chats(uid), MESSAGE.format(
+            method=event["method"],
+            description=e.error_description,
+            code=e.error_code
+        )
     )

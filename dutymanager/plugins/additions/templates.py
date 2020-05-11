@@ -3,7 +3,6 @@ from dutymanager.db.methods import AsyncDatabase
 from module.objects.types import SendMySignal
 from dutymanager.units.utils import *
 from module import Blueprint, Method
-from module import types
 
 import typing
 
