@@ -8,7 +8,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-dutymanager/files/settings.json
 dutymanager/core/duty.db
 dutymanager/core/duty.db-shm
 dutymanager/core/duty.db-wal
