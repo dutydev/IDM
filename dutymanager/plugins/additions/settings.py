@@ -1,3 +1,4 @@
+
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.vk_script import msg_edit
 from module import Blueprint, Method

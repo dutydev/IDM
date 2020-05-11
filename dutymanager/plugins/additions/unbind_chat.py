@@ -1,7 +1,7 @@
+from module.objects.types import SendMySignal, SendSignal
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.utils import send_msg
 from module import Blueprint, Method
-from module import types
 
 bot = Blueprint()
 db = AsyncDatabase.get_current()
@@ -19,7 +19,7 @@ async def unbind_chat(uid: str):
     Method.SEND_SIGNAL,
     text=["отвязать", "отвязать <uid>"]
 )
-async def send_signal(event: types.SendSignal, uid: str = None):
+async def send_signal(event: SendSignal, uid: str = None):
     uid = uid if uid else event.object.chat
     if event.object.from_id in db.trusted:
         await unbind_chat(uid)
@@ -29,6 +29,6 @@ async def send_signal(event: types.SendSignal, uid: str = None):
     Method.SEND_MY_SIGNAL,
     text=["отвязать", "отвязать <uid>"]
 )
-async def send_my_signal(event: types.SendMySignal, uid: str = None):
+async def send_my_signal(event: SendMySignal, uid: str = None):
     uid = uid if uid else event.object.chat
     await unbind_chat(uid)

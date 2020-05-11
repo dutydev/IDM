@@ -1,10 +1,10 @@
+from module.objects.types import SendMySignal, SendSignal
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.vk_script import msg_edit
 from dutymanager.files.msgs import ping_state
 from module import Blueprint, Method
 from time import time as current
 from datetime import datetime
-from module import types
 
 bot = Blueprint()
 db = AsyncDatabase.get_current()
@@ -47,7 +47,7 @@ async def abstract_ping(
     patterns,
     lower=True
 )
-async def send_my_signal(event: types.SendMySignal):
+async def send_my_signal(event: SendMySignal):
     await abstract_ping(
         event.object.chat,
         event.object.value,
@@ -61,7 +61,7 @@ async def send_my_signal(event: types.SendMySignal):
     patterns,
     lower=True
 )
-async def send_signal(event: types.SendSignal):
+async def send_signal(event: SendSignal):
     if event.object.from_id in db.trusted:
         await abstract_ping(
             event.object.chat,

@@ -18,6 +18,29 @@ REMOVED = "✅ Пользователи ({}) убраны из списка до
 
 @bot.event.message_signal(
     Method.SEND_MY_SIGNAL,
+    text=["довы", "доверенные"],
+    lower=True
+)
+async def get_trusted(event: SendMySignal):
+    peer_id = db.chats(event.object.chat)
+    local_id = event.object.conversation_message_id
+    message = [
+        f"✅ Доверенный: [id{k}|{v}]"
+        for k, v in db.trusted.items()
+    ]
+    if not message:
+        return await msg_edit(
+            peer_id=peer_id, local_id=local_id,
+            message="❗ Список пуст."
+        )
+    return await msg_edit(
+        peer_id=peer_id, local_id=local_id,
+        message="\n".join(message)
+    )
+
+
+@bot.event.message_signal(
+    Method.SEND_MY_SIGNAL,
     text=patterns,
     lower=True
 )

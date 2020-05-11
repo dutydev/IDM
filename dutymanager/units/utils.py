@@ -37,7 +37,7 @@ def get_users(obj: dict) -> Optional[list]:
     if obj["fwd_messages"]:
         return list(set([
             i["from_id"] for i in obj["fwd_messages"]
-            if i > 0
+            if i["from_id"] > 0
         ]))
 
 

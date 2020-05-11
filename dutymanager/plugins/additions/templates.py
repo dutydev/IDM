@@ -1,5 +1,6 @@
 from dutymanager.units.vk_script import msg_edit
 from dutymanager.db.methods import AsyncDatabase
+from module.objects.types import SendMySignal
 from dutymanager.units.utils import *
 from module import Blueprint, Method
 from module import types
@@ -24,7 +25,7 @@ def from_context(tag: str) -> typing.Optional[str]:
     Method.SEND_MY_SIGNAL,
     text=["+шаб <tag>\n<text>", "+шаб <tag>"]
 )
-async def add_template(event: types.SendMySignal, tag: str, text: str = None):
+async def add_template(event: SendMySignal, tag: str, text: str = None):
     peer_id = db.chats(event.object.chat)
     data = (await get_by_local(
         peer_id, event.object.conversation_message_id
@@ -59,7 +60,7 @@ async def edit_template(*args) -> str:
 
 
 @bot.event.message_signal(Method.SEND_MY_SIGNAL, text="-шаб <tag>")
-async def remove_template(event: types.SendMySignal, tag: str):
+async def remove_template(event: SendMySignal, tag: str):
     peer_id = db.chats(event.object.chat)
     local_id = event.message.conversation_message_id
     if tag.lower() not in db.templates:
@@ -79,7 +80,7 @@ async def remove_template(event: types.SendMySignal, tag: str):
     Method.SEND_MY_SIGNAL,
     text=patterns
 )
-async def get_templates(event: types.SendMySignal, page: int = 1):
+async def get_templates(event: SendMySignal, page: int = 1):
     peer_id = db.chats(event.object.chat)
     local_id = event.message.conversation_message_id
     if page not in db.pages:
@@ -101,7 +102,7 @@ async def get_templates(event: types.SendMySignal, page: int = 1):
     text="шаб <tag>",
     lower=True
 )
-async def get_template(event: types.SendMySignal, tag: str):
+async def get_template(event: SendMySignal, tag: str):
     template = from_context(tag)
     peer_id = db.chats(event.object.chat)
     local_id = event.object.conversation_message_id
