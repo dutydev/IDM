@@ -26,5 +26,5 @@ class Template(Model):
 
 
 class Trusted(Model):
-    id = fields.IntField(pk=True)
+    uid = fields.IntField()
     name = fields.TextField()

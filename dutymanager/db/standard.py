@@ -1,6 +1,6 @@
 from .abc import AbstractDict
 from .models import *
-from typing import Union
+from typing import Union, List
 
 __all__ = (
     'Chats', 'Chat',
@@ -72,12 +72,22 @@ class Proxies(AbstractDict):
 
     async def load_values(self):
         async for i in Trusted.all():
-            self[i.id] = i.name
+            self[i.uid] = i.name
+
+    async def create_many(self, data: List[Trusted]) -> int:
+        await Trusted.bulk_create(data)
+        self.update({i.uid: i.name for i in data})
+        return len(data)
 
     async def create(self, *args):
         uid, name = args
-        await Trusted.create(id=uid, name=name)
+        await Trusted.create(uid=uid, name=name)
         self[uid] = name
+
+    async def remove_many(self, ids: list) -> int:
+        await Trusted.filter(uid__in=ids).delete()
+        [self.pop(i) for i in ids]
+        return len(ids)
 
     async def remove(self, uid: int):
         await Trusted.filter(id=uid).delete()
@@ -85,7 +95,7 @@ class Proxies(AbstractDict):
 
     async def change(self, *args):
         uid, name = args
-        await Trusted.filter(id=uid).update(name=name)
+        await Trusted.filter(uid=uid).update(name=name)
         self[uid] = name
 
 
@@ -95,8 +105,12 @@ class Settings(AbstractDict):
         return self[tag]
 
     async def load_values(self):
-        async for i in Setting.all():
-            self["page_limit"] = i.page_limit
+        try:
+            self.update(
+                **(await Setting.all().values())[0]
+            )
+        except IndexError:
+            await self.create()
 
     async def create(self, *args):
         if not await Setting.get_or_none(id=1):

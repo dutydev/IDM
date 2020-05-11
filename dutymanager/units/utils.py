@@ -12,8 +12,33 @@ __all__ = (
     "send_msg", "edit_msg",
     "get_attachments", "get_msg_ids",
     "get_history", "get_by_local",
-    "get_name", "get_requests"
+    "get_name", "get_requests",
+    'get_users'
 )
+
+
+def get_attachments(obj: dict) -> Optional[str]:
+    attachments = []
+    if not obj["attachments"]:
+        return
+    for x in obj["attachments"]:
+        kind = x["type"]
+        if kind != "link":
+            attachments.append(
+                f"{kind}{x[kind]['owner_id']}_{x[kind]['id']}"
+            )
+    return ",".join(attachments)
+
+
+def get_users(obj: dict) -> Optional[list]:
+    if obj.get("reply_message"):
+        return [obj["reply_message"]["from_id"]]
+
+    if obj["fwd_messages"]:
+        return list(set([
+            i["from_id"] for i in obj["fwd_messages"]
+            if i > 0
+        ]))
 
 
 async def get_requests(count: int = 1000, out: bool = False) -> list:
@@ -25,27 +50,14 @@ async def get_requests(count: int = 1000, out: bool = False) -> list:
 
 
 async def get_name(user_ids: Union[int, list]) -> dict:
-    data = dict()
-    if isinstance(user_ids, str):
-        user_ids = [user_ids]
-    for i in await bp.api.users.get(
-        user_ids=",".join(list(map(str, user_ids)))
-    ):
-        data[i.id] = f"{i.first_name} {i.last_name}"
-    return data
-
-
-async def get_attachments(obj: dict) -> Optional[str]:
-    attachments = []
-    if not obj["attachments"]:
-        return
-    for x in obj["attachments"]:
-        kind = x["type"]
-        if kind != "link":
-            attachments.append(
-                f"{kind}{x[kind]['owner_id']}_{x[kind]['id']}"
-            )
-    return ",".join(attachments)
+    if isinstance(user_ids, int):
+        user_ids = [str(user_ids)]
+    return {
+        i.id: f"{i.first_name} {i.last_name}"
+        for i in await bp.api.users.get(
+            user_ids=",".join(list(map(str, user_ids)))
+        )
+    }
 
 
 async def get_by_local(peer_id: int, local_id: int) -> dict:

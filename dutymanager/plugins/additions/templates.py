@@ -29,7 +29,7 @@ async def add_template(event: types.SendMySignal, tag: str, text: str = None):
     data = (await get_by_local(
         peer_id, event.object.conversation_message_id
     ))
-    attachments = await get_attachments(data)
+    attachments = get_attachments(data)
     if tag.lower() in db.templates:
         return await edit_msg(
             peer_id=peer_id, message_id=data["id"],

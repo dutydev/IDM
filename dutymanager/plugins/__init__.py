@@ -1,6 +1,7 @@
 from .base_events.base_events import bot as base_bp
 from .base_events.delete_messages import bot as delete_bp
 from .base_events.return_user import bot as return_bp
+from .additions.trusted import bot as trusted_bp
 from .additions.unbind_chat import bot as unbind_bp
 from .additions.templates import bot as template_bp
 from .additions.ping import bot as ping_bp
@@ -21,10 +22,9 @@ from .additions.workers.out_friends import bot as out_bp
 
 blueprints = (
     base_bp, util_bp, unbind_bp,
-    delete_bp, return_bp,
-    template_bp, ping_bp,
-    lp_ping, script_bp,
-    limit_bp, error_bp,
+    delete_bp, return_bp, ping_bp,
+    template_bp, lp_ping, script_bp,
+    limit_bp, error_bp, trusted_bp,
     repeat_bp, friends_bp, out_bp,
     online_bp, worker_bp
 )
