@@ -49,10 +49,11 @@ async def swear(e: VKError, event: dict):
             f"❗ {VK_ERROR.get(e.error_code)}",
             event["message"]["conversation_message_id"]
         )
-    return await send_msg(
+    await send_msg(
         db.chats(uid), MESSAGE.format(
             method=event["method"],
             description=e.error_description,
             code=e.error_code
         )
     )
+    return {"response": "error", "error_code": e.error_code}
