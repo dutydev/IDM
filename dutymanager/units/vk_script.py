@@ -57,7 +57,7 @@ async def delete_messages(peer_id: int, local_ids: list, spam: int):
     return await execute(code)
 
 
-async def get_chat(date: int, q: str = "!связать"):
+async def get_chat(local_id: int, q: str = "!связать"):
     code = """var a = 0;
     var chat_id;
     var title;
@@ -65,7 +65,7 @@ async def get_chat(date: int, q: str = "!связать"):
         "q": "%s", "count": 5
     }).items;
     while (a < data.length) {
-        if (data[a].date == %s) {
+        if (data[a].conversation_message_id == %s) {
             chat_id = data[a].peer_id - 2000000000;
             title = API.messages.getChat({"chat_id": chat_id}).title;
             API.messages.edit({
@@ -76,7 +76,7 @@ async def get_chat(date: int, q: str = "!связать"):
         return [data[a].peer_id, title];
         }
         a = a + 1;
-    }""" % (q, date)
+    }""" % (q, local_id)
     return await execute(code)
 
 
