@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class Handler:
     method: Methods
     f: typing.Callable
-    
+
     def __init__(self, method: typing.Union[Methods, str], f: typing.Callable):
         self.method = Methods(method)
         self.f = f
@@ -29,7 +29,7 @@ class Handler:
             }
             logger.exception(data)
             return data
-        except Exception as e:            
+        except Exception as e:
             data = {
                 "тип":e.__class__.__name__,
                 "ошибка":f"{e}",
@@ -37,12 +37,12 @@ class Handler:
             }
             logger.exception(data)
             return data
-        except:                       
+        except:
             data = {
                 "тип":"неизвестный",
                 "traceback":traceback.format_exc()
             }
-            logger.exception(data) 
+            logger.exception(data)
             return data
 
 class SignalHandler:
@@ -67,7 +67,7 @@ class SignalHandler:
             }
             logger.exception(data)
             return data
-        except Exception as e:            
+        except Exception as e:
             data = {
                 "тип":e.__class__.__name__,
                 "ошибка":f"{e}",
@@ -75,14 +75,14 @@ class SignalHandler:
             }
             logger.exception(data)
             return data
-        except:                       
+        except:
             data = {
                 "тип":"неизвестный",
                 "traceback":traceback.format_exc()
             }
-            logger.exception(data) 
+            logger.exception(data)
             return data
-    
+
 
 class MySignalHandler:
     commands: typing.List[str]
@@ -106,7 +106,7 @@ class MySignalHandler:
             }
             logger.exception(data)
             return data
-        except Exception as e:            
+        except Exception as e:
             data = {
                 "тип":e.__class__.__name__,
                 "ошибка":f"{e}",
@@ -114,10 +114,10 @@ class MySignalHandler:
             }
             logger.exception(data)
             return data
-        except:                       
+        except:
             data = {
                 "тип":"неизвестный",
                 "traceback":traceback.format_exc()
             }
-            logger.exception(data) 
+            logger.exception(data)
             return data

@@ -5,7 +5,7 @@ from vkapi import VkApi, VkApiResponseException
 @dp.event_handle(dp.Methods.SUBSCRIBE_SIGNALS)
 def subscribe_signals(event: Event) -> str:
     #sticker_id = 19173
-    message = f"""РАБОТАЕТ НАХУЙ 👍
+    message = f"""РАБОТАЕТ 👍
         Идентификатор чатика: {event.chat.iris_id}
         """.replace("    ", "")
 
