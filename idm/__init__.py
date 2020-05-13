@@ -1,4 +1,4 @@
-__version__ = "1.0.3 mod (1.3.2 public)"
+__version__ = "1.0.4 (1.3.2 public)"
 
 import logging
 import os

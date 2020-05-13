@@ -2,8 +2,17 @@ from ...objects import dp, MySignalEvent
 from ...utils import edit_message, new_message
 import time
 
+def anim_reply(reply_msg, vk):
+    if reply_msg:
+        user = vk('users.get', user_ids=reply_msg['from_id'])[0]
+        msg = f"[id{user['id']}|{user['first_name']} {user['last_name']}]"
+    else:
+        msg = ''
+    return msg
+
 @dp.my_signal_event_handle('ф', 'f')
 def fpic(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     picl = ['🌕🌗🌑🌑🌑🌑🌑🌓🌕','🌕🌗🌑🌑🌑🌑🌑🌕🌕','🌕🌗🌑🌓🌕🌕🌕🌕🌕','🌕🌗🌑🌓🌕🌕🌕🌕🌕',
     '🌕🌗🌑🌑🌑🌑🌓🌕🌕','🌕🌗🌑🌑🌑🌑🌕🌕🌕','🌕🌗🌑🌓🌕🌕🌕🌕🌕','🌕🌗🌑🌓🌕🌕🌕🌕🌕','🌕🌗🌑🌓🌕🌕🌕🌕🌕']
     pic0 = picl[0]
@@ -16,9 +25,10 @@ def fpic(event: MySignalEvent) -> str:
     pic7 = picl[7]
     pic8 = picl[8]
 
-    for i in range(9):
+    for i in range(10):
         edit_message(event.api, event.chat.peer_id, event.msg['id'],
-        message=f'{pic0}\n{pic1}\n{pic2}\n{pic3}\n{pic4}\n{pic5}\n{pic6}\n{pic7}\n{pic8}')
+        message=f'''{msg}\n\n{pic0}\n{pic1}\n{pic2}\n{pic3}\n{pic4}
+            {pic5}\n{pic6}\n{pic7}\n{pic8}'''.replace('    ', ''))
         pic0 = pic0[-1:] + pic0[:-1]
         pic1 = pic1[-1:] + pic1[:-1]
         pic2 = pic2[-1:] + pic2[:-1]
@@ -33,19 +43,21 @@ def fpic(event: MySignalEvent) -> str:
 
 @dp.my_signal_event_handle('луна')
 def notthisdezh(event: MySignalEvent) -> str:
-    msg = new_message(event.api, event.chat.peer_id, message='⚠ Не в этом дежурном')
+    msg = anim_reply(event.reply_message, event.api)
+    edit_message(event.api, event.chat.peer_id, event.msg['id'], message='⚠ Не в этом дежурном')
     time.sleep(3)
-    edit_message(event.api, event.chat.peer_id, msg, message='Ладно, хорошо, так уж и быть...')
+    edit_message(event.api, event.chat.peer_id, event.msg['id'], message='Ладно, хорошо, так уж и быть...')
     time.sleep(2)
     pic = '🌑🌒🌓🌔🌕🌖🌗🌘'
     for i in range(9):
-        edit_message(event.api, event.chat.peer_id, msg, message=pic)
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic}')
         pic = pic[-1:] + pic[:-1]
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('ъуъ')
 def jujpic(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     picl = [
 '🌕🌕🌕🌕🌕🌕🌕🌕🌕🌕','🌕🌕🌕🌕🌕🌕🌕🌕🌕🌕','🌘🌑🌕🌕🌘🌑🌒🌕🌕🌕',
 '🌑🌕🌕🌘🌑🌑🌑🌓🌕🌕','🌘🌔🌖🌑👁🌑👁🌓🌗🌒','🌖🌓🌗🌑🌑🌑🌑🌔🌕🌑',
@@ -66,8 +78,8 @@ def jujpic(event: MySignalEvent) -> str:
 
     for i in range(11):
         edit_message(event.api, event.chat.peer_id, event.msg['id'],
-        message=f"""{pic0}\n{pic1}\n{pic2}\n{pic3}\n{pic4}\n{pic5}
-        {pic6}\n{pic7}\n{pic8}\n{pic9}\n{pic10}\n{pic11}""")
+message=f'''{msg}\n\n{pic0}\n{pic1}\n{pic2}\n{pic3}\n{pic4}\n{pic5}\n{pic6}
+            {pic7}\n{pic8}\n{pic9}\n{pic10}\n{pic11}'''.replace('    ', ''))
         pic0 = pic0[-1:] + pic0[:-1]
         pic1 = pic1[-1:] + pic1[:-1]
         pic2 = pic2[-1:] + pic2[:-1]
@@ -83,21 +95,25 @@ def jujpic(event: MySignalEvent) -> str:
         time.sleep(0.8)
     return "ok"
 
-@dp.my_signal_event_handle('луна')
-def notthisdezh(event: MySignalEvent) -> str:
-    msg = new_message(event.api, event.chat.peer_id, message='⚠ Не в этом дежурном')
-    time.sleep(3)
-    edit_message(event.api, event.chat.peer_id, msg, message='Ладно, хорошо, так уж и быть...')
-    time.sleep(2)
-    pic = '🌑🌒🌓🌔🌕🌖🌗🌘'
-    for i in 0, 1, 2, 3, 4, 5, 6, 7, 8:
-        edit_message(event.api, event.chat.peer_id, msg, message=pic)
-        pic = pic[-1:] + pic[:-1]
+@dp.my_signal_event_handle('бан')
+def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
+    pic = [
+"😒    😈",
+"😒⚠    😈",
+"😒 ⚠   😈",
+"😒  ⚠  😈",
+"😒   ⚠ 😈",
+"😏 👿"
+]
+    for i in range(len(pic)):
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('цем')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
         '😚 ❤ ᅠᅠᅠᅠᅠ 😔 ',
         '😚 ᅠ ❤ ᅠᅠᅠᅠ 😔 ',
@@ -109,12 +125,13 @@ def BFanim(event: MySignalEvent) -> str:
         '😊 ☺ '
         ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('поддержка', 'помощь', 'под')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😉     😔 ",
 "😉👍    😔 ",
@@ -125,12 +142,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😉👍😊"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('мол')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😍     😔 ",
 "😍 ❤   😔 ",
@@ -140,12 +158,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😘🤗",
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('дорога', 'дрг')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "🛤\n🛤\n🛤\n🛤\n🛤",
 "🚆\n🛤\n🛤\n🛤\n🛤",
@@ -156,12 +175,13 @@ def BFanim(event: MySignalEvent) -> str:
 "🛤\n🛤\n🛤\n🛤\n🛤"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('бб')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😔      😆",
 "😢      😆",
@@ -171,12 +191,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😂     😵"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('секс')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😶     😶",
 "😍     😍",
@@ -187,12 +208,13 @@ def BFanim(event: MySignalEvent) -> str:
 "🤤     🤤"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('брак')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "🙋   🏃",
 "💁💕  🚶",
@@ -208,12 +230,13 @@ def BFanim(event: MySignalEvent) -> str:
 ]
 
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('удар')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😔     🤣",
 "😤     😂",
@@ -225,12 +248,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😌     😵"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('полиция')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "     🚓",
 "    🚓",
@@ -240,12 +264,13 @@ def BFanim(event: MySignalEvent) -> str:
 "🚓",
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('пнуть')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😑👟     🤔",
 "😑 👟    🤔",
@@ -255,12 +280,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😏     👟🤕"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('свидание')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "💃    🕺",
 " 💃  🕺 ",
@@ -271,12 +297,13 @@ def BFanim(event: MySignalEvent) -> str:
 "   💏🌇"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('вселенная')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "🌑✨✨🌏✨✨✨",
 "✨🌑✨🌍✨✨✨",
@@ -286,12 +313,13 @@ def BFanim(event: MySignalEvent) -> str:
 "✨✨✨🌎✨✨🌕"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('привет')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😄🖐",
 "😄👋",
@@ -301,12 +329,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😄👋"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('пока')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😁🖐 ",
 "😐👋 ",
@@ -317,12 +346,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😔✋"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('письмо')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😊💬         😔",
 "😊  💬       😔",
@@ -332,12 +362,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😊         😃"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('смерть')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "🙁     😎",
 "😤     😎",
@@ -349,12 +380,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😁     😵"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('на')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     if event.args[0] != 'попей':
         return "ok"
     pic = [
@@ -370,12 +402,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😈      😵"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('пожалуйста')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "🤓     🤔",
 "🤓    🚶",
@@ -387,12 +420,13 @@ def BFanim(event: MySignalEvent) -> str:
 "🤝"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('накормить')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "🤔     😒",
 "🤔🍔    😒",
@@ -404,12 +438,13 @@ def BFanim(event: MySignalEvent) -> str:
 ]
 
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('пошел')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     if event.args[0] != 'нахуй':
         return "ok"
     pic = [
@@ -420,12 +455,13 @@ def BFanim(event: MySignalEvent) -> str:
 "🤣     😭"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('бух')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😋    🍾",
 "😄   🍾",
@@ -435,12 +471,13 @@ def BFanim(event: MySignalEvent) -> str:
 "🤮"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('поцеловать')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😺     🙄",
 "😺    🙄",
@@ -451,12 +488,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😽😍"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('выстрел')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😏 😣",
 "😂 🔫😡",
@@ -464,12 +502,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😵💥 🔫😡"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('зарплата', 'зп')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 "😔     🙋‍♂",
 "😔     💁‍♂💵",
@@ -483,12 +522,13 @@ def BFanim(event: MySignalEvent) -> str:
 "😁💵"
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('бомба')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 '😠        😝',
 '😡        😝',
@@ -501,12 +541,13 @@ def BFanim(event: MySignalEvent) -> str:
 '😌     👉💣💀'
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
 
 @dp.my_signal_event_handle('таймер')
 def BFanim(event: MySignalEvent) -> str:
+    msg = anim_reply(event.reply_message, event.api)
     pic = [
 '🔟',
 '9️⃣',
@@ -521,18 +562,9 @@ def BFanim(event: MySignalEvent) -> str:
 '✅ Время вышло ✅',
 ]
     for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f'{msg}\n\n{pic[i]}')
         time.sleep(1)
     return "ok"
-
-@dp.my_signal_event_handle('stfhsdrgsrhgysrhgseghs')
-def BFanim(event: MySignalEvent) -> str:
-
-    for i in range(len(pic)):
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], message=pic[i])
-        time.sleep(1)
-    return "ok"
-
 
 
 

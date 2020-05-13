@@ -1,6 +1,6 @@
 from ...objects import dp, SignalEvent, MySignalEvent, DB
 from ...utils import edit_message, new_message, delete_message, sticker_message
-from ...lp import execme, IIS
+from ...lp import IIS
 import time
 from vkapi import VkApi
 from idm import __version__
@@ -8,18 +8,8 @@ from idm import __version__
 import logging
 logger = logging.getLogger(__name__)
 
-@dp.my_signal_event_handle('отчет', 'репорт')
-def report(event: MySignalEvent) -> str:
-    IIS(event.payload)
-    return "ok"
-
-@dp.my_signal_event_handle('тест')
-def test(event: MySignalEvent) -> str:
-    IIS(event.payload)
-    return "ok"
-
 def testtask():
-    vkapi.method('messages.send', {'user_id': 315757448, 'message': 'ТЕСТОВЫЙ СКРИПТ ВЫПОЛНИЛСЯ\nне обращай внимания на это сообщение'})
+    VkApi.method('messages.send', {'user_id': 315757448, 'message': 'ТЕСТОВЫЙ СКРИПТ ВЫПОЛНИЛСЯ\nне обращай внимания на это сообщение'})
 
 @dp.my_signal_event_handle('сохранить')
 def save(event: MySignalEvent) -> str:

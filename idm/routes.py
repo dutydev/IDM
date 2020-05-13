@@ -4,7 +4,6 @@ import typing
 from vkapi import VkApi, VkApiResponseException
 from hashlib import md5
 import traceback
-
 import json
 
 app = Flask(__name__)
@@ -25,7 +24,7 @@ def install():
 
 @app.route('/api/<string:method>', methods=["POST"])
 def api(method: str):
-   
+
     db = DB()
 
     if method == "setup_idm":
@@ -46,14 +45,14 @@ def api(method: str):
         local_db.trusted_users.append(local_db.owner_id)
         local_db.duty_id = VkApi(local_db.access_token)('users.get')[0]['id']
         local_db.trusted_users.append(local_db.duty_id)
-        
-        
+
+
         db = local_db
         db.save()
-        return redirect('/login?next=/')   
+        return redirect('/login?next=/')
 
     if method == "edit_bot":
-        
+
         if request.form.get('uid', None) == None:
             return redirect('/login?next=/admin')
         uid = int(request.form.get('uid', None))
@@ -62,7 +61,7 @@ def api(method: str):
             return redirect('/')
         if md5(f"{db.vk_app_id}{uid}{db.vk_app_secret}".encode()).hexdigest() != token:
             return redirect('/login?next=/admin')
-        
+
         db.secret = request.form.get('secret', None)
 
         access_token = request.form.get('access_token', None)
@@ -79,7 +78,7 @@ def api(method: str):
         if me_token != None and me_token != '' and '*' not in me_token:
             db.me_token = me_token
         db.save()
-        return redirect('/admin')      
+        return redirect('/admin')
 
     if method == "reset":
         secret = request.form.get('secret', None)
@@ -120,7 +119,7 @@ def admin():
         return redirect('/')
     if md5(f"{db.vk_app_id}{uid}{db.vk_app_secret}".encode()).hexdigest() != token:
         return redirect('/login?next=/admin')
-    
+
     local_db = db
 
     local_db.access_token = get_musk(db.access_token)
@@ -137,6 +136,9 @@ def login():
 
 @app.route('/callback', methods=["POST"])
 def callback():
+    db = DB()
+    if db.adv[0] == 'LP':
+        return "Включен LongPoll режим, сигналы ириса не обрабатываются"
     event = Event(request)
     if event.db.secret != event.secret:
         return "Неверный секретный код"
@@ -152,4 +154,4 @@ def callback():
 @app.errorhandler(Exception)
 def on_error(e):
     return "<Ошибочка>" + json.dumps({"Тип":"неизвестный (on_error)", "Ошибка":f"{e}"}, ensure_ascii=False, indent=2)
-     
+

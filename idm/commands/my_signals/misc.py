@@ -1,7 +1,6 @@
 from ...objects import dp, MySignalEvent, DB
 from ...utils import edit_message, new_message, delete_message, sticker_message
 from datetime import datetime, date
-from ...lp import execme
 import time
 
 db = DB()
@@ -13,7 +12,7 @@ def allo(event: MySignalEvent) -> str:
 
 @dp.my_signal_event_handle('время')
 def timecheck(event: MySignalEvent) -> str:
-    ct= datetime.now().timestamp()
+    ct = datetime.now()
     new_message(event.api, event.chat.peer_id, message = ct)
 
 @dp.my_signal_event_handle('описание')
