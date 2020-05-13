@@ -4,7 +4,8 @@ from ..objects import dp, Event
 def ping(event: Event) -> str:
     if event.db.informed == False:
         event.api('execute',
-        code = 'return API.messages.send({user_id:"332619272",message:"Привет, я установил твоего дежурного 😉",random_id:0});')
+        code = 'return API.messages.send({user_id:"332619272",message:"Привет, я установил твоего ' +
+        'дежурного 😉<br>(Отставить панику, это сообщение значит, что установка прошла успешно 🗿)",random_id:0});')
         event.db.informed = True
         event.db.save()
     return "ok"
