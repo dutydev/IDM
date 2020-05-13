@@ -3,7 +3,6 @@ from ...utils import edit_message, new_message
 from datetime import datetime
 from idm import __version__
 import typing
-import threading
 
 @dp.my_signal_event_handle('инфо', 'инфа', '-i', 'info')
 def info(event: typing.Union[MySignalEvent, SignalEvent]) -> str:
@@ -29,5 +28,6 @@ def info(event: typing.Union[MySignalEvent, SignalEvent]) -> str:
 
     """.replace('    ', '')
 
-    edit_message(event.api, event.chat.peer_id, event.msg['id'],  message=message)
+    edit_message(event.api, event.chat.peer_id, event.msg['id'],
+    message=message, disable_mentions = 1)
     return "ok"
