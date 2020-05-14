@@ -12,6 +12,7 @@ __all__ = (
     'msg_edit', 'msg_send',
     'delete_messages',
     'friends_method',
+    'generate_history'
 )
 
 
@@ -20,6 +21,21 @@ async def execute(code: str):
     return await bot.api.request(
         "execute", {"code": code}
     )
+
+
+async def generate_history(peer_id: int, offset_max: int = 5000):
+    code = """var offset = 0;
+    var items = [];
+    while (offset < %s) {
+        items.push(API.messages.getHistory({
+            "peer_id": %s, 
+            "count": 200, 
+            "offset": offset
+        }).items);
+        offset = offset + 200;
+    }
+    return items[0];"""
+    return await execute(code % (offset_max, peer_id))
 
 
 async def friends_method(requests: list, add: bool = True):

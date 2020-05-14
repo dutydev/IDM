@@ -6,6 +6,7 @@ from module import VKError
 from module import Blueprint
 from module.utils import logger
 from traceback import format_exc
+from asyncio import sleep
 from re import findall
 
 bot = Blueprint(name="Error Handler")
@@ -14,6 +15,11 @@ db = AsyncDatabase.get_current()
 MESSAGE = """❗ Произошла ошибка.
 Метод: {method}
 ВК Ответил: {description} ({code})."""
+
+
+async def rps_handler(e: VKError):
+    await sleep(1)
+    return await e.method_requested(**e.params_requested)
 
 
 @bot.error_handler(KeyError)
@@ -36,6 +42,8 @@ async def swear(e: VKError, event: dict):
     :param e: Класс ошибки (VKError)
     :param event: Пришедший эвент/сигнал
     """
+    if e.error_code == 6:
+        return await rps_handler(e)
     logger.error(format_exc(5))
     if event["method"] in ("ping", "banExpired"):
         return
