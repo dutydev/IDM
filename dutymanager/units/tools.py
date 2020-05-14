@@ -42,9 +42,14 @@ def parse_interval(text: str) -> int:
     :return: unix (total seconds)
     """
     unix = 0
-    tags = re.findall(r'(\d+)[. ](день|дн|час|мин|сек|)', text)
+    tags = re.findall(r'(\d+)?[. ]?(день|дн|час|мин|сек|)', text)
     for k, v in tags:
-        unix += int(k) * intervals[v]
+        if not any([k, v]):
+            continue
+        if k == '' and v != '':
+            unix += intervals[v]
+        else:
+            unix += int(k) * intervals[v]
     return unix
 
 

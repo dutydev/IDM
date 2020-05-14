@@ -7,8 +7,8 @@ from vbml import Patcher
 
 class AsyncHandleManager:
     event: Event
-    patcher: Patcher
     error_handler: ErrorHandler
+    _patcher: Patcher
 
     async def _processor(self, event):
         if event["method"] != "ping":
@@ -26,7 +26,7 @@ class AsyncHandleManager:
             if handler.method.value == event["method"]:
                 for pattern in handler.patterns:
                     text = sub_string(event["message"]["text"])
-                    if self.patcher.check(text, pattern) is not None:
+                    if self._patcher.check(text, pattern) is not None:
                         return await handler(event, **pattern.dict())
 
     async def error_processor(self, error: Exception, event: dict):

@@ -37,8 +37,9 @@ class Dispatcher(AsyncHandleManager):
 
         self._tokens = [tokens] if isinstance(tokens, str) else tokens
         self._debug: bool = debug
-        self._patcher = patcher or Patcher()
-        Patcher.set_current(self._patcher)
+        self._patcher = patcher or Patcher(pattern="^{}$")
+        if not Patcher.get_current():
+            Patcher.set_current(self._patcher)
 
         if polling and len(self._tokens) < 2:
             raise RuntimeError(
@@ -89,7 +90,6 @@ class Dispatcher(AsyncHandleManager):
         :return: "ok" (if possible)
         """
         logger.debug("Event: {event}", event=event)
-
         if event is None:
             return {"response": "error", "error_code": NO_DATA}
 
