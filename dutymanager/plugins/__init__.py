@@ -9,6 +9,7 @@ from .additions.ping import bot as ping_bp
 from .additions.settings import bot as limit_bp
 from .additions.repeat import bot as repeat_bp
 from .additions.delete_messages import bot as delete_bp
+from .additions.add_friends import bot as friend_bp
 from ..units.utils import bp as util_bp
 from ..units.vk_script import bot as script_bp
 from ..core.error_handler import bot as error_bp
@@ -30,5 +31,5 @@ blueprints = (
     limit_bp, error_bp, trusted_bp,
     repeat_bp, friends_bp, out_bp,
     online_bp, worker_bp, meet_bp,
-    block_bp, delete_bp
+    block_bp, delete_bp, friend_bp
 )

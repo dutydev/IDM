@@ -105,7 +105,7 @@ class Dispatcher(AsyncHandleManager):
                 return task
         except Exception as e:
             processing = await self.error_processor(e, event)
-            if processing is False:
+            if not processing:
                 logger.error(traceback.format_exc(limit=5))
                 return traceback.format_exc(limit=5)
 

@@ -46,7 +46,7 @@ async def delete_by_count(event: SendMySignal, num: int):
 
 @bot.event.message_signal(
     Method.SEND_MY_SIGNAL,
-    text="-смс за <unix:unix>"
+    text=["-смс <unix:unix>", "-смс за <unix:unix>"]
 )
 async def delete_by_time(event: SendMySignal, unix: int):
     peer_id = db.chats(event.object.chat)
