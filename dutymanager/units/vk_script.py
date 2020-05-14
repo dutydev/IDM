@@ -73,7 +73,7 @@ async def get_chat(local_id: int, q: str = "!связать"):
                 "message": "✅ Беседа " + "«" + title + "»" + " распознана!",
                 "message_id": data[a].id
             });
-        return [data[a].peer_id, title];
+        return [data[a].peer_id, title.substr(0, 250)];
         }
         a = a + 1;
     }""" % (q, local_id)

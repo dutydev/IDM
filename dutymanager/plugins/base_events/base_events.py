@@ -34,7 +34,7 @@ async def abstract_bind(
 ):
     if uid not in db.chats:
         chat_id, title = await get_chat(local_id, text)
-        return await db.chats.create(uid, chat_id, title[:250])
+        return await db.chats.create(uid, chat_id, title)
     await msg_edit(
         peer_id=db.chats(uid), local_id=local_id,
         message=f"✅ Беседа «{db.chats(uid, 'title')}» распознана!",

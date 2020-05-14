@@ -114,12 +114,16 @@ class Dispatcher(AsyncHandleManager):
 
         return {"response": "ok"}
 
+    def dispatch(self, other: "Blueprint"):
+        self.on.concatenate(other.on)
+        self.__user.middleware.middleware += other.middleware.middleware
+
     def set_blueprints(self, *blueprints: Blueprint):
         for bp in blueprints:
             bp.create(self.api, self.user_id)
             self.event.concatenate(bp.event)
             self.error_handler.update(bp.error_handler.processors)
-            self.on.concatenate(bp.on)
+            self.dispatch(bp)
         logger.debug("Blueprints have been successfully loaded")
 
     def set_web_blueprints(self, *blueprints: WebBlueprint):
