@@ -3,6 +3,7 @@ from dutymanager.units.vk_script import delete_messages
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.utils import *
 from module import Blueprint
+from time import time
 
 bot = Blueprint()
 db = AsyncDatabase.get_current()
@@ -15,7 +16,8 @@ async def delete_from_user(event: DeleteMessagesFromUser):
     peer_id = db.chats(event.object.chat)
     for i in await get_history(peer_id):
         if i["from_id"] in member_ids and "action" not in i:
-            message_ids.append(str(i["id"]))
+            if (time() - i["date"]) < 86400:  # Вложенные if`ы - зло (noqa)
+                message_ids.append(str(i["id"]))
     if not message_ids:
         return await send_msg(peer_id, "❗ Сообщения не найдены.")
 
