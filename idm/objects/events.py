@@ -80,6 +80,8 @@ class Event:
                                 }
                             }
                         )
+                        self.chat = Chat(self.db.chats[self.obj['chat']],
+                                         self.obj['chat'], self.obj['chat'])
                         self.db.save()
                         self.set_msg()
                         break
