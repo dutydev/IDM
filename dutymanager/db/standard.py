@@ -13,7 +13,7 @@ __all__ = (
 class Chats(AbstractDict):
 
     def __call__(self, uid: str, field: str = "id") -> Union[str, int]:
-        return self[uid].get(field, "null")
+        return self[uid][field]
 
     async def load_values(self):
         async for i in Chat.all():

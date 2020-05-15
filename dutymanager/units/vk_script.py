@@ -61,7 +61,7 @@ async def delete_messages(peer_id: int, local_ids: list, spam: int):
             "delete_for_all": 1,
             "spam": %s,
             "message_ids": API.messages.getByConversationMessageId({
-                "peer_id": %s, "conversation_message_ids": [%s]
+                "peer_id": %s, "conversation_message_ids": %s
             }).items@.id
         }),
         API.messages.send({
@@ -89,7 +89,7 @@ async def get_chat(local_id: int, q: str = "!связать"):
                 "message": "✅ Беседа " + "«" + title + "»" + " распознана!",
                 "message_id": data[a].id
             });
-        return [data[a].peer_id, title.substr(0, 250)];
+            return [data[a].peer_id, title.substr(0, 250)];
         }
         a = a + 1;
     }""" % (q, local_id)

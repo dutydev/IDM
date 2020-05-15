@@ -3,23 +3,25 @@ from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.vk_script import msg_edit
 from dutymanager.files.msgs import ping_state
 from module import Blueprint, Method
-from time import time as current
 from datetime import datetime
+from typing import List
+from time import time
 
 bot = Blueprint()
 db = AsyncDatabase.get_current()
 responses = {
-    'пинг': 'понг',
-    'кинг': 'конг',
-    'пиф': 'паф',
-    'пиу': 'пау'
+    'пинг': 'ПОНГ',
+    'кинг': 'КОНГ',
+    'пиф': 'ПАФ',
+    'пиу': 'ПАУ'
 }
 patterns = [
-    "пинг", "пинг %time",
-    "кинг", "кинг %time",
-    "пиу", "пиу %time",
-    "пиф", "пиф %time"
+    "пинг", "пинг %debug",
+    "кинг", "кинг %debug",
+    "пиу", "пиу %debug",
+    "пиф", "пиф %debug"
 ]
+average: List[float] = []
 
 
 async def abstract_ping(
@@ -27,17 +29,18 @@ async def abstract_ping(
     timestamp: int, local_id: int
 ):
     text = text.split()
-    if text[-1] == "%time":
+    current = round(time() - timestamp, 2)
+    average.append(current)
+    if text[-1] == "%debug":
         message = ping_state.format(
-            responses[text[0]].upper(),
-            round(current() - timestamp, 2),
+            responses[text[0]], current,
+            round(sum(average) / len(ping_state), 2),
             datetime.fromtimestamp(timestamp),
-            datetime.fromtimestamp(int(current()))
+            datetime.fromtimestamp(int(time()))
         )
     else:
         message = "{}\nОтвет через: {} сек.".format(
-            responses[text[0]].upper(),
-            round(current() - timestamp, 2)
+            responses[text[0]], current
         )
     await msg_edit(db.chats(uid), message, local_id)
 

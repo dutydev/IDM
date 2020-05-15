@@ -13,14 +13,14 @@ async def wrapper(ans: Message):
     timestamp = ans.date
     if text[-1] == "%time":
         message = ping_state.format(
-            responses[text[0]].upper(),
+            responses[text[0]],
             round(current() - timestamp, 2),
             datetime.fromtimestamp(timestamp),
             datetime.fromtimestamp(int(current()))
         )
     else:
         message = "{}\nОтвет через: {} сек.".format(
-            responses[text[0]].upper(),
+            responses[text[0]],
             round(current() - timestamp, 2)
         )
     await bot.api.messages.edit(

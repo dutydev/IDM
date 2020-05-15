@@ -79,7 +79,7 @@ class Dispatcher(AsyncHandleManager):
             logger.add(
                 "logs/errors.log",
                 level="ERROR",
-                format="{time:YYYY-MM-DD HH:MM:SS} | {level} | {message}",
+                format="{time:YYYY-MM-DD HH:MM:ss} | {level} | {message}",
                 rotation="5 MB"
             )
 

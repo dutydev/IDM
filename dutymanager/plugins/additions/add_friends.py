@@ -37,7 +37,7 @@ async def add_friends(event: SendMySignal):
     if not users:
         return await msg_edit(
             peer_id=peer_id, local_id=local_id,
-            message="❗ Ошибка, перешлите сообщение."
+            message="❗ Ошибка, пользователи не найдены."
         )
     if "-др" in event.object.value:
         return await remove_friends(event, users)
