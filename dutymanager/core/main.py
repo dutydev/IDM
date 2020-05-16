@@ -1,21 +1,19 @@
+from typing import Union
+
+from aiohttp import web
+
+from dutymanager import setup_web
+from dutymanager.db.methods import db
+from dutymanager.files.const import Token
+from dutymanager.files.dicts import default_data
+from dutymanager.plugins import blueprints
 from dutymanager.units.dataclasses.generator import Generator
 from dutymanager.units.dataclasses.validator import patcher
 from dutymanager.units.dataclasses.workers import worker
-from module.utils.context import ContextInstanceMixin
-from dutymanager.files.dicts import default_data
 from dutymanager.units.tools import get_values
 from dutymanager.web import web_blueprints
 from module import Dispatcher, TaskManager
-from dutymanager.plugins import blueprints
-from dutymanager.files.const import Token
-from dutymanager.db.methods import db
-from dutymanager import setup_web
-from pyinstrument import Profiler
-from module.utils import logger
-from typing import Union
-from aiohttp import web
-
-profiler = Profiler()
+from module.utils.context import ContextInstanceMixin
 
 try:
     from pyngrok import ngrok
@@ -51,11 +49,8 @@ class Core(ContextInstanceMixin):
         self.port = default_data.get("port", 8080)
 
     async def wrapper(self, request: web.Request):
-        profiler.start()
         event = await request.json()
         emulation = await self.bot.emulate(event)
-        profiler.stop()
-        logger.debug(profiler.output_text(unicode=True, color=True))
         if isinstance(emulation, str):
             return web.Response(text=emulation)
         return web.json_response(data=emulation)

@@ -1,21 +1,22 @@
 import asyncio
-import typing
-import traceback
 import sys
+import traceback
+import typing
 
-from vkbottle.framework.framework.handler.user import Handler
-from module.framework.framework.blueprint import Blueprint
-from module.framework.processor import AsyncHandleManager
-from module.framework.error_handler import ErrorHandler
-from dutymanager.web.objects import WebBlueprint
-from module.framework.framework.bot import User
-from dutymanager.units.tools import get_values
-from module.utils import LoggerLevel, logger
-from dutymanager.files.const import Token
-from module.utils import generate_string
-from module.objects.events import Event
-from dutymanager.files.errors import *
 from vbml import Patcher
+from vkbottle.framework.framework.handler.user import Handler
+
+from dutymanager.files.const import Token
+from dutymanager.files.errors import *
+from dutymanager.units.tools import get_values
+from dutymanager.web.objects import WebBlueprint
+from module.framework.error_handler import ErrorHandler
+from module.framework.framework.blueprint import Blueprint
+from module.framework.framework.bot import User
+from module.framework.processor import AsyncHandleManager
+from module.objects.events import Event
+from module.utils import LoggerLevel, logger
+from module.utils import generate_string
 
 
 class Dispatcher(AsyncHandleManager):

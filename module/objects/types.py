@@ -47,6 +47,10 @@ class DeleteMessagesFromUserObject(BaseModel):
     is_spam: int
 
 
+class DeleteMessagesByTypeObject(BaseModel):
+    pass
+
+
 class IgnoreMessagesObject(BaseModel):
     chat: str
     local_ids: List[int]
@@ -131,6 +135,10 @@ class DeleteMessages(BaseObject):
 class DeleteMessagesFromUser(BaseObject):
     message: Message
     object: DeleteMessagesFromUserObject
+
+
+class DeleteMessagesByType(BaseObject):
+    pass
 
 
 class IgnoreMessages(BaseObject):
