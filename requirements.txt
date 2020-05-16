@@ -1,4 +1,5 @@
 jinja2
+pyinstrument
 https://github.com/timoniq/vkbottle/archive/master.zip
 aiohttp==3.6.2
 aiosqlite==0.13.0

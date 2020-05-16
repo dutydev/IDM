@@ -2,7 +2,7 @@ from ..framework.handler import Handler, MessageHandler
 from ..objects.methods import Method
 from ..utils import logger
 
-from typing import List, Callable, Union
+from typing import List, Callable, Union, Dict
 from inspect import iscoroutinefunction
 
 Text = Union[str, List[str]]
@@ -10,14 +10,14 @@ Text = Union[str, List[str]]
 
 class Event:
     def __init__(self):
-        self.handler: List[Handler] = list()
         self.message_handler: List[MessageHandler] = list()
+        self.routes: Dict[str, Handler] = dict()
 
     def concatenate(self, handler: "Event"):
         """
         Concatenate handlers from another handler.
         """
-        self.handler += handler.handler
+        self.routes.update(handler.routes)
         self.message_handler += handler.message_handler
         logger.debug(
             "Current handler was concatenated with {handler}",
@@ -28,7 +28,7 @@ class Event:
         if not iscoroutinefunction(func):
             raise TypeError("Handler has to be coroutine function.")
         handler = Handler(func, method)
-        self.handler.append(handler)
+        self.routes[method.value] = handler
 
     def add_message_handler(
         self,

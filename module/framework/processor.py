@@ -10,18 +10,24 @@ class AsyncHandleManager:
     error_handler: ErrorHandler
     _patcher: Patcher
 
-    async def _processor(self, event):
-        if event["method"] != "ping":
+    async def _processor(self, event: dict):
+        method = event["method"]
+        if method != "ping":
             logger.debug(
                 "-> NEW SIGNAL {} FROM CHAT {}",
-                event["method"], event["object"]["chat"]
+                method, event["object"]["chat"]
             )
 
-        if event["method"] not in ("sendSignal", "sendMySignal"):
-            for handler in self.event.handler:
-                if handler.method.value == event["method"]:
-                    return await handler(event)
+        if method in ("sendSignal", "sendMySignal"):
+            return await self.message_processor(event)
 
+        if method in self.event.routes:
+            return await self.event.routes[method](event)
+
+    async def message_processor(self, event: dict):
+        """
+        TODO: Adding Routing to Increase Performance
+        """
         for handler in self.event.message_handler:
             if handler.method.value == event["method"]:
                 for pattern in handler.patterns:

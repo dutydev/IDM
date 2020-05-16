@@ -10,8 +10,12 @@ from dutymanager.plugins import blueprints
 from dutymanager.files.const import Token
 from dutymanager.db.methods import db
 from dutymanager import setup_web
+from pyinstrument import Profiler
+from module.utils import logger
 from typing import Union
 from aiohttp import web
+
+profiler = Profiler()
 
 try:
     from pyngrok import ngrok
@@ -47,8 +51,11 @@ class Core(ContextInstanceMixin):
         self.port = default_data.get("port", 8080)
 
     async def wrapper(self, request: web.Request):
+        profiler.start()
         event = await request.json()
         emulation = await self.bot.emulate(event)
+        profiler.stop()
+        logger.debug(profiler.output_text(unicode=True, color=True))
         if isinstance(emulation, str):
             return web.Response(text=emulation)
         return web.json_response(data=emulation)
