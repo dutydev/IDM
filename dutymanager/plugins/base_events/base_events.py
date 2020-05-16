@@ -1,5 +1,4 @@
 from dutymanager.units.vk_script import get_chat, msg_edit
-from dutymanager.files.errors import CANT_BIND_CHAT
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.vk_script import msg_send
 from tortoise.exceptions import BaseORMException
@@ -62,4 +61,4 @@ async def subscribe_signals(event: types.SubscribeSignals):
         await db.chats.change(uid, is_duty=True)
     except (BaseORMException, Exception) as e:
         logger.error(e)
-        return {"response": "error", "error_code": CANT_BIND_CHAT}
+        return {"response": "error", "error_code": 10}

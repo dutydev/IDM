@@ -1,4 +1,3 @@
-from dutymanager.files.errors import UNBIND_CHAT
 from dutymanager.units.vk_script import msg_edit
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.utils import send_msg
@@ -22,7 +21,7 @@ async def key_error(e: KeyError, event: dict):
             "Чат {} всё еще не был связан.",
             event["object"]["chat"]
         )
-        return {"response": "error", "error_code": UNBIND_CHAT}
+        return {"response": "error", "error_code": 4}
     logger.error(format_exc(5))
 
 

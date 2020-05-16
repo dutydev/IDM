@@ -7,7 +7,6 @@ from vbml import Patcher
 from vkbottle.framework.framework.handler.user import Handler
 
 from dutymanager.files.const import Token
-from dutymanager.files.errors import *
 from dutymanager.units.tools import get_values
 from dutymanager.web.objects import WebBlueprint
 from module.framework.error_handler import ErrorHandler
@@ -93,18 +92,17 @@ class Dispatcher(AsyncHandleManager):
         """
         logger.debug("Event: {event}", event=event)
         if event is None:
-            return {"response": "error", "error_code": NO_DATA}
+            return {"response": "error", "error_code": 1}
 
         if event["method"] not in Method.list():
-            return {"response": "error", "error_code": UNKNOWN_METHOD}
+            return {"response": "error", "error_code": 2}
 
         if not self._check_data(event["user_id"], event["secret"]):
-            return {"response": "error", "error_code": INVALID_DATA}
+            return {"response": "error", "error_code": 3}
 
         try:
             task = (await self._processor(event))
-            if task is not None:
-                return task
+            return task or {"response": "ok"}
         except Exception as e:
             processing = await self.error_processor(e, event)
             if not processing:
@@ -113,20 +111,18 @@ class Dispatcher(AsyncHandleManager):
 
             return processing
 
-        return {"response": "ok"}
-
     def _check_data(self, user_id: int, secret: str) -> bool:
         return (self.secret, self.user_id) == (secret, user_id)
 
     def dispatch(self, other: "Blueprint"):
         self.on.concatenate(other.on)
+        self.error_handler.update(other.error_handler.processors)
         self.__user.middleware.middleware += other.middleware.middleware
 
     def set_blueprints(self, *blueprints: Blueprint):
         for bp in blueprints:
             bp.create(self.api, self.user_id)
             self.event.concatenate(bp.event)
-            self.error_handler.update(bp.error_handler.processors)
             self.dispatch(bp)
         logger.debug("Blueprints have been successfully loaded")
 
@@ -144,8 +140,12 @@ class Dispatcher(AsyncHandleManager):
         return self.__loop
 
     def run_polling(self):
-        loop = self.__loop
-        loop.create_task(self.__user.run())
+        if not self.__user.stopped:
+            raise RuntimeError(
+                "Polling has been already started!"
+            )
+        self.__user.stopped = False
+        self.loop.create_task(self.__user.run())
 
     @property
     def loop(self):
