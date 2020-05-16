@@ -10,9 +10,8 @@ bot = Blueprint(name="VK Script")
 __all__ = (
     'execute', 'get_chat',
     'msg_edit', 'msg_send',
-    'delete_messages',
-    'friends_method',
-    'generate_history'
+    'delete_messages', 'delete_by_local',
+    'friends_method', 'generate_history'
 )
 
 
@@ -23,19 +22,35 @@ async def execute(code: str):
     )
 
 
-async def generate_history(peer_id: int, offset_max: int = 5000):
-    code = """var offset = 0;
+async def generate_history(
+    peer_id: int, start_message_id: int = 0,
+    offset_min: int = 0, offset_max: int = 200
+):
+    start_message_id = (
+        """"start_message_id": API.messages.getByConversationMessageId({
+            "peer_id": %s, "conversation_message_ids": %s
+        }).items@.id""" % (peer_id, start_message_id)
+        if start_message_id else
+        ''
+    )
+    code = """var offset = %s;
     var items = [];
     while (offset < %s) {
         items.push(API.messages.getHistory({
             "peer_id": %s, 
             "count": 200, 
-            "offset": offset
+            "offset": offset,
+            %s
         }).items);
         offset = offset + 200;
     }
     return items[0];"""
-    return await execute(code % (offset_max, peer_id))
+    return await execute(
+        code % (
+            offset_min, offset_max,
+            peer_id, start_message_id
+        )
+    )
 
 
 async def friends_method(requests: list, add: bool = True):
@@ -55,7 +70,22 @@ async def friends_method(requests: list, add: bool = True):
         await execute(code % (requests[i: i + 25], method))
 
 
-async def delete_messages(peer_id: int, local_ids: list, spam: int):
+async def delete_messages(ids: list) -> int:
+    code = """var ids = %s;
+    var a = 0;
+    while (a < ids.length) {
+        API.messages.delete({
+            "message_ids": ids.slice(a, a + 500),
+            "delete_for_all": 1
+        });
+        a = a + 500;
+    }"""
+    for i in range(0, len(ids), 12500):
+        await execute(code % ids[i: i + 12500])
+    return len(ids)
+
+
+async def delete_by_local(peer_id: int, local_ids: list, spam: int):
     code = """return [
         API.messages.delete({
             "delete_for_all": 1,

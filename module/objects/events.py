@@ -91,6 +91,13 @@ class Event:
 
         return decorator
 
+    def delete_messages_by_type(self):
+        def decorator(func):
+            self.add_handler(Method.DELETE_MESSAGES_BY_TYPE, func)
+            return func
+
+        return decorator
+
     def print_bookmark(self):
         def decorator(func):
             self.add_handler(Method.PRINT_BOOKMARK, func)

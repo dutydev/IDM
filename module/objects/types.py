@@ -48,7 +48,11 @@ class DeleteMessagesFromUserObject(BaseModel):
 
 
 class DeleteMessagesByTypeObject(BaseModel):
-    pass
+    chat: str
+    type: str
+    local_id: int
+    offset: int
+    is_spam: int
 
 
 class IgnoreMessagesObject(BaseModel):
@@ -138,7 +142,8 @@ class DeleteMessagesFromUser(BaseObject):
 
 
 class DeleteMessagesByType(BaseObject):
-    pass
+    message: Message
+    object: DeleteMessagesByTypeObject
 
 
 class IgnoreMessages(BaseObject):

@@ -1,4 +1,4 @@
-from dutymanager.units.vk_script import generate_history, msg_edit
+from dutymanager.units.vk_script import *
 from dutymanager.units.tools import display_time
 from dutymanager.units.utils import send_msg
 from dutymanager.db.methods import AsyncDatabase
@@ -8,21 +8,6 @@ from time import time
 
 bot = Blueprint(name="Delete self messages")
 db = AsyncDatabase.get_current()
-
-
-async def delete_messages(ids: list) -> int:
-    code = """var ids = %s;
-    var a = 0;
-    while (a < ids.length) {
-        API.messages.delete({
-            "message_ids": ids.slice(a, a + 500),
-            "delete_for_all": 1
-        });
-        a = a + 500;
-    }"""
-    for i in range(0, len(ids), 12500):
-        await bot.api.execute(code % ids[i: i + 12500])
-    return len(ids)
 
 
 @bot.event.message_signal(

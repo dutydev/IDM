@@ -1,7 +1,6 @@
 import aiohttp
 import traceback
 
-from dutymanager.files.dicts import default_data
 from module.utils import logger
 from vkbottle.user import User as Bot
 
