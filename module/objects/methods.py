@@ -9,7 +9,7 @@ class Method(str, Enum):
     SUBSCRIBE_SIGNALS = "subscribeSignals"
     DELETE_MESSAGES = "deleteMessages"
     DELETE_MESSAGES_FROM_USER = "deleteMessagesFromUser"
-    DELETE_MESSAGES_BY_TYPE = "deleteMessagesByType"
+    DELETE_MESSAGES_BY_TYPE = "messages.deleteByType"
     PRINT_BOOKMARK = "printBookmark"
     FORBIDDEN_LINKS = "forbiddenLinks"
     SEND_SIGNAL = "sendSignal"
