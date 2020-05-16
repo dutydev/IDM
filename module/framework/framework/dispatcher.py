@@ -15,6 +15,7 @@ from module.framework.framework.blueprint import Blueprint
 from module.framework.framework.bot import User
 from module.framework.processor import AsyncHandleManager
 from module.objects.events import Event
+from module.objects.methods import Method
 from module.utils import LoggerLevel, logger
 from module.utils import generate_string
 
@@ -94,10 +95,10 @@ class Dispatcher(AsyncHandleManager):
         if event is None:
             return {"response": "error", "error_code": NO_DATA}
 
-        if event.get("secret") != self.secret:
-            return {"response": "error", "error_code": INVALID_DATA}
+        if event["method"] not in Method.list():
+            return {"response": "error", "error_code": UNKNOWN_METHOD}
 
-        if event.get("user_id") != self.user_id:
+        if not self._check_data(event["user_id"], event["secret"]):
             return {"response": "error", "error_code": INVALID_DATA}
 
         try:
@@ -110,10 +111,12 @@ class Dispatcher(AsyncHandleManager):
                 logger.error(traceback.format_exc(limit=5))
                 return traceback.format_exc(limit=5)
 
-            if processing is not None:
-                return processing
+            return processing
 
         return {"response": "ok"}
+
+    def _check_data(self, user_id: int, secret: str) -> bool:
+        return (self.secret, self.user_id) == (secret, user_id)
 
     def dispatch(self, other: "Blueprint"):
         self.on.concatenate(other.on)

@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Method(str, Enum):
+class Method(Enum):
     PING = "ping"
     IGNORE_MESSAGES = "ignoreMessages"
     BAN_EXPIRED = "banExpired"
@@ -19,3 +19,8 @@ class Method(str, Enum):
     TO_GROUP = "toGroup"
     BIND_CHAT = "bindChat"
     MEET_CHAT_DUTY = "meetChatDuty"
+
+    @staticmethod
+    def list():
+        return [i.value for i in Method]
+
