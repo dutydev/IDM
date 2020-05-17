@@ -1,5 +1,6 @@
 from .base_events.base_events import bot as base_bp
 from .base_events.delete_messages import bot as base_delete
+from .base_events.delete_by_type import bot as type_bp
 from .base_events.return_user import bot as return_bp
 from .base_events.meet_duty import bot as meet_bp
 from .additions.trusted import bot as trusted_bp
@@ -31,5 +32,6 @@ blueprints = (
     limit_bp, error_bp, trusted_bp,
     repeat_bp, friends_bp, out_bp,
     online_bp, worker_bp, meet_bp,
-    block_bp, delete_bp, friend_bp
+    block_bp, delete_bp, friend_bp,
+    type_bp
 )
