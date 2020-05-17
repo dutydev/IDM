@@ -70,18 +70,19 @@ async def friends_method(requests: list, add: bool = True):
         await execute(code % (requests[i: i + 25], method))
 
 
-async def delete_messages(ids: list) -> int:
+async def delete_messages(ids: list, spam: int = 0) -> int:
     code = """var ids = %s;
     var a = 0;
     while (a < ids.length) {
         API.messages.delete({
             "message_ids": ids.slice(a, a + 500),
-            "delete_for_all": 1
+            "delete_for_all": 1,
+            "spam": %s
         });
         a = a + 500;
     }"""
     for i in range(0, len(ids), 12500):
-        await execute(code % ids[i: i + 12500])
+        await execute(code % (ids[i: i + 12500], spam))
     return len(ids)
 
 

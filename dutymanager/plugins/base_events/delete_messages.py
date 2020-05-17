@@ -28,8 +28,8 @@ async def delete_by_type(event: types.DeleteMessagesByType):
     ):
         if (time() - i["date"]) > 86400:
             continue
-        attachments = i["attachments"]
-        if attachments and attachments[0]["type"] == kind:
+        attachments = i["attachments"] or [{"type": "1"}]
+        if any([i["type"] == kind for i in attachments]):
             message_ids.append(i["id"])
 
     if not message_ids:
@@ -39,7 +39,7 @@ async def delete_by_type(event: types.DeleteMessagesByType):
             )
         )
 
-    await delete_messages(message_ids)
+    await delete_messages(message_ids, event.object.is_spam)
     return await send_msg(
         peer_id, f"✅ Сообщения {words.get(kind, '')} удалены."
     )
