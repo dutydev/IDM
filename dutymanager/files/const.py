@@ -4,7 +4,7 @@ Token = Union[str, list]
 
 __version__ = 2.0
 
-__author__ = "Даниил Маркелов & Юрий Юшманов"
+__author__ = "IRIS Team"
 
 CORE_BOT_FOLDER = "dutymanager/core"
 

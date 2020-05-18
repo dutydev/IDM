@@ -1,11 +1,15 @@
+from dutymanager.web import views
 from dutymanager.web.objects import UrlPath
-from dutymanager.web import viewers
 
 urlpatterns = [
-    UrlPath.add_get('', viewers.index, name='index'),
-    UrlPath.add_get('/home', viewers.index),
+    UrlPath.add_get('', views.pages.index, name='index'),
+    UrlPath.add_get('/home', views.pages.index),
+    UrlPath.add_get('/help', views.pages.help, name='help'),
 
-    UrlPath.add_get('/login', viewers.login, name='login'),
-    UrlPath.add_post('/login', viewers.login),
-    UrlPath.add_get('/logout', viewers.logout, name='logout'),
+    UrlPath.add_get('/admin', views.admin.admin, name='admin'),
+    UrlPath.add_post('/admin', views.admin.api),
+
+    UrlPath.add_get('/login', views.pages.login, name='login'),
+    UrlPath.add_post('/login', views.pages.login),
+    UrlPath.add_get('/logout', views.pages.logout, name='logout'),
 ]

@@ -4,7 +4,7 @@
     <div class="py-5">
         <div class="container">
             <div class="row">
-                <div class="col-md-8 offset-md-2 align-middle">
+                <div class="col-md-6 offset-md-3 align-middle">
                     <form action="" method="post" class="form-group">
                         <input type="text" name="csfr_token" value="{{ csfr_token }}" hidden>
                         <div class="card">
@@ -12,10 +12,15 @@
                                 Вход
                             </div>
                             <div class="card-body">
-                                {{ login_form }}
+                                {% for field in login_form %}
+                                    <div class="form-group">
+                                        <label for="{{ field.id }}">{{ field.label }}</label>
+                                        {{ field }}
+                                    </div>
+                                {% endfor %}
                             </div>
                             <div class="card-footer text-center">
-                                 <button class="btn btn-primary" type="submit">Войти</button>
+                                <button class="btn btn-primary" type="submit">Войти</button>
                             </div>
                         </div>
                     </form>

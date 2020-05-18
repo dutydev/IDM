@@ -26,20 +26,22 @@
     }
 </style>
 
-<div class="ml-auto">
-    <div class="dropdown open">
-        <button class="login-btn btn btn-link dropdown-toggle" type="button" id="login-dropdown"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{ user.info.id }}
-        </button>
-        <div class="dropdown-menu" aria-labelledby="login-dropdown">
-            <form id="logoutForm" action="/logout" method="get">
-                <input type="text" name="act" value="logout" hidden>
-                <button class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()" >Выйти</button>
-            </form>
+    <div class="ml-auto">
+        <div class="dropdown open">
+            <button class="login-btn btn btn-link dropdown-toggle" type="button" id="login-dropdown"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ user.info.first_name }} {{ user.info.last_name }}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="login-dropdown">
+                <form id="logoutForm" action="/logout" method="get">
+                    <input type="text" name="act" value="logout" hidden>
+                    <button class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()">
+                        Выйти
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 {% else %}
 
