@@ -1,14 +1,18 @@
-from aiohttp import web
 import typing
+
+from aiohttp import web
+from vkbottle.api import UserApi
 
 
 class WebBlueprint:
 
     def __init__(self):
+        self.api: UserApi = None
         self.user_id: int = None
         self.secret: str = None
 
-    def create(self, user_id: int, secret: str):
+    def create(self, api: UserApi, user_id: int, secret: str):
+        self.api = api
         self.user_id = user_id
         self.secret = secret
 

@@ -1,6 +1,10 @@
-from dutymanager.files.config import TEMPLATES_PATH
+import wtforms
 from jinja2 import Environment, FileSystemLoader
+from wtforms import validators
+
+from dutymanager.files.config import TEMPLATES_PATH
 from dutymanager.web.objects import WebBlueprint
+from dutymanager.web.utils import get_user
 
 environment = Environment(
     loader=FileSystemLoader(TEMPLATES_PATH)
@@ -9,48 +13,37 @@ environment = Environment(
 bot = WebBlueprint()
 
 
-class LoginForm:
-    """
-    TODO: Refactoring
-    """
-    template_name = 'forms/login.html'
+class LoginForm(wtforms.Form):
+    user: dict
 
-    login: str
-    password: str
-    errors: dict
-
-    def __init__(self, post: 'MultiDictProxy[Union[str, bytes, FileField]]' = None):
-        self.login = post.get('login', None) if post else None
-        self.password = post.get('password', None) if post else None
-        self.errors = {
-            "form": [],
-            "login": [],
-            "password": []
+    login = wtforms.StringField(
+        'Логин',
+        validators=[validators.input_required()],
+        render_kw={
+            'class': 'form-control'
         }
+    )
 
-    def __html__(self):
-        template = environment.get_or_select_template(self.template_name)
-        return template.render(
-            **{
-                "login": self.login or "",
-                "password": "",
-                "form_errors": self.errors
-            }
-        )
+    password = wtforms.PasswordField(
+        'Пароль',
+        validators=[validators.input_required()],
+        render_kw={
+            'class': 'form-control'
+        }
+    )
 
-    def validate(self):
-        is_valid = True
+    async def validate(self, extra_validators=None):
+        self.user = await get_user(self.data['login'])
+        if self.user['id'] != bot.user_id or self.data['password'] != bot.secret:
+            self.errors.setdefault(
+                '__all__',
+                []
+            ).append({
+                'message': 'Не верный логин/пароль',
+            })
+            return False
 
-        if not self.login:
-            self.errors['login'].append("Пустой логин")
-            is_valid = False
+        return super().validate(extra_validators)
 
-        if not self.password:
-            self.errors['password'].append("Пустой пароль")
-            is_valid = False
-
-        if self.login != str(bot.user_id) or self.password != bot.secret:
-            self.errors['form'].append('Не верный логин/пароль')
-            is_valid = False
-
-        return is_valid
+    def set_user(self, obj: dict):
+        obj.update(**self.user)

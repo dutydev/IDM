@@ -128,7 +128,7 @@ class Dispatcher(AsyncHandleManager):
 
     def set_web_blueprints(self, *blueprints: WebBlueprint):
         for blueprint in blueprints:
-            blueprint.create(self.user_id, self.secret)
+            blueprint.create(self.api, self.user_id, self.secret)
         logger.debug("Web-Blueprints have been successfully loaded")
 
     def loop_update(self, loop: asyncio.AbstractEventLoop = None):
