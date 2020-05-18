@@ -177,6 +177,7 @@ class BanGetReason(BaseObject):
 
 
 class ToGroup(BaseObject):
+    message: Message
     object: ToGroupObject
 
 

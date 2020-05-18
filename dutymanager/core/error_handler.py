@@ -39,7 +39,7 @@ async def swear(e: VKError, event: dict):
         return
     uid = event["object"]["chat"]
     if uid not in db.chats:
-        return {"response": "error", "error_code": UNBIND_CHAT}
+        return {"response": "error", "error_code": 4}
 
     message = MESSAGE.format(
         method=event["method"],

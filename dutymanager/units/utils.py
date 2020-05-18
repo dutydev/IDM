@@ -23,10 +23,16 @@ def get_attachments(obj: dict) -> Optional[str]:
         return
     for x in obj["attachments"]:
         kind = x["type"]
-        if kind != "link":
-            attachments.append(
-                f"{kind}{x[kind]['owner_id']}_{x[kind]['id']}"
-            )
+        if kind == "link":
+            continue
+        if "access_key" in x[kind]:
+            string = "{}{}_{}_{}"
+        else:
+            string = "{}{}_{}"
+        attachments.append(string.format(
+            kind, x[kind]["owner_id"],
+            x[kind]["id"], x[kind].get("access_key")
+        ))
     return ",".join(attachments)
 
 
@@ -49,14 +55,17 @@ async def get_requests(count: int = 1000, out: bool = False) -> list:
     }))["items"]
 
 
-async def get_name(user_ids: Union[int, list]) -> dict:
+async def get_name(user_ids: Union[int, list]) -> Union[dict, str]:
     if isinstance(user_ids, int):
-        user_ids = [str(user_ids)]
+        user_ids = [user_ids]
+
+    users = await bp.api.users.get(user_ids=user_ids)
+    if len(user_ids) == 1:
+        return f"{users[0].first_name} {users[0].last_name}"
+
     return {
         i.id: f"{i.first_name} {i.last_name}"
-        for i in await bp.api.users.get(
-            user_ids=",".join(list(map(str, user_ids)))
-        )
+        for i in users
     }
 
 
