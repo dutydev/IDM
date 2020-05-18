@@ -13,7 +13,6 @@ class ApiMethod(Enum):
     ADD_TOKEN = 'addToken'
     SET_TOKEN = 'setToken'
     DELETE_TOKEN = 'deleteToken'
-
     SET_SECRET_CODE = 'setSecretCode'
 
 
