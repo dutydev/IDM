@@ -21,7 +21,7 @@ async def wrapper(event: ToGroup):
         from_id = data["reply_message"]["from_id"]
 
     if not any([message, attachments]):
-        return send_msg(peer_id, "❗ Запись не может быть пустой.")
+        return await send_msg(peer_id, "❗ Запись не может быть пустой.")
 
     if "автор" in event.message.text:
         message.append("\n\n🗣 Автор: [id{}|{}]".format(
@@ -36,13 +36,3 @@ async def wrapper(event: ToGroup):
         guid=0
     )
     return await send_msg(peer_id, "✅ Запись опубликована!")
-
-
-
-
-
-
-
-
-
-
