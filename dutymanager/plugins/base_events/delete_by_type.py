@@ -1,4 +1,6 @@
-from dutymanager.units.vk_script import *
+from dutymanager.units.vk_script import (
+    generate_history, delete_messages
+)
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.utils import send_msg
 from module import Blueprint
@@ -11,14 +13,18 @@ clipboard = dict(
     wall="wall", photo="photo",
     stickers="sticker", gif="gif",
     voice="audio_message",
-    forwarded="forwarded"
+    video="video", audio="audio",
+    forwarded="forwarded",
+    article="article"
 )
 words = dict(
     wall="с репостами",
     photo="с изображениями",
     sticker="со стикерами",
     audio_message="с голосовыми",
-    gif="с гифками"
+    gif="с гифками",
+    video="с видеороликами",
+    audio="с аудиозаписями"
 )
 
 
