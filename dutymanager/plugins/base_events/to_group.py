@@ -1,4 +1,10 @@
-from dutymanager.units.utils import *
+from dutymanager.units.utils import (
+    get_users,
+    get_name,
+    get_attachments,
+    get_by_local,
+    send_msg
+)
 from dutymanager.db.methods import AsyncDatabase
 from module import Blueprint
 from module.objects.types import ToGroup

@@ -57,7 +57,7 @@ async def get_requests(count: int = 1000, out: bool = False) -> list:
 
 async def get_name(user_ids: Union[int, list]) -> Union[dict, str]:
     users = await bp.api.users.get(user_ids=user_ids)
-    if len(user_ids) == 1:
+    if isinstance(user_ids, int):
         return f"{users[0].first_name} {users[0].last_name}"
 
     return {

@@ -1,4 +1,8 @@
-from dutymanager.units.vk_script import *
+from dutymanager.units.vk_script import (
+    generate_history,
+    delete_messages,
+    msg_edit
+)
 from dutymanager.units.tools import display_time
 from dutymanager.units.utils import send_msg
 from dutymanager.db.methods import AsyncDatabase

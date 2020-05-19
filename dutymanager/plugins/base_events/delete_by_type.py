@@ -1,4 +1,6 @@
-from dutymanager.units.vk_script import *
+from dutymanager.units.vk_script import (
+    generate_history, delete_messages
+)
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.utils import send_msg
 from module import Blueprint

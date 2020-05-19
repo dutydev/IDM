@@ -1,7 +1,11 @@
 from dutymanager.units.vk_script import msg_edit
 from dutymanager.db.methods import AsyncDatabase
 from module.objects.types import SendMySignal
-from dutymanager.units.utils import *
+from dutymanager.units.utils import (
+    get_by_local,
+    get_attachments,
+    edit_msg
+)
 from module import Blueprint, Method
 
 import typing
