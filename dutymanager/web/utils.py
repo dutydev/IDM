@@ -36,7 +36,7 @@ async def get_user(login: str) -> Union[dict, None]:
 
 def write_values(data: dict = None):
     if data is None:
-        data = default_data
+        data = default_data.copy()
     with open(SETTINGS_PATH, mode="w") as file:
         file.write(json.dumps(data, indent=2))
         logger.info("Recreated datafile \"settings.json\".")

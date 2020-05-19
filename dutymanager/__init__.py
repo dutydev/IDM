@@ -20,8 +20,7 @@ def setup_web(self):
         ]
     )
 
-    middlewares.setup_errors(self.app)
-    middlewares.setup_auth(self.app)
+    middlewares.setup_all(self.app)
 
     self.app.router.add_static(
         STATIC_URL, STATIC_PATH,

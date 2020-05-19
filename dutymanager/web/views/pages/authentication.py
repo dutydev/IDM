@@ -14,7 +14,6 @@ __all__ = (
 
 async def login(request: web.Request) -> web.Response:
     assert isinstance(request, web.Request)
-    logger.info(f'{request.method} -> {request.path}')
     if request.method == 'POST':
         post_data = await request.post()
         login_form = LoginForm(post_data)

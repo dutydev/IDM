@@ -1,0 +1,18 @@
+<div class="py-3">
+   <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <p><img src="/static/img/loading.gif" width="25" height="25"> В ожидании чуда... <small class="text-muted">(Раздел в разработке)</small></p>
+            </div>
+        </div>
+       {% for iid in db.chats.keys() %}
+            <div id="chat-container-{{ iid }}" class="row __chat">
+                <div class="col-md-2">{{ iid }}</div>
+                <div class="col-md-6">{{ db.chats[iid].title }}</div>
+                <div class="col-md-2"><a href="#">Удалить</a></div>
+                <div class="col-md-2"><a href="#">Обновить</a></div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+

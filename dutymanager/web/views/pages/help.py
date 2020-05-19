@@ -10,7 +10,6 @@ __all__ = (
 
 async def help(request: web.Request) -> web.Response:
     assert isinstance(request, web.Request)
-    logger.info(f'{request.method} -> {request.path}')
     return render_template(
         'dutymanager/help.html',
         request,

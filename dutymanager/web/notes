@@ -1,0 +1,59 @@
+
+
+admin api
+ ->
+{
+  "method": "name",
+  "object": {...}
+}
+
+<-
+{
+  "response": "ok"
+}
+
+<!-
+{
+  "response": "error",
+  "error_message": "...",
+  "request_params": {...}
+}
+
+
+
+deleteToken object ->
+{
+  "type": "main|online|friends|me",
+  "token": "..."
+}
+
+deleteToken response <-
+{
+  "response": "ok",
+  "method": "deleteToken",
+  "object": {
+    "type": "main|online|friends|me",
+    "token": "..."
+  }
+}
+
+
+
+
+editToken object ->
+{
+  "type": "main|online|friends|me",
+  "token": "..."
+}
+
+editToken response <-
+{
+  "response": "ok",
+  "method": "deleteToken",
+  "object": {
+    "type": "main|online|friends|me",
+    "token": "..."
+  }
+}
+
+

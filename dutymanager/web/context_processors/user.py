@@ -10,6 +10,7 @@ __all__ = (
 
 
 async def user_ctx(request: web.Request) -> Dict[str, Any]:
+    await auth.update(request)
     return {
         'user': {
             'is_anonymous': auth.is_anonymous(request),

@@ -1,0 +1,97 @@
+<script>
+    function successDeleteTokenRequest(data) {
+        console.log(data);
+    }
+
+    function sendDeleteTokenRequest(e, token) {
+        $.ajax({
+            url: document.location.href,
+            data: {
+                method: 'deleteToken',
+                object: {
+                    type: $(e).attr('data-token-type'),
+                    token: token
+                }
+            },
+            success: successDeleteTokenRequest
+        });
+        return false;
+    }
+
+    function successEditTokenRequest(data) {
+        console.log(data);
+    }
+
+    function sendEditTokenRequest(e, token) {
+        $.ajax({
+            url: document.location.href,
+            data: {
+                method: 'deleteToken',
+                object: {
+                    type: $(e).attr('data-token-type'),
+                    token: token
+                }
+            },
+            success: successEditTokenRequest
+        });
+        return false;
+    }
+</script>
+
+
+<div class="py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <p>access_tokens — Токен или токены, которые являются базовыми и используются для получения нужных данных при обработке сигнала. Если вы запускаете User LP, то желательно указать 2+ токена, чтобы обойти лимит в 3 запроса/сек.</p>
+                <p>me_token — Токен для отправки сообщения с параметром expire_ttl (сообщение с бомбой) и сообщения со скриншотом.</p>
+                <p>online_token — Токен для поддержки вечного онлайна.</p>
+                <p>friends_token — Токен для работы двух воркеров автоотписка и автоприем заявок в друзья. Нужен для того, чтобы сократить количество запросов у access_tokens</p>
+                <p><img src="/static/img/loading.gif" width="25" height="25"> В ожидании чуда... <small class="text-muted">(Раздел в разработке)</small></p>
+
+            </div>
+            <div class="container">
+                <div class="row">
+                    {% for token in settings.tokens %}
+                        {% if settings.tokens|length == 1 %}
+                            <div id="token_{{ token }}" class="col-md-12">
+                                <div class="form-group container-fluid row">
+                                    <div class="col-2 offset-8 text-right align-text-bottom">
+                                        <a href="#" data-token-type="main"
+                                           onclick="return editToken(this, '{{ token }}')">Заменить</a>
+                                    </div>
+                                    <div class="col-2 text-right align-text-bottom">
+                                        <a href="#" data-token-type="main"
+                                           onclick="return deleteToken(this, '{{ token }}')">Удалить</a>
+                                    </div>
+                                    <div class="col-12">
+                                        <input type="text" class="form-control col-12" data-token-type="main"
+                                               value="{{ token }}">
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div id="token_{{ token }}" class="col-md-12">
+                                <div class="form-group container-fluid row">
+                                    <div class="col-2 offset-10 text-right align-text-bottom">
+                                        <a href="#" data-token-type="main"
+                                           onclick="return editToken(this, '{{ token }}')">Заменить</a>
+                                    </div>
+                                    <div class="col-12">
+                                        <input type="text" class="form-control col-12" data-token-type="main"
+                                               value="{{ token }}">
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <button class="btn btn-primary">Добавить токен</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

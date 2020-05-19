@@ -1,17 +1,81 @@
 {% extends 'layout.html' %}
 {% block content %}
 
+
     <div class="py-5">
         <div class="container">
             <div class="row">
-                <div class="col-md-12"><h3>Токены</h3></div>
-                <div class="col-md-12">
+                <div class="col-md-12 text-center"><h3>Панель управления</h3></div>
 
+                <div class="col-md-12">
+                    <ul id="admin-tabs" class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#tokens">Токены</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#settings">Настройки</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#chats">Чаты</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#templates">Шаблоны</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#dynamic-templates">Динамические шаблоны</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link danger text-danger" data-toggle="tab" href="#danger-zone">Опасная
+                                зона</a>
+                        </li>
+                    </ul>
+
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="tokens">
+                            {% include 'particals/admin/tokens.html' %}
+                        </div>
+
+                        <div class="tab-pane fade" id="settings">
+                            {% include 'particals/admin/settings.html' %}
+                        </div>
+
+
+                        <div class="tab-pane fade" id="chats">
+                            {% include 'particals/admin/chats.html' %}
+                        </div>
+
+
+                        <div class="tab-pane fade" id="templates">
+                            {% include 'particals/admin/templates.html' %}
+                        </div>
+
+                        <div class="tab-pane fade" id="dynamic-templates">
+                            {% include 'particals/admin/dynamic_templates.html' %}
+                        </div>
+
+                        <div class="tab-pane fade" id="danger-zone">
+                            {% include 'particals/admin/danger.html' %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-
+<script>
+    $(function() {
+        $('a[href="#danger-zone"]').on('shown.bs.tab', function (e) {
+            console.log('click')
+            $('#admin-tabs').addClass('border-danger border-bottom');
+            $('#admin-tabs a[href="#danger-zone"]').parent().addClass('border border-danger border-bottom-0 rounded-top')
+        });
+        $('a[href="#danger-zone"]').on('hide.bs.tab', function (e) {
+            console.log('click')
+            $('#admin-tabs').removeClass('border-danger border-bottom');
+            $('#admin-tabs a[href="#danger-zone"]').parent().removeClass('border border-danger border-bottom-0 rounded-top')
+        });
+    });
+</script>
 
 {% endblock %}

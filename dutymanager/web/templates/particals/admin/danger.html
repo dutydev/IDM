@@ -1,0 +1,195 @@
+<script>
+    function successZeroingRequest(data) {
+        console.log(data);
+
+        if (data.response === "ok") {
+            $('#zeroingServerModal').modal('hide');
+            $('#zeroingServerModalSuccess').modal('show');
+            setTimeout(function () {
+                document.location = '/';
+            }, 10000);
+        } else {
+
+        }
+    }
+
+
+    function sendZeroingRequest() {
+
+        $.ajax({
+            url: document.location.href,
+            type: 'POST',
+            success: successZeroingRequest,
+            data: {
+                method: "doZeroing"
+            }
+        });
+        return false;
+    }
+</script>
+
+<div class="modal fade" id="zeroingServerModalSuccess" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-1"><img src="/static/img/loading.gif" alt="" width="25" height="25"></div>
+                        <div class="col-md-11"><p>Удаление данных завершено, перезапуск сервера...</p></div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="zeroingServerModal" tabindex="-1" role="dialog" aria-labelledby="zeroingServerModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="zeroingServerModalLabel">Вы уверены?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="zeroingServerModalBody">
+                <p>Это действие нельзя отменить.</p>
+                <p>Обнуление приведет к полному уничтожению всех чатов/шаблонов/настроек на этом сервере.</p>
+            </div>
+            <div class="modal-footer" id="zeroingServerModalFooter">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-danger" onclick="sendZeroingRequest()">Обнулить сервер</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function successZeroingChatsRequest(data) {
+        console.log(data);
+
+        if (data.response === "ok") {
+            $('#zeroingChatsModal').modal('hide');
+            $('#zeroingChatsModalSuccess').modal('show');
+
+            $('.__chat').each(function (index, chat) {
+                $(chat).remove();
+            });
+
+            setTimeout(function () {
+                $('#zeroingChatsModalSuccess').modal('hide');
+            }, 3000);
+        } else {
+
+        }
+    }
+
+
+    function sendZeroingChatsRequest() {
+
+        $.ajax({
+            url: document.location.href,
+            type: 'POST',
+            success: successZeroingChatsRequest,
+            data: {
+                method: "doZeroingChats"
+            }
+        });
+        return false;
+    }
+</script>
+
+<div class="modal fade" id="zeroingChatsModalSuccess" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-1"><img src="/static/img/loading.gif" alt="" width="25" height="25"></div>
+                        <div class="col-md-11"><p>Удаление данных завершено, закрытие окна через 3 секунды.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="zeroingChatsModal" tabindex="-1" role="dialog" aria-labelledby="zeroingChatsModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="zeroingChatsModalLabel">Вы уверены?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="zeroingChatsModalBody">
+                <p>Это действие нельзя отменить.</p>
+                <p>Будут удалены все чаты.</p>
+            </div>
+            <div class="modal-footer" id="zeroingChatsModalFooter">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-danger" onclick="sendZeroingChatsRequest()">Обнулить чаты</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">.
+                <p><img src="/static/img/loading.gif" width="25" height="25"> В ожидании чуда... <small
+                        class="text-muted">(Раздел в разработке)</small></p>
+                <div class="card border-danger">
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <button class="btn btn-danger" data-toggle="modal"
+                                            data-target="#zeroingServerModal">Обнулить сервер
+                                    </button>
+                                </div>
+                                <div class="col-md-8">
+                                    <p>Удаление всех данных с сервера и его перезапуск.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="py-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="card border-danger">
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <button class="btn btn-danger" data-toggle="modal" data-target="#zeroingChatsModal">
+                                        Обнулить чаты
+                                    </button>
+                                </div>
+                                <div class="col-md-8">
+                                    <p>Удаление всех чатов.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
