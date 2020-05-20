@@ -6,7 +6,7 @@ from aiohttp import web
 from dutymanager.web.utils import write_values
 from dutymanager.db.methods import AsyncDatabase
 
-db = AsyncDatabase()
+db = AsyncDatabase().get_current()
 
 clean_data = {
     "tokens": None,
