@@ -1,13 +1,17 @@
 from .abc import AbstractDict
 from .models import *
 from typing import Union, List
+from module.objects.enums import TokenType
 
 __all__ = (
     'Chats', 'Chat',
     'Proxies', 'Trusted',
     'Templates', 'Template',
-    'Setting', 'Settings'
+    'Setting', 'Settings',
+    'Token', 'Tokens'
 )
+
+Type = Union[TokenType, str]
 
 
 class Chats(AbstractDict):
@@ -120,3 +124,27 @@ class Settings(AbstractDict):
     async def change(self, **kwargs):
         await Setting.filter(id=1).update(**kwargs)
         self.update(**kwargs)
+
+
+class Tokens(AbstractDict):
+
+    def __call__(self, token_type: Type):
+        if isinstance(token_type, TokenType):
+            token_type = token_type.value
+
+        return self[token_type]
+
+    async def load_values(self):
+        self.update(**(await Token.all().values())[0])
+
+    async def create(self, token: str, token_type: Type):
+        if isinstance(token_type, str):
+            token_type = TokenType(token_type)
+        if not await Token.get_or_none(type=token_type):
+            await Token.create(token=token, type=token_type)
+            self[token_type.value] = token
+
+    async def change(self, kind: TokenType, token: str):
+        await Token.filter(type=kind).update(token=token)
+        self[kind.value] = token
+

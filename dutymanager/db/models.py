@@ -4,7 +4,8 @@ from module.objects.enums import TokenType
 
 __all__ = (
     "Chat", "Setting",
-    "Template", "Trusted"
+    "Template", "Trusted",
+    "Token"
 )
 
 

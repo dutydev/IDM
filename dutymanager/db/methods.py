@@ -10,8 +10,9 @@ class AsyncDatabase(ContextInstanceMixin):
         self.chats = Chats()
         self.trusted = Proxies()
         self.templates = Templates()
-        self.settings = Settings()
 
+        self.settings = Settings()
+        self.tokens = Tokens()
         self.pages = dict()
 
     def create_pages(self, limit: int = None):
