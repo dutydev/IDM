@@ -1,5 +1,5 @@
 from ..framework.handler import Handler, MessageHandler
-from ..objects.methods import Method
+from ..objects.enums import Method
 from ..utils import logger
 
 from typing import List, Callable, Union, Dict

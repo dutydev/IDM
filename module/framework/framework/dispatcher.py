@@ -14,7 +14,7 @@ from module.framework.framework.blueprint import Blueprint
 from module.framework.framework.bot import User
 from module.framework.processor import AsyncHandleManager
 from module.objects.events import Event
-from module.objects.methods import Method
+from module.objects.enums import Method
 from module.utils import LoggerLevel, logger
 from module.utils import generate_string
 
@@ -84,7 +84,6 @@ class Dispatcher(AsyncHandleManager):
                 rotation="5 MB"
             )
 
-    @logger.catch(level="ERROR")
     async def emulate(self, event: dict) -> typing.Union[dict, str]:
         """ Process all signals
         from IRIS CM.

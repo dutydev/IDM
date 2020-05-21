@@ -1,4 +1,4 @@
-from ..objects.methods import Method
+from ..objects.enums import Method
 from ..objects.types import BaseObject
 
 from typing import Callable, List, Union

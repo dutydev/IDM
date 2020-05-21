@@ -24,3 +24,11 @@ class Method(Enum):
     def list():
         return [i.value for i in Method]
 
+
+class TokenType(Enum):
+    ACCESS_TOKEN = "access_token"
+    FRIENDS_TOKEN = "friends_token"
+    ONLINE_TOKEN = "online_token"
+    ME_TOKEN = "me_token"
+
+

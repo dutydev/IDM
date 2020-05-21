@@ -4,7 +4,6 @@ from dutymanager.units.vk_script import msg_edit
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.units.utils import send_msg
 from module import Blueprint, VKError
-from traceback import format_exc
 from module.utils import logger
 from typing import Optional
 
