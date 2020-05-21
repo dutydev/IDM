@@ -3,6 +3,7 @@ from ..utils import logger, sub_string
 from .error_handler import ErrorHandler
 
 from vbml import Patcher
+from time import time
 
 
 class AsyncHandleManager:
@@ -30,6 +31,7 @@ class AsyncHandleManager:
 
     async def message_processor(self, event: dict):
         task = None
+        event["message"]["date"] = int(time())
         for handler in self.event.message_handler:
             if handler.method.value == event["method"]:
                 for pattern in handler.patterns:

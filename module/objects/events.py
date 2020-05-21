@@ -12,13 +12,17 @@ class Event:
     def __init__(self):
         self.message_handler: List[MessageHandler] = list()
         self.routes: Dict[str, List[Handler]] = dict()
-        self.routes.update({i: [] for i in Method.list()})
+        self.routes.update({
+            i: [] for i in Method.list()
+            if i not in ("sendSignal", "sendMySignal")
+        })
 
     def concatenate(self, handler: "Event"):
         """
         Concatenate handlers from another handler.
         """
-        self.routes.update(handler.routes)
+        for k, v in handler.routes.items():
+            self.routes[k].extend(v)
         self.message_handler += handler.message_handler
         logger.debug(
             "Current handler was concatenated with {handler}",

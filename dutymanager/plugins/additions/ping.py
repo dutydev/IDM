@@ -1,11 +1,11 @@
-from module.objects.types import SendMySignal, SendSignal
-from dutymanager.db.methods import AsyncDatabase
-from dutymanager.units.vk_script import msg_edit
-from dutymanager.files.msgs import ping_state
-from module import Blueprint, Method
 from datetime import datetime
-from typing import List
 from time import time
+
+from dutymanager.db.methods import AsyncDatabase
+from dutymanager.files.msgs import ping_state
+from dutymanager.units.vk_script import msg_edit
+from module import Blueprint, Method
+from module.objects.types import SendMySignal, SendSignal
 
 bot = Blueprint()
 db = AsyncDatabase.get_current()
@@ -21,7 +21,6 @@ patterns = [
     "пиу", "пиу %debug",
     "пиф", "пиф %debug"
 ]
-average: List[float] = []
 
 
 async def abstract_ping(
@@ -30,11 +29,9 @@ async def abstract_ping(
 ):
     text = text.split()
     current = round(time() - timestamp, 2)
-    average.append(current)
     if text[-1] == "%debug":
         message = ping_state.format(
             responses[text[0]], current,
-            round(sum(average) / len(ping_state), 2),
             datetime.fromtimestamp(timestamp),
             datetime.fromtimestamp(int(time()))
         )
