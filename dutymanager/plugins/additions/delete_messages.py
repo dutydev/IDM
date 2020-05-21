@@ -3,7 +3,7 @@ from dutymanager.units.vk_script import (
     delete_messages,
     msg_edit
 )
-from dutymanager.units.tools import display_time
+from dutymanager.units.tools import display_time, get_case
 from dutymanager.units.utils import send_msg
 from dutymanager.db.methods import AsyncDatabase
 from module.objects.types import SendMySignal
@@ -24,12 +24,14 @@ async def delete_by_count(event: SendMySignal, num: int = 5000):
         peer_id=peer_id,
         offset_max=(200, 5000)[num >= 200]
     )
-    await send_msg(peer_id, "✅ Сообщения ({}) удалены.".format(
-        await delete_messages([
-            i["id"] for i in history if i["from_id"] == bot.user_id
-            and "action" not in i
-            and time() - i["date"] < 86400
-        ][:num + 1]) - 1
+    count = await delete_messages([
+        i["id"] for i in history
+        if i["from_id"] == bot.user_id
+        and "action" not in i
+        and time() - i["date"] < 86400
+    ][:num + 1]) - 1
+    await send_msg(peer_id, "✅ Удалено {}.".format(
+        get_case(count, "сообщение")
     ))
 
 
@@ -54,6 +56,6 @@ async def delete_by_time(event: SendMySignal, unix: int):
             and "action" not in i
             and time() - i["date"] < unix
         ])
-    await send_msg(peer_id, "✅ Удалено ({}) сообщений за {}.".format(
-        count, display_time(unix)
+    await send_msg(peer_id, "✅ Удалено {} за {}.".format(
+        get_case(count, "сообщение"), display_time(unix)
     ))

@@ -10,6 +10,7 @@ from dutymanager.files.config import SETTINGS_PATH
 from inspect import signature as sign
 from module.utils import logger
 from typing import Any, Optional
+from pymorphy2 import MorphAnalyzer
 
 import json
 import re
@@ -18,8 +19,16 @@ import re
 __all__ = (
     "display_time", "parse_interval",
     "load_values", "recreate",
-    'get_values'
+    'get_values', 'get_case'
 )
+m = MorphAnalyzer()
+
+
+def get_case(num: int, word: str) -> str:
+    p = m.parse(m.parse(word)[0].normal_form)[0]
+    return "{} {}".format(
+        num, p.make_agree_with_number(num).word
+    )
 
 
 def display_time(seconds: int) -> str:
@@ -31,7 +40,7 @@ def display_time(seconds: int) -> str:
             seconds -= value * count
             if value == 1:
                 name = name.rstrip('s')
-            result.append("{} {}".format(value, name))
+            result.append(get_case(value, name))
     return '. '.join(result[:3])
 
 
@@ -42,14 +51,9 @@ def parse_interval(text: str) -> int:
     :return: unix (total seconds)
     """
     unix = 0
-    tags = re.findall(r'(\d+)?[. ]?(день|дн|час|мин|сек|)', text)
+    tags = re.findall(r'(\d+)[. ](день|дн|час|мин|сек|)', text)
     for k, v in tags:
-        if not any([k, v]):
-            continue
-        if k == '' and v != '':
-            unix += intervals[v]
-        else:
-            unix += int(k) * intervals[v]
+        unix += int(k) * intervals[v]
     return unix
 
 

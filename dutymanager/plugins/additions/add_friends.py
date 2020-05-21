@@ -2,6 +2,7 @@ from dutymanager.units.utils import get_users, get_by_local
 from dutymanager.units.vk_script import msg_edit
 from dutymanager.db.methods import AsyncDatabase
 from module.objects.types import SendMySignal
+from dutymanager.units.tools import get_case
 from module import Blueprint, Method
 
 bot = Blueprint(name="Friends add")
@@ -51,7 +52,7 @@ async def add_friends(event: SendMySignal):
     )
     await msg_edit(
         peer_id=peer_id, local_id=local_id,
-        message=f"✅ Отправлено ({count}) заявок."
+        message=f"✅ Отправлено {get_case(count, 'заявка')}"
     )
 
 
@@ -68,5 +69,5 @@ async def remove_friends(event: SendMySignal, users: list):
     )
     await msg_edit(
         peer_id=peer_id, local_id=local_id,
-        message=f"✅ Удалено {count}."
+        message=f"✅ Удалено {get_case(count, 'пользователь')}"
     )

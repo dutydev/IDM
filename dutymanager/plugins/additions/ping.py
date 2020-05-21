@@ -1,6 +1,6 @@
 from datetime import datetime
 from time import time
-
+from dutymanager.units.tools import get_case
 from dutymanager.db.methods import AsyncDatabase
 from dutymanager.files.msgs import ping_state
 from dutymanager.units.vk_script import msg_edit
@@ -36,8 +36,9 @@ async def abstract_ping(
             datetime.fromtimestamp(int(time()))
         )
     else:
-        message = "{}\nОтвет через: {} сек.".format(
-            responses[text[0]], current
+        message = "{}\nОтвет через: {}".format(
+            responses[text[0]],
+            get_case(int(current), 'секунда')
         )
     await msg_edit(db.chats(uid), message, local_id)
 

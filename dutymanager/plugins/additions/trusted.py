@@ -1,9 +1,11 @@
-from dutymanager.units.utils import get_by_local, get_name
 from dutymanager.db.methods import AsyncDatabase, Trusted
+from dutymanager.units.tools import get_case
+from dutymanager.units.utils import (
+    get_by_local, get_name, get_users
+)
 from dutymanager.units.vk_script import msg_edit
-from dutymanager.units.utils import get_users
-from module.objects.types import SendMySignal
 from module import Blueprint, Method
+from module.objects.types import SendMySignal
 
 bot = Blueprint(name="Trusted")
 db = AsyncDatabase.get_current()
@@ -12,8 +14,8 @@ patterns = [
     "+доверенный", "-доверенный"
 ]
 
-ADDED = "✅ Пользователи ({}) добавлены в список доверенных."
-REMOVED = "✅ Пользователи ({}) убраны из списка доверенных."
+ADDED = "✅ В список доверенных {} {}."
+REMOVED = "✅ Из списка доверенных {} {}."
 
 
 @bot.event.message_signal(
@@ -62,7 +64,10 @@ async def add_trusted(event: SendMySignal):
     ])
     return await msg_edit(
         peer_id=peer_id, local_id=local_id,
-        message=ADDED.format(count)
+        message=ADDED.format(
+            "добавлен" if count == 1 else "добавлены",
+            get_case(count, 'пользователь')
+        )
     )
 
 
@@ -76,5 +81,8 @@ async def remove_trusted(
     ])
     return await msg_edit(
         peer_id=peer_id, local_id=local_id,
-        message=REMOVED.format(count)
+        message=REMOVED.format(
+            "убран" if count == 1 else "убраны",
+            get_case(count, 'пользователь')
+        )
     )

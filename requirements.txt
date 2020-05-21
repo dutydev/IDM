@@ -1,5 +1,5 @@
-jinja2
-https://github.com/timoniq/vkbottle/archive/master.zip
+jinja2~=2.11.2
+vkbottle==2.7.4
 aiohttp==3.6.2
 aiosqlite==0.13.0
 async-timeout==3.0.1
@@ -8,7 +8,7 @@ chardet==3.0.4
 contextvars==2.4
 future==0.18.2
 idna==2.9
-immutables==0.13
+immutables==0.14
 iso8601==0.1.12
 multidict==4.7.6
 pydantic==1.5.1
@@ -22,4 +22,4 @@ yarl==1.4.2
 aiohttp-jinja2==1.2.0
 vk-api==11.8.0
 WTForms==2.3.1
-
+pymorphy2==0.8
