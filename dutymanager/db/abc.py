@@ -8,13 +8,11 @@ class AbstractDict(dict):
     sub_classes: List["AbstractDict"] = []
 
     def __init__(self):
+        super().__init__()
+        self.dataclass = None
         self.set_current(self)
-        super(AbstractDict, self).__init__()
 
     def __call__(self, *args):
-        ...
-
-    async def load_values(self):
         ...
 
     async def create(self, *args):
@@ -33,4 +31,5 @@ class AbstractDict(dict):
     @classmethod
     async def load(cls):
         for i in cls.sub_classes:
-            await i.load_values()
+            for x in await i.dataclass.all():
+                i.update(x.load_model())

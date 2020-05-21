@@ -34,6 +34,7 @@ class AsyncDatabase(ContextInstanceMixin):
 
     async def compose(self):
         await AbstractDict.load()
+        print(self.chats)
         try:
             self.create_pages()
         except KeyError:

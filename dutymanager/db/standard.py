@@ -16,14 +16,12 @@ Type = Union[TokenType, str]
 
 class Chats(AbstractDict):
 
+    def __init__(self):
+        super().__init__()
+        self.dataclass = Chat
+
     def __call__(self, uid: str, field: str = "id") -> Union[str, int]:
         return self[uid][field]
-
-    async def load_values(self):
-        self.update(
-            **i.load_model()
-            async for i in Chat.all()
-        )
 
     async def create(self, *args):
         uid, chat_id, title = args
@@ -41,14 +39,12 @@ class Chats(AbstractDict):
 
 class Templates(AbstractDict):
 
+    def __init__(self):
+        super().__init__()
+        self.dataclass = Template
+
     def __call__(self, tag: str) -> dict:
         return self[tag.lower()]
-
-    async def load_values(self):
-        self.update(
-            **i.load_model()
-            async for i in Template.all()
-        )
 
     async def create(self, *args):
         tag, text, attachments = args
@@ -70,14 +66,12 @@ class Templates(AbstractDict):
 
 class Proxies(AbstractDict):
 
+    def __init__(self):
+        super().__init__()
+        self.dataclass = Trusted
+
     def __call__(self, uid: int) -> str:
         return self[uid]
-
-    async def load_values(self):
-        self.update(
-            **i.load_model()
-            async for i in Trusted.all()
-        )
 
     async def create_many(self, data: List[Trusted]) -> int:
         await Trusted.bulk_create(data)
@@ -106,14 +100,12 @@ class Proxies(AbstractDict):
 
 class Settings(AbstractDict):
 
+    def __init__(self):
+        super().__init__()
+        self.dataclass = Setting
+
     def __call__(self, tag: str = "page_limit") -> int:
         return self[tag]
-
-    async def load_values(self):
-        self.update(
-            **i.load_model()
-            async for i in Setting.all()
-        )
 
     async def create(self, *args):
         if not await Setting.get_or_none(id=1):
@@ -127,6 +119,10 @@ class Settings(AbstractDict):
 
 class Tokens(AbstractDict):
 
+    def __init__(self):
+        super().__init__()
+        self.dataclass = Token
+
     def __call__(self, *args, **kwargs):
         ...
 
@@ -138,10 +134,4 @@ class Tokens(AbstractDict):
 
     def remove(self, *args):
         ...
-
-    async def load_values(self):
-        self.update(
-            **i.load_model()
-            async for i in Trusted.all()
-        )
 
