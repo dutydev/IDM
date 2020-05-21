@@ -84,6 +84,7 @@ class Dispatcher(AsyncHandleManager):
                 rotation="5 MB"
             )
 
+    @logger.catch(level="ERROR")
     async def emulate(self, event: dict) -> typing.Union[dict, str]:
         """ Process all signals
         from IRIS CM.
