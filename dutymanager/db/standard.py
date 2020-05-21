@@ -20,10 +20,10 @@ class Chats(AbstractDict):
         return self[uid][field]
 
     async def load_values(self):
-        async for i in Chat.all():
-            self[i.uid] = {
-                "id": i.id, "title": i.title
-            }
+        self.update(
+            **i.load_model()
+            async for i in Chat.all()
+        )
 
     async def create(self, *args):
         uid, chat_id, title = args
@@ -45,11 +45,10 @@ class Templates(AbstractDict):
         return self[tag.lower()]
 
     async def load_values(self):
-        async for i in Template.all():
-            self[i.tag] = {
-                "message": i.text,
-                "attachment": i.attachments
-            }
+        self.update(
+            **i.load_model()
+            async for i in Template.all()
+        )
 
     async def create(self, *args):
         tag, text, attachments = args
@@ -75,8 +74,10 @@ class Proxies(AbstractDict):
         return self[uid]
 
     async def load_values(self):
-        async for i in Trusted.all():
-            self[i.uid] = i.name
+        self.update(
+            **i.load_model()
+            async for i in Trusted.all()
+        )
 
     async def create_many(self, data: List[Trusted]) -> int:
         await Trusted.bulk_create(data)
@@ -109,12 +110,10 @@ class Settings(AbstractDict):
         return self[tag]
 
     async def load_values(self):
-        try:
-            self.update(
-                **(await Setting.all().values())[0]
-            )
-        except IndexError:
-            await self.create()
+        self.update(
+            **i.load_model()
+            async for i in Setting.all()
+        )
 
     async def create(self, *args):
         if not await Setting.get_or_none(id=1):
@@ -128,23 +127,21 @@ class Settings(AbstractDict):
 
 class Tokens(AbstractDict):
 
-    def __call__(self, token_type: Type):
-        if isinstance(token_type, TokenType):
-            token_type = token_type.value
+    def __call__(self, *args, **kwargs):
+        ...
 
-        return self[token_type]
+    def create(self, *args):
+        ...
+
+    def change(self, **kwargs):
+        ...
+
+    def remove(self, *args):
+        ...
 
     async def load_values(self):
-        self.update(**(await Token.all().values())[0])
-
-    async def create(self, token: str, token_type: Type):
-        if isinstance(token_type, str):
-            token_type = TokenType(token_type)
-        if not await Token.get_or_none(type=token_type):
-            await Token.create(token=token, type=token_type)
-            self[token_type.value] = token
-
-    async def change(self, kind: TokenType, token: str):
-        await Token.filter(type=kind).update(token=token)
-        self[kind.value] = token
+        self.update(
+            **i.load_model()
+            async for i in Trusted.all()
+        )
 

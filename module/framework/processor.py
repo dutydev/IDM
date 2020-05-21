@@ -12,6 +12,7 @@ class AsyncHandleManager:
 
     async def _processor(self, event: dict):
         method = event["method"]
+        task = None
         if method != "ping":
             logger.debug(
                 "-> NEW SIGNAL {} FROM CHAT {}",
@@ -22,18 +23,20 @@ class AsyncHandleManager:
             return await self.message_processor(event)
 
         if method in self.event.routes:
-            return await self.event.routes[method](event)
+            for handler in self.event.routes[method]:
+                task = await handler(event)
+
+        return task
 
     async def message_processor(self, event: dict):
-        """
-        TODO: Adding Routing to Increase Performance
-        """
+        task = None
         for handler in self.event.message_handler:
             if handler.method.value == event["method"]:
                 for pattern in handler.patterns:
                     text = sub_string(event["message"]["text"])
                     if self._patcher.check(text, pattern) is not None:
-                        return await handler(event, **pattern.dict())
+                        task = await handler(event, **pattern.dict())
+        return task
 
     async def error_processor(self, error: Exception, event: dict):
         error_type = error.__class__

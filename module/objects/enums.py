@@ -1,7 +1,15 @@
 from enum import Enum
+from typing_extensions import final
 
 
-class Method(Enum):
+class ABCEnum(Enum):
+    @classmethod
+    @final
+    def list(cls):
+        return [i.value for i in cls]
+
+
+class Method(ABCEnum):
     PING = "ping"
     IGNORE_MESSAGES = "ignoreMessages"
     BAN_EXPIRED = "banExpired"
@@ -20,15 +28,9 @@ class Method(Enum):
     BIND_CHAT = "bindChat"
     MEET_CHAT_DUTY = "meetChatDuty"
 
-    @staticmethod
-    def list():
-        return [i.value for i in Method]
 
-
-class TokenType(Enum):
+class TokenType(ABCEnum):
     ACCESS_TOKEN = "access_token"
     FRIENDS_TOKEN = "friends_token"
     ONLINE_TOKEN = "online_token"
     ME_TOKEN = "me_token"
-
-

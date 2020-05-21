@@ -11,7 +11,8 @@ Text = Union[str, List[str]]
 class Event:
     def __init__(self):
         self.message_handler: List[MessageHandler] = list()
-        self.routes: Dict[str, Handler] = dict()
+        self.routes: Dict[str, List[Handler]] = dict()
+        self.routes.update({i: [] for i in Method.list()})
 
     def concatenate(self, handler: "Event"):
         """
@@ -28,7 +29,7 @@ class Event:
         if not iscoroutinefunction(func):
             raise TypeError("Handler has to be coroutine function.")
         handler = Handler(func, method)
-        self.routes[method.value] = handler
+        self.routes[method.value].append(handler)
 
     def add_message_handler(
         self,
