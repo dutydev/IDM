@@ -24,8 +24,9 @@ __all__ = (
 m = MorphAnalyzer()
 
 
-def get_case(num: int, word: str) -> str:
-    p = m.parse(m.parse(word)[0].normal_form)[0]
+def get_case(num: int, word: str, case: str = "nomn") -> str:
+    inflected = m.parse(word)[0].inflect({case})[0]
+    p = m.parse(inflected)[0]
     return "{} {}".format(
         num, p.make_agree_with_number(num).word
     )
