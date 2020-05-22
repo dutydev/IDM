@@ -16,25 +16,29 @@ from module.framework.processor import AsyncHandleManager
 from module.objects.events import Event
 from module.objects.enums import Method
 from module.utils import LoggerLevel, logger
-from module.utils import generate_string
 
 
 class Dispatcher(AsyncHandleManager):
+
+    __user: User
+    user_id: int
+    on: Handler
+
     def __init__(
         self,
         secret: str = None,
         user_id: int = None,
         tokens: Token = None,
-        login: str = None,
-        password: str = None,
         polling: bool = False,
         mobile: bool = False,
         patcher: Patcher = None,
         debug: typing.Union[str, bool] = True,
         errors_log: bool = False,
+        setup_mode: bool = False,
     ):
-        self.secret: str = secret or generate_string()
+        self.secret: str = secret
         self.user_id: int = user_id
+        self.setup_mode = setup_mode
 
         self._tokens = [tokens] if isinstance(tokens, str) else tokens
         self._debug: bool = debug
@@ -48,21 +52,18 @@ class Dispatcher(AsyncHandleManager):
             )
 
         self.__loop = asyncio.get_event_loop()
-        self.__user: User = User(**get_values(User, locals()))
-        if not secret:
-            print("Generated new secret word: ", self.secret)
-
-        if user_id is None:
-            self.user_id = self.__user.user_id
+        if not self.setup_mode:
+            self.__user: User = User(**get_values(User, locals()))
+            self.user_id = user_id or self.__user.user_id
+            self.on: Handler = self.__user.on
 
         if polling:
             self.run_polling()
 
         if isinstance(debug, bool):
-            debug = "INFO" if debug else "CRITICAL"
+            debug = "INFO" if debug else "ERROR"
 
         self.logger = LoggerLevel(debug)
-        self.on: Handler = self.__user.on
         self.event: Event = Event()
         self.error_handler: ErrorHandler = ErrorHandler()
 
@@ -153,6 +154,8 @@ class Dispatcher(AsyncHandleManager):
 
     @property
     def api(self):
+        if self.setup_mode:
+            return
         return self.__user.api
 
     @property

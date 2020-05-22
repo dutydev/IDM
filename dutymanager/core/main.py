@@ -6,6 +6,7 @@ from dutymanager import setup_web
 from dutymanager.db.methods import db
 from dutymanager.files.const import Token
 from dutymanager.files.dicts import default_data
+from dutymanager.files.msgs import setup
 from dutymanager.plugins import blueprints
 from dutymanager.units.dataclasses.generator import Generator
 from dutymanager.units.dataclasses.validator import patcher
@@ -13,6 +14,7 @@ from dutymanager.units.dataclasses.workers import worker
 from dutymanager.units.tools import get_values
 from dutymanager.web import web_blueprints
 from module import Dispatcher, TaskManager
+from module.utils import logger
 from module.utils.context import ContextInstanceMixin
 
 try:
@@ -28,25 +30,29 @@ class Core(ContextInstanceMixin):
         secret: str = None,
         user_id: int = None,
         tokens: Token = None,
-        login: str = None,
-        password: str = None,
         polling: bool = False,
         mobile: bool = False,
         debug: Union[str, bool] = True,
         errors_log: bool = False,
+        setup_mode: bool = False,
     ):
         # Main workers
         self.bot = Dispatcher(**self.get_params(locals()), patcher=patcher)
-        self.bot.api.token_generator = Generator(**get_values(Generator))
         self.app = web.Application()
         self.task = TaskManager(self.bot.loop)
         setup_web(self)
 
         # Sign assets
-        self.bot.set_blueprints(*blueprints)
         self.bot.set_web_blueprints(*web_blueprints)
         self.app.router.add_route("POST", "/", self.wrapper)
         self.port = default_data.get("port", 8080)
+
+        if not setup_mode:
+            self.bot.api.token_generator = Generator(**get_values(Generator))
+            self.bot.set_blueprints(*blueprints)
+
+        if setup_mode:
+            logger.error(setup.format(self.port))
 
     async def wrapper(self, request: web.Request):
         event = await request.json()
