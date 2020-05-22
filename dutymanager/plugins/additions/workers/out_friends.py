@@ -1,11 +1,11 @@
-from dutymanager.files.dicts import default_data, workers_state
+from dutymanager.db.methods import AsyncDatabase
+from dutymanager.files.dicts import default_data
 from dutymanager.units.dataclasses.workers import Worker
 from dutymanager.units.vk_script import msg_edit
-from dutymanager.db.methods import AsyncDatabase
 from module import Blueprint, Method
 from module import types
 
-bot = Blueprint(name="Out friends worker")
+bot = Blueprint(name="Out deleter worker")
 db = AsyncDatabase.get_current()
 worker = Worker.get_current()
 
@@ -18,7 +18,7 @@ worker = Worker.get_current()
 async def check_state(event: types.SendMySignal):
     message = "Автоотписка от исходящих заявок {}.".format(
         "включена"
-        if workers_state["deleter"] else
+        if db.settings("deleter") else
         "отключена"
     )
     return await msg_edit(
@@ -36,7 +36,7 @@ async def check_state(event: types.SendMySignal):
 async def turn_on(event: types.SendMySignal):
     peer_id = db.chats(event.object.chat)
     local_id = event.object.conversation_message_id
-    if workers_state["deleter"]:
+    if db.settings("deleter"):
         return await msg_edit(
             peer_id=peer_id, local_id=local_id,
             message="❗ Автоотписка уже включена.",
@@ -46,7 +46,7 @@ async def turn_on(event: types.SendMySignal):
             peer_id=peer_id, local_id=local_id,
             message="❗ Ошибка, не указан токен для этой функции."
         )
-    worker.manage_worker("deleter", start=True)
+    await worker.manage_worker("deleter", start=True)
     return await msg_edit(
         peer_id=peer_id, local_id=local_id,
         message="✅ Автоотписка запущена!"
@@ -61,12 +61,12 @@ async def turn_on(event: types.SendMySignal):
 async def turn_off(event: types.SendMySignal):
     peer_id = db.chats(event.object.chat)
     local_id = event.object.conversation_message_id
-    if not workers_state["deleter"]:
+    if not db.settings("deleter"):
         return await msg_edit(
             peer_id=peer_id, local_id=local_id,
             message="❗ Автоотписка и так отключена."
         )
-    worker.manage_worker("friends", start=False)
+    await worker.manage_worker("deleter", start=False)
     return await msg_edit(
         peer_id=peer_id, local_id=local_id,
         message="✅ Автоотписка успешно отключена!"

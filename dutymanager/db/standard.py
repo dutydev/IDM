@@ -1,6 +1,7 @@
 from .abc import AbstractDict
 from .models import *
 from typing import Union, List
+from tortoise.query_utils import Q
 from module.objects.enums import TokenType
 
 __all__ = (
@@ -110,7 +111,7 @@ class Settings(AbstractDict):
     async def create(self, *args):
         if not await Setting.get_or_none(id=1):
             setting = await Setting.create()
-            self["page_limit"] = setting.page_limit
+            self.update(setting.load_model())
 
     async def change(self, **kwargs):
         await Setting.filter(id=1).update(**kwargs)

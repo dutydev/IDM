@@ -1,8 +1,8 @@
 from asyncio import AbstractEventLoop, sleep
 
-from dutymanager.files.dicts import workers_state
 from dutymanager.units.utils import get_requests
 from dutymanager.units.vk_script import friends_method
+from dutymanager.db.methods import db
 from module import Blueprint
 from module.utils import logger
 from module.utils.context import ContextInstanceMixin
@@ -21,8 +21,8 @@ class Worker(ContextInstanceMixin):
             "deleter": self.deleter
         }
 
-    def manage_worker(self, state: str, start: bool):
-        workers_state[state] = start
+    async def manage_worker(self, state: str, start: bool):
+        await db.settings.change(state=start)
         if start:
             self.loop.create_task(self.metadata[state]())
         logger.info(
@@ -32,20 +32,19 @@ class Worker(ContextInstanceMixin):
 
     def dispatch(self, loop: AbstractEventLoop):
         self.loop = loop
-        for k, v in self.metadata.items():
-            if workers_state[k]:
-                loop.create_task(v())
-        logger.debug("Workers have been dispatched.")
+        for v in self.metadata.values():
+            loop.create_task(v())
+        logger.debug("Workers have been dispatched!")
 
     @staticmethod
     async def online():
-        while workers_state["online"]:
+        while db.settings("online"):
             await bot.api.account.set_online()
             await sleep(300)
 
     @staticmethod
     async def friends():
-        while workers_state["friends"]:
+        while db.settings("friends"):
             await friends_method([
                 i["user_id"] for i in await get_requests()
                 if "deactivated" not in i
@@ -54,7 +53,7 @@ class Worker(ContextInstanceMixin):
 
     @staticmethod
     async def deleter():
-        while workers_state["deleter"]:
+        while db.settings("deleter"):
             await friends_method(
                 await get_requests(out=True), add=False
             )

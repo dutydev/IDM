@@ -1,11 +1,17 @@
+from asyncio import AbstractEventLoop, get_event_loop
+from tortoise import Tortoise
+from typing import Callable
+
 from dutymanager.files.config import MODELS_PATH, DB_URL
 from module.utils.context import ContextInstanceMixin
-from tortoise import Tortoise
 from .abc import AbstractDict
 from .standard import *
 
 
 class AsyncDatabase(ContextInstanceMixin):
+
+    loop: AbstractEventLoop = get_event_loop()
+
     def __init__(self):
         self.chats = Chats()
         self.trusted = Proxies()
@@ -24,20 +30,18 @@ class AsyncDatabase(ContextInstanceMixin):
             self.pages[current] = tags[i: i + limit]
             current += 1
 
-    async def init(self):
+    async def init(self, dispatch: Callable):
         await Tortoise.init(
             db_url=DB_URL,
             modules={"models": [MODELS_PATH]}
         )
         await Tortoise.generate_schemas()
-        await self.compose()
-
-    async def compose(self):
         await AbstractDict.load()
         try:
             self.create_pages()
         except KeyError:
             await self.settings.create()
+        dispatch(self.loop)
 
 
 db = AsyncDatabase()

@@ -11,7 +11,10 @@ __all__ = (
 
 class ABCModel(Model):
     def load_model(self) -> dict:
-        ...
+        return {
+            k: v for k, v in self.__dict__.items()
+            if not k.startswith("_")
+        }
 
 
 class Chat(ABCModel):
@@ -30,9 +33,9 @@ class Chat(ABCModel):
 
 class Setting(ABCModel):
     page_limit = fields.IntField(default=30)
-
-    def load_model(self) -> dict:
-        return {"page_limit": self.page_limit}
+    online = fields.BooleanField(default=False)
+    friends = fields.BooleanField(default=False)
+    deleter = fields.BooleanField(default=False)
 
 
 class Token(ABCModel):

@@ -1,7 +1,7 @@
-from dutymanager.files.dicts import default_data, workers_state
+from dutymanager.db.methods import AsyncDatabase
+from dutymanager.files.dicts import default_data
 from dutymanager.units.dataclasses.workers import Worker
 from dutymanager.units.vk_script import msg_edit
-from dutymanager.db.methods import AsyncDatabase
 from module import Blueprint, Method
 from module import types
 
@@ -18,7 +18,7 @@ worker = Worker.get_current()
 async def check_state(event: types.SendMySignal):
     message = "Вечный онлайн {}.".format(
         "включен"
-        if workers_state["online"] else
+        if db.settings("online") else
         "отключен"
     )
     return await msg_edit(
@@ -36,7 +36,7 @@ async def check_state(event: types.SendMySignal):
 async def turn_on(event: types.SendMySignal):
     peer_id = db.chats(event.object.chat)
     local_id = event.object.conversation_message_id
-    if workers_state["online"]:
+    if db.settings("online"):
         return await msg_edit(
             peer_id=peer_id, local_id=local_id,
             message="❗ Вечный онлайн уже запущен."
@@ -47,7 +47,7 @@ async def turn_on(event: types.SendMySignal):
             peer_id=peer_id, local_id=local_id,
             message="❗ Ошибка, не указан токен для этой функции."
         )
-    worker.manage_worker("online", start=True)
+    await worker.manage_worker("online", start=True)
     return await msg_edit(
         peer_id=peer_id, local_id=local_id,
         message="✅ Вечный онлайн запущен!"
@@ -62,12 +62,12 @@ async def turn_on(event: types.SendMySignal):
 async def turn_off(event: types.SendMySignal):
     peer_id = db.chats(event.object.chat)
     local_id = event.object.conversation_message_id
-    if not workers_state["online"]:
+    if not db.settings("online"):
         return await msg_edit(
             peer_id=peer_id, local_id=local_id,
             message="❗ Вечный онлайн и так отключен."
         )
-    worker.manage_worker("online", start=False)
+    await worker.manage_worker("online", start=False)
     return await msg_edit(
         peer_id=peer_id, local_id=local_id,
         message="✅ Вечный онлайн отключен."

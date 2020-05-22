@@ -4,20 +4,18 @@ from typing import Union
 from aiohttp import web
 
 from dutymanager import setup_web
-from dutymanager.db.methods import db
-from dutymanager.files.const import Token
-from dutymanager.files.dicts import default_data
-from dutymanager.files.msgs import setup
-from dutymanager.plugins import blueprints
-from dutymanager.units.dataclasses.generator import Generator
-from dutymanager.units.dataclasses.validator import patcher
-from dutymanager.units.dataclasses.workers import worker
-from dutymanager.units.tools import get_values
-from dutymanager.web import web_blueprints
-
 from module import Dispatcher, TaskManager
 from module.utils import logger
 from module.utils.context import ContextInstanceMixin
+from ..files.const import Token
+from ..files.dicts import default_data
+from ..files.msgs import setup
+from ..plugins import blueprints
+from ..units.dataclasses.workers import db, worker
+from ..units.dataclasses.generator import Generator
+from ..units.dataclasses.validator import patcher
+from ..units.tools import get_values
+from ..web import web_blueprints
 
 try:
     from pyngrok import ngrok
@@ -56,7 +54,7 @@ class Core(ContextInstanceMixin):
             self.bot.api.token_generator = Generator(**get_values(Generator))
             self.bot.set_blueprints(*blueprints)
 
-        if setup_mode:
+        else:
             url = self.URL + f":{self.port}"
             logger.error(setup.format(url))
             webbrowser.open(url)
@@ -72,9 +70,8 @@ class Core(ContextInstanceMixin):
         if use_ngrok:
             url = self.get_url(self.port)
             print("Using ngrok WSGI: {}", url)
-        worker.dispatch(self.bot.loop)
+        self.task.add_task(db.init(worker.dispatch))
         self.task.add_task(web._run_app(self.app, port=self.port))  # noqa
-        self.task.add_task(db.init)
         self.task.run()
 
     @staticmethod

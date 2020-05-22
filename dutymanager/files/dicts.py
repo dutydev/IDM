@@ -35,9 +35,3 @@ intervals = {
     "мин": 60,
     "сек": 1,
 }
-
-workers_state = {
-    "online": False,
-    "friends": False,
-    "deleter": False
-}
