@@ -38,7 +38,7 @@ async def abstract_ping(
     else:
         message = "{}\nОтвет через: {}".format(
             responses[text[0]],
-            get_case(int(current), 'секунда')
+            get_case(current, 'секунда')
         )
     await msg_edit(db.chats(uid), message, local_id)
 

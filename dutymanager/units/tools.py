@@ -9,7 +9,7 @@ from dutymanager.files.dicts import default_data, intervals
 from dutymanager.files.config import SETTINGS_PATH
 from inspect import signature as sign
 from module.utils import logger
-from typing import Any, Optional
+from typing import Any, Optional, Union
 from pymorphy2 import MorphAnalyzer
 
 import json
@@ -24,24 +24,26 @@ __all__ = (
 m = MorphAnalyzer()
 
 
-def get_case(num: int, word: str, case: str = "nomn") -> str:
+def get_case(
+    num: Union[float, str],
+    word: str, case: str = "nomn"
+) -> str:
     inflected = m.parse(word)[0].inflect({case})[0]
     p = m.parse(inflected)[0]
     return "{} {}".format(
-        num, p.make_agree_with_number(num).word
+        num, p.make_agree_with_number(int(num)).word
     )
 
 
-def display_time(seconds: int) -> str:
+def display_time(seconds: int, case: str = "nomn") -> str:
     result = []
-
     for name, count in list(intervals.items()):
         value = int(seconds // count)
         if value:
             seconds -= value * count
             if value == 1:
                 name = name.rstrip('s')
-            result.append(get_case(value, name))
+            result.append(get_case(value, name, case))
     return '. '.join(result[:3])
 
 
@@ -54,6 +56,8 @@ def parse_interval(text: str) -> int:
     unix = 0
     tags = re.findall(r'(\d+)[. ](день|дн|час|мин|сек|)', text)
     for k, v in tags:
+        if not k:
+            continue
         unix += int(k) * intervals[v]
     return unix
 

@@ -1,5 +1,6 @@
-from typing import Union
+import webbrowser
 
+from typing import Union
 from aiohttp import web
 
 from dutymanager import setup_web
@@ -13,6 +14,7 @@ from dutymanager.units.dataclasses.validator import patcher
 from dutymanager.units.dataclasses.workers import worker
 from dutymanager.units.tools import get_values
 from dutymanager.web import web_blueprints
+
 from module import Dispatcher, TaskManager
 from module.utils import logger
 from module.utils.context import ContextInstanceMixin
@@ -24,6 +26,9 @@ except ModuleNotFoundError:
 
 
 class Core(ContextInstanceMixin):
+
+    URL: str = "http://127.0.0.1"
+
     def __init__(
         self,
         *,
@@ -52,7 +57,9 @@ class Core(ContextInstanceMixin):
             self.bot.set_blueprints(*blueprints)
 
         if setup_mode:
-            logger.error(setup.format(self.port))
+            url = self.URL + f":{self.port}"
+            logger.error(setup.format(url))
+            webbrowser.open(url)
 
     async def wrapper(self, request: web.Request):
         event = await request.json()

@@ -14,7 +14,8 @@ default_data = {
     "debug": True,
     "errors_log": True,
     "port": 8080,
-    "polling": False
+    "polling": False,
+    "setup_mode": True,
 }
 
 intervals = {

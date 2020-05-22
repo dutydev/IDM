@@ -55,7 +55,7 @@ async def delete_by_time(event: SendMySignal, unix: int):
             i["id"] for i in history if i["from_id"] == bot.user_id
             and "action" not in i
             and time() - i["date"] < unix
-        ])
+        ]) - 1
     await send_msg(peer_id, "✅ Удалено {} за {}.".format(
-        get_case(count, "сообщение"), display_time(unix)
+        get_case(count, "сообщение"), display_time(unix, "accs")
     ))

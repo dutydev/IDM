@@ -1,10 +1,11 @@
-from dutymanager.units.vk_script import friends_method
+from asyncio import AbstractEventLoop, sleep
+
 from dutymanager.files.dicts import workers_state
 from dutymanager.units.utils import get_requests
-from asyncio import AbstractEventLoop, sleep
-from module.utils.context import ContextInstanceMixin
-from module.utils import logger
+from dutymanager.units.vk_script import friends_method
 from module import Blueprint
+from module.utils import logger
+from module.utils.context import ContextInstanceMixin
 
 bot = Blueprint(name="Worker")
 

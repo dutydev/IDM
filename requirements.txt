@@ -1,5 +1,5 @@
+https://github.com/timoniq/vkbottle/archive/master.zip
 jinja2~=2.11.2
-vkbottle==2.7.4
 aiohttp==3.6.2
 aiosqlite==0.13.0
 async-timeout==3.0.1
