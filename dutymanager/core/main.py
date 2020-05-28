@@ -55,7 +55,7 @@ class Core(ContextInstanceMixin):
             self.bot.set_blueprints(*blueprints)
 
         else:
-            url = self.URL + f":{self.port}"
+            url = self.URL + f":{self.port}/install"
             logger.error(setup.format(url))
             webbrowser.open(url)
 

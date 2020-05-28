@@ -1,0 +1,316 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+
+
+    <script>
+        var reloadRequest = {
+            success: function (data) {
+                if (data.response === 'ok') {
+                    $('#showSecretCodeModal').modal('hide');
+                    $('#reloadModalSuccess').modal('show');
+                    setTimeout(function () {
+                        document.location = '/login';
+                    }, 10000);
+                }
+            },
+            send: function () {
+                $.ajax({
+                    url: document.location.href,
+                    type: 'POST',
+                    success: this.success,
+                    data: {
+                        method: 'reload',
+                    }
+                });
+                return false;
+            }
+        }
+
+        var autoRequest = {
+            success: function (data) {
+                if (data.response === 'error') {
+                    $('#auto-setup-error').text(data.error);
+                    $('#auto-setup-error').css('display', 'block');
+                } else {
+                    $('#secretCodeInput').val(data.secret);
+                    $('#showSecretCodeModal').modal('show');
+                }
+            },
+            send: function () {
+                console.log('click')
+                let login = $("#id_login").val();
+                let password = $("#id_password").val();
+
+                $.ajax({
+                    url: document.location.href,
+                    type: 'POST',
+                    success: this.success,
+                    data: {
+                        method: 'autoSetup',
+                        login: login,
+                        password: password
+                    }
+                });
+                return false;
+            }
+        }
+
+        var manualRequest = {
+            success: function () {
+
+            },
+            send: function () {
+                return false;
+            }
+        }
+
+        var tokens = {
+            addSuccess: function (data) {
+            },
+            add: function () {
+            },
+
+            removeSuccess: function (data) {
+            },
+            remove: function () {
+            },
+        }
+
+        var setMode = {
+            manualPages: [
+                'setup',
+                'tokens'
+            ],
+            pagesClean: function () {
+                this.manualPages.forEach(pageName => {
+                    $(`#manual-${pageName}`).css('display', 'none');
+                });
+                return false;
+            },
+            home: function () {
+                this.pagesClean();
+                $("#hello").css('display', 'block');
+                $("#auto-setup").css('display', 'none');
+                return false;
+            },
+            auto: function () {
+                this.pagesClean();
+                $("#hello").css('display', 'none');
+                $("#auto-setup").css('display', 'block');
+                return false;
+            },
+            manual: function () {
+                this.pagesClean();
+                $("#hello").css('display', 'none');
+                $("#auto-setup").css('display', 'none');
+                $("#manual-setup").css('display', 'block');
+                return false;
+            },
+            manualPage: function (page) {
+                this.pagesClean();
+                $("#hello").css('display', 'none');
+                $("#auto-setup").css('display', 'none');
+                $(`#manual-${page}`).css('display', 'block');
+                return false;
+            }
+        }
+
+    </script>
+
+
+    <div class="modal fade" id="showSecretCodeModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Секретный код</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        Пожалуйста, запишите этот секретный код, он необходим для доступа к панели управления:
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="secretCodeInput" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="return reloadRequest.send()">Завершить
+                        настройку
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="reloadModalSuccess" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-1"><img src="/static/img/loading.gif" alt="" width="25" height="25">
+                            </div>
+                            <div class="col-md-11"><p>Настройка завершена, перезапуск сервера...</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="py-5" id="hello">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Мастер настройки IDM Reborn</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>Вас приветствует мастер настройки IDM Reborn.</p>
+                            <p>Как Вы хотите настроить IDM?</p>
+                        </div>
+                        <div class="card-footer">
+                            <ul class="nav navbar-nav">
+                                <li class="nav-link">
+                                    <a class="nav-link btn btn-primary" href="#auto-setup"
+                                       onclick="return setMode.auto();">
+                                        Настроить автоматически
+                                    </a>
+                                </li>
+                                <li class="nav-link">
+                                    <a class="nav-link btn btn-secondary" href="#manual-setup"
+                                       onclick="return setMode.manual();">
+                                        Настроить в ручную
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="py-5" id="auto-setup" style="display: none">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Автоматическая настройка</h4>
+                        </div>
+                        <form onsubmit="return autoRequest.send();" id="auto-form">
+                            <div class="card-body">
+                                <small style="color: #c82333;display: none">
+                                    Не удалось выполнить автоматическую настройку: <span id="auto-setup-error"></span>
+                                </small>
+                                <div class="form-group">
+                                    <label for="id_login">Логин</label>
+                                    <input type="text" id="id_login" placeholder="Логин от VK" class="form-control"
+                                           required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_password">Пароль</label>
+                                    <input type="password" id="id_password" placeholder="Пароль от VK"
+                                           class="form-control" required>
+                                </div>
+                                <small class="text-muted">
+                                    <span style="color: #ff6a07">Обратите внимание:</span>
+                                    Для автоматической настройки у вас должна быть отключена двухфакторная авторизация.
+                                    <a href="/help#2fa-off">Как отключить двухфакторную авторизацию</a>
+
+                                </small>
+                            </div>
+                            <div class="card-footer">
+                                <ul class="nav navbar-nav">
+                                    <li class="nav-link">
+                                        <button type="submit" class="btn btn-primary nav-link container-fluid">
+                                            Настроить
+                                        </button>
+                                    </li>
+                                    <li class="nav-link">
+                                        <a class="nav-link btn btn-secondary" href="#manual-setup"
+                                           onclick="return setMode.home();">
+                                            В главное меню
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="py-5" id="manual-setup" style="display: none">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Ручная настройка</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>Прежде чем продолжить, настоятельно рекомендуем ознакомиться со <a href="/help">справочной
+                                информацией</a>.</p>
+                        </div>
+                        <div class="card-footer">
+                            <ul class="nav navbar-nav">
+                                <li class="nav-link">
+                                    <a class="nav-link btn btn-primary" href="#manual-setup"
+                                       onclick="return setMode.manualPage('tokens')">
+                                        Продолжить
+                                    </a>
+                                </li>
+                                <li class="nav-link">
+                                    <a class="nav-link btn btn-secondary" href="#manual-setup"
+                                       onclick="return setMode.home()">
+                                        В главное меню
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="py-5" id="manual-tokens" style="display: none">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Установка токенов</h4>
+                        </div>
+                        <div class="card-body">
+                            <p><a href="/help#tokens">Справочная информация по установке токенов</a>.</p>
+                        </div>
+                        <div class="card-footer">
+                            <ul class="nav navbar-nav">
+                                <li class="nav-link col-md-6 offset-3">
+                                    <a class="nav-link btn btn-primary" href="#manual-setup"
+                                       onclick="return setMode.manualPage('tokens')">
+                                        Продолжить
+                                    </a>
+                                </li>
+                                <li class="nav-link col-md-6 offset-3">
+                                    <a class="nav-link btn btn-secondary" href="#manual-setup"
+                                       onclick="return setMode.home()">
+                                        В главное меню
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

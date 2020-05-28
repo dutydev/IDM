@@ -12,4 +12,7 @@ urlpatterns = [
     UrlPath.add_get('/login', views.pages.login, name='login'),
     UrlPath.add_post('/login', views.pages.login),
     UrlPath.add_get('/logout', views.pages.logout, name='logout'),
+
+    UrlPath.add_get('/install', views.pages.install, name='install'),
+    UrlPath.add_post('/install', views.pages.install),
 ]

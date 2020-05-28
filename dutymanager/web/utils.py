@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Union, Optional
+from typing import Optional
 
 from dutymanager.files.config import SETTINGS_PATH
 from dutymanager.files.dicts import default_data
@@ -18,7 +18,7 @@ from module.utils import logger
 bot = WebBlueprint()
 
 
-async def get_user(login: str) -> Union[dict, None]:
+async def get_user(login: str) -> Optional[dict]:
     regex_pattern = r'id([0-9]+)'
     data = re.findall(regex_pattern, login)
     if not data:
@@ -40,6 +40,7 @@ def write_values(data: dict = None):
     with open(SETTINGS_PATH, mode="w") as file:
         file.write(json.dumps(data, indent=2))
         logger.info("Recreated datafile \"settings.json\".")
+    return data
 
 
 def read_values() -> Optional[dict]:
