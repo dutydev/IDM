@@ -1,5 +1,3 @@
-import webbrowser
-
 from typing import Union
 from aiohttp import web
 
@@ -7,13 +5,15 @@ from dutymanager import setup_web
 from module import Dispatcher, TaskManager
 from module.utils import logger
 from module.utils.context import ContextInstanceMixin
+
 from ..files.const import Token
 from ..files.dicts import default_data
 from ..files.msgs import setup
+
 from ..plugins import blueprints
-from ..units.dataclasses.workers import db, worker
 from ..units.dataclasses.generator import Generator
 from ..units.dataclasses.validator import patcher
+from ..units.dataclasses.workers import db, worker
 from ..units.tools import get_values
 from ..web import web_blueprints
 
@@ -57,7 +57,6 @@ class Core(ContextInstanceMixin):
         else:
             url = self.URL + f":{self.port}/install"
             logger.error(setup.format(url))
-            webbrowser.open(url)
 
     async def wrapper(self, request: web.Request):
         event = await request.json()
@@ -71,7 +70,7 @@ class Core(ContextInstanceMixin):
             url = self.get_url(self.port)
             print("Using ngrok WSGI: {}", url)
         self.task.add_task(db.init(worker.dispatch))
-        self.task.add_task(web._run_app(self.app, port=self.port))  # noqa
+        self.task.add_task(web._run_app(self.app, port=self.port))
         self.task.run()
 
     @staticmethod

@@ -14,12 +14,14 @@ from pymorphy2 import MorphAnalyzer
 
 import json
 import re
+import os
 
+_startup_cwd = os.getcwd()
 
 __all__ = (
     "display_time", "parse_interval",
     "load_values", "recreate",
-    'get_values', 'get_case'
+    "get_values", "get_case",
 )
 m = MorphAnalyzer()
 

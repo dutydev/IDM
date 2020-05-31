@@ -4,7 +4,7 @@ import traceback
 import typing
 
 from vbml import Patcher
-from vkbottle.framework.framework.handler.user import Handler
+from vkbottle.framework.framework.handler.user import UserHandler
 
 from dutymanager.files.const import Token
 from dutymanager.units.tools import get_values
@@ -22,7 +22,7 @@ class Dispatcher(AsyncHandleManager):
 
     __user: User
     user_id: int
-    on: Handler
+    on: UserHandler
 
     def __init__(
         self,
@@ -55,7 +55,7 @@ class Dispatcher(AsyncHandleManager):
         if not self.setup_mode:
             self.__user: User = User(**get_values(User, locals()))
             self.user_id = user_id or self.__user.user_id
-            self.on: Handler = self.__user.on
+            self.on: UserHandler = self.__user.on
 
         if polling:
             self.run_polling()
@@ -115,16 +115,16 @@ class Dispatcher(AsyncHandleManager):
     def _check_data(self, user_id: int, secret: str) -> bool:
         return (self.secret, self.user_id) == (secret, user_id)
 
-    def dispatch(self, other: "Blueprint"):
+    async def dispatch(self, other: Blueprint):
         self.on.concatenate(other.on)
+        self.event.concatenate(other.event)
         self.error_handler.update(other.error_handler.processors)
         self.__user.middleware.middleware += other.middleware.middleware
 
     def set_blueprints(self, *blueprints: Blueprint):
         for bp in blueprints:
             bp.create(self.api, self.user_id)
-            self.event.concatenate(bp.event)
-            self.dispatch(bp)
+            self.loop.create_task(self.dispatch(bp))
         logger.debug("Blueprints have been successfully loaded")
 
     def set_web_blueprints(self, *blueprints: WebBlueprint):
