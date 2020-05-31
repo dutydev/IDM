@@ -1,4 +1,4 @@
-https://github.com/timoniq/vkbottle/archive/master.zip
+vkbottle~=2.7.5
 jinja2~=2.11.2
 aiohttp==3.6.2
 aiosqlite==0.13.0
@@ -12,14 +12,14 @@ immutables==0.14
 iso8601==0.1.12
 multidict==4.7.6
 pydantic==1.5.1
-PyPika==0.37.6
+PyPika==0.37.7
 PyYAML==5.3.1
-tortoise-orm==0.16.11
+tortoise-orm==0.16.12
 typing-extensions==3.7.4.2
 vbml==0.5.93
-watchgod==0.6
 yarl==1.4.2
 aiohttp-jinja2==1.2.0
 vk-api==11.8.0
 WTForms==2.3.1
 pymorphy2==0.8
+requests~=2.23.0
