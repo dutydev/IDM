@@ -2,8 +2,9 @@
 
 ## Содержание
 1. [Как установить](https://github.com/Elchinchel/IDM-SC-mod#Как-установить)
-2. [Сигналы](https://github.com/Elchinchel/IDM-SC-mod#Сигналы)
-3. [Благодарности](https://github.com/Elchinchel/IDM-SC-mod#Благодарности)
+2. [Как обновить](https://github.com/Elchinchel/IDM-SC-mod#Как-обновить)
+3. [Сигналы](https://github.com/Elchinchel/IDM-SC-mod#Сигналы)
+4. [Благодарности](https://github.com/Elchinchel/IDM-SC-mod#Благодарности)
 
 ## Как установить
 Для установки мы будем использовать сайт [pythonanywhere.com](https://www.pythonanywhere.com/)
@@ -64,6 +65,15 @@ git clone https://github.com/elchinchel/IDM
 
 Кликаем на *подключить сайт*.
 
+## Как обновить
+Вводим в консоль эти команды
+``` bash
+cp -r IDM/database database
+rm -rf IDM
+git clone https://github.com/elchinchel/IDM
+cp -rf database IDM
+```
+Перезагружаем сайт на вкладке *Web*
 
 ## Сигналы
 (здесь не все, потом дополню)\
@@ -103,22 +113,22 @@ git clone https://github.com/elchinchel/IDM
 
 Спасибо за исходный код:
 
-[Юрий Юшманов](https://vk.com/llordrall)
+>[Юрий Юшманов](https://vk.com/llordrall)
 
 
 Спасибо за идеи и помощь в тестировании:
 
-[Аня Фельченко](https://vk.com/klubnishhhka)
-
-[Степа Та](https://vk.com/st_ta)
+>[Аня Фельченко](https://vk.com/klubnishhhka)
+>
+>[Степа Та](https://vk.com/st_ta)
 
 
 Спасибо за помощь в тестировании (от Юрия):
 
-[Ридэль Яумбаев](https://vk.com/ss_20)
-
-[Влад Богданов](https://vk.com/gamtz)
-
-[Владислав Джениа](https://vk.com/klubnishhhka)
-
-[Дмитрий Ким](https://vk.com/iris_wolf)
+>[Ридэль Яумбаев](https://vk.com/ss_20)
+>
+>[Влад Богданов](https://vk.com/gamtz)
+>
+>[Владислав Джениа](https://vk.com/klubnishhhka)
+>
+>[Дмитрий Ким](https://vk.com/iris_wolf)
