@@ -15,7 +15,7 @@ def sinfo(event: SignalEvent) -> str:
     owner = event.api('users.get', user_ids=event.db.duty_id)[0]
 
     new_message(event.api, event.chat.peer_id, message = event.responses['info_duty'].format(
-    версия = __version__, дежурный = user_f(owner), чаты = len(event.db.chats.keys()),
-    ид = event.chat.iris_id, имя = event.chats.name))
+    версия = __version__, владелец = user_f(owner), чаты = len(event.db.chats.keys()),
+    ид = event.chat.iris_id, имя = event.chat.name))
 
     return "ok"
