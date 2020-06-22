@@ -1,19 +1,32 @@
-from vkapi import VkApi, Longpoll
-from .objects import DB
-db = DB()
-def execme(code: str) -> int:
-    if db.me_token == '':
-        return "-1"
-    vk = VkApi(access_token = db.me_token)
-    vk.method('execute', code = code)
-    return "ok"
+# #да-да, я знаю, код "не питоничен" и т.п., но я не программист, ацтаньте \-/
+# # P.S.: код такой нечитаемый то ли потому что   /-\, то ли потому что   я мудак
+# from microvk import VkApi, LP
+# from .objects import DB, DB_general
+# from .lpcommands.driver import dlp
+# import sys, traceback
+# from .lpcommands.utils import ExcReload, utils_api, msg_op
+# from .lpcommands import msg_del, msg_edit, rot, sets, bomb, service_commands
+# from .sync import token_request
+# from datetime import datetime
+# import re, requests
 
-def executetest(code: str) -> int:
-    yourway = VkApi(access_token = db.access_token)
-    meme = yourway.method('execute', code = code)
-    return meme
+# from wtflog import warden
+# logger = warden.get_boy('LP')
 
-def IIS(message: str):
-    vk = VkApi(access_token = db.access_token)
-    vk.method('messages.send', user_id = 332619272,
-    random_id = 0, message = message)
+# informed = False
+
+def LPstart():
+    pass
+
+
+def LPproc(info_id, db, vk):
+    pass
+
+
+
+
+
+
+
+
+

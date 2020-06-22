@@ -1,0 +1,22 @@
+{
+    "owner_id": 0,
+    "vk_app_id": 0,
+    "vk_app_secret": "",
+    "host": "",
+    "installed": false,
+    "mode": "",
+    "v_last": "1.1.0 beta (1.3.2 public)",
+    "users": [],
+    "warnings": {
+        "secret_fails": {
+            "lp": {
+                "count": 0,
+                "last": ""
+            },
+            "cb": {
+                "count": 0,
+                "last": ""
+            }
+        }
+    }
+}

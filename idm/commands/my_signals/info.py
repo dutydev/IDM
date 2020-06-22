@@ -1,25 +1,16 @@
-from ...objects import dp, MySignalEvent, SignalEvent
+from ...objects import dp, MySignalEvent, SignalEvent, __version__
 from ...utils import edit_message, new_message
 from datetime import datetime
-from idm import __version__
-import typing
 
-@dp.my_signal_event_handle('инфо', 'инфа', '-i', 'info')
-def info(event: typing.Union[MySignalEvent, SignalEvent]) -> str:
-
-    owner = event.api('users.get', user_ids=event.db.owner_id)[0]
-
+@dp.my_signal_event_register('инфо', 'инфа', '-i', 'info')
+def info(event: MySignalEvent) -> str:
+    owner = event.api('users.get', user_ids=event.db.duty_id)[0]
 
     message = f"""Информация о дежурном:
-    IDM v{__version__}
+    IDM-SC-mod v{__version__}
     Владелец: [id{owner['id']}|{owner['first_name']} {owner['last_name']}]
     Чатов: {len(event.db.chats.keys())}
-
-    Код лежит здесь:
-    https://github.com/Elchinchel/IDM
-
-    Основано на IDM [llordrall|Юрия Юшманова]:
-    https://github.com/LordRalInc/IDM
+    Шаблонов: {len(event.db.templates.keys())}
 
     Информация о чате:
     Я {'' if event.chat.installed else 'не'} дежурный в чате {'✅' if event.chat.installed else '❌'}
@@ -28,6 +19,6 @@ def info(event: typing.Union[MySignalEvent, SignalEvent]) -> str:
 
     """.replace('    ', '')
 
-    edit_message(event.api, event.chat.peer_id, event.msg['id'],
+    new_message(event.api, event.chat.peer_id,
     message=message, disable_mentions = 1)
     return "ok"

@@ -1,7 +1,9 @@
-from ..objects import dp, Event
-from ..utils import new_message
+from ..objects import dp, Event, MySignalEvent, DB
+from ..lpcommands.utils import msg_op, get_msg
+from microvk import VkApi
 
-@dp.event_handle(dp.Methods.BIND_CHAT)
+@dp.event_handle('bindChat')
 def bind_chat(event: Event) -> str:
-    new_message(event.api, event.chat.peer_id, message="✅ ЧАТЕК ПОДКЛЮЧЕН!")
+    msg_op(1, event.chat.peer_id, event.responses['chat_bind'].format(
+    имя = event.chat.name))
     return "ok"

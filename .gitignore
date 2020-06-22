@@ -4,7 +4,8 @@
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
-__pycache__/
+
+**/__pycache__
 *.py[cod]
 *$py.class
 
@@ -123,9 +124,13 @@ dmypy.json
 ###
 
 .vs/
-database*.json
+.vscode/
+database/*
+!database/general.json
 tests
 *.zip
 test*.py
 *.log
-database.json
+*.log.backup
+LP.py
+*.bat

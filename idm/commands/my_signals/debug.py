@@ -1,8 +1,8 @@
 from ...objects import dp, SignalEvent, MySignalEvent
 from ...utils import edit_message, new_message, delete_message, sticker_message
-from ...lp import IIS
+from ...lpcommands.utils import send_info
 
-@dp.my_signal_event_handle('дебагхелп', 'debughelp')
+@dp.my_signal_event_register('дебагхелп', 'debughelp')
 def debughelp(event: MySignalEvent) -> str:
     if event.args == None:
         new_message(event.api, event.chat.peer_id,
@@ -24,7 +24,7 @@ def debughelp(event: MySignalEvent) -> str:
         \nevent.object:\n{event.object}""")
         return "ok"
 
-@dp.my_signal_event_handle('дебагинфо', 'дебагинфа')
+@dp.my_signal_event_register('дебагинфо', 'дебагинфа')
 def about(event: MySignalEvent) -> str:
     if event.args == None:
         new_message(event.api, event.chat.peer_id,
@@ -43,7 +43,7 @@ def about(event: MySignalEvent) -> str:
         new_message(event.api, event.chat.peer_id, message = f'{ret}')
     return "ok"
 
-@dp.my_signal_event_handle('отчет', 'репорт')
+@dp.my_signal_event_register('отчет', 'репорт')
 def report(event: MySignalEvent) -> str:
-    IIS(event.payload)
+    send_info(event.payload)
     return "ok"

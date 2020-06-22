@@ -1,14 +1,11 @@
 from .. import utils
 from ..objects import dp, Event
-from vkapi import VkApi, VkApiResponseException
+from microvk import VkApi, VkApiResponseException
 
-@dp.event_handle(dp.Methods.SUBSCRIBE_SIGNALS)
+@dp.event_handle('subscribeSignals')
 def subscribe_signals(event: Event) -> str:
-    #sticker_id = 19173
-    message = f"""РАБОТАЕТ 👍
-        Идентификатор чатика: {event.chat.iris_id}
-        """.replace("    ", "")
-
+    message = event.responses['chat_subscribe'].format(имя = event.chat.name,
+    ид = event.chat.iris_id)
     event.db.chats[event.chat.iris_id]['installed'] = True
     event.db.save()
     utils.new_message(event.api, event.chat.peer_id, message=message)

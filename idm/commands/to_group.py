@@ -1,11 +1,11 @@
 import typing
-from .. import utils
+from ..utils import new_message, edit_message, get_msg
 from ..objects import dp, Event
-from vkapi import VkApiResponseException
+from microvk import VkApiResponseException
 import re
 import requests
 
-@dp.event_handle(dp.Methods.TO_GROUP)
+@dp.event_handle('toGroup')
 def to_group(event: Event) -> str:
     def parse_attachments(event: Event) -> typing.Tuple[str, typing.List[str]]:
         def get_payload(text: str) -> str:
@@ -28,13 +28,13 @@ def to_group(event: Event) -> str:
 
             return f"photo{attach['owner_id']}_{attach['id']}_{attach['access_key']}"
 
-        payload = get_payload(event.message['text'])
+        payload = get_payload(event.msg['text'])
 
         attachments = []
         if event.reply_message != None:
             if payload == "":
                 payload = event.reply_message['text']
-            message = utils.get_msg(event.api, event.chat.peer_id, event.reply_message['conversation_message_id'])
+            message = get_msg(event.api, event.chat.peer_id, event.reply_message['conversation_message_id'])
             for attachment in message.get('attachments', []):
                 
                 a_type = attachment['type']
@@ -59,18 +59,18 @@ def to_group(event: Event) -> str:
         data = event.api('wall.post', owner_id=(-1) * event.obj['group_id'], from_group=1, message=text, 
             attachments=",".join(attachments))
 
-        utils.new_message(event.api, event.chat.peer_id, message="✅ Запись опубликованна",
+        new_message(event.api, event.chat.peer_id, message=event.responses['to_group_success'],
             attachment=f"wall-{event.obj['group_id']}_{data['post_id']}")
     except VkApiResponseException as e:
         if e.error_code == 214:
-            utils.new_message(event.api, event.chat.peer_id, message="❗ Ошибка при публикации. Публикация запрещена. Превышен лимит на число публикаций в сутки, либо на указанное время уже запланирована другая запись, либо для текущего пользователя недоступно размещение записи на этой стене.")
+            new_message(event.api, event.chat.peer_id, message=event.responses['to_group_err_forbidden'])
         elif e.error_code == 220:
-            utils.new_message(event.api, event.chat.peer_id, message="❗ Ошибка при публикации. Слишком много получателей.")
+            new_message(event.api, event.chat.peer_id, message=event.responses['to_group_err_recs'])
         elif e.error_code == 222:
-            utils.new_message(event.api, event.chat.peer_id, message="❗ Ошибка при публикации.Запрещено размещать ссылки.")
+            new_message(event.api, event.chat.peer_id, message=event.responses['to_group_err_link'])
         else:
-            utils.new_message(event.api, event.chat.peer_id, message=f"❗ Ошибка при публикации. Ошибка VK: {e.error_msg}.")
+            new_message(event.api, event.chat.peer_id, message=event.responses['to_group_err_vk'] + str({e.error_msg}))
     except:
-        utils.new_message(event.api, event.chat.peer_id, message=f"❗ Ошибка при публикации. Неизвестная ошибка.")
+        new_message(event.api, event.chat.peer_id, message=event.responses['to_group_err_unknown'])
 
     return "ok"

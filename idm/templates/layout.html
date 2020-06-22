@@ -31,14 +31,14 @@
   <link rel="stylesheet" href="/static/css/theme.css" type="text/css">
   <script src="/static/js/site.js"></script>
 
-  <title>Iris duty manager</title>
+  <title>IDM-SC-mod</title>
 </head>
 
-<body class="d-flex flex-column">
+<body class="d-flex flex-column" style="background-color: #1E1E1E">
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="/">
-        <b>IDM</b>
+        <b>IDM-SC-mod</b>
       </a>
     </div>
   </nav>
@@ -48,7 +48,7 @@
       <div class="py-12">
         <div class="container">
           <div class="row">
-            <p>Для работы сайта требуется javascript и cookies, пожалуйстав включите их.</p>
+            <p>Для работы сайта требуются javascript и cookies, включи их</p>
           </div>
         </div>
       </div>
@@ -58,7 +58,7 @@
       <div class="container">
         <div class="row">
           <div class="col-md-12">
-            <p>Для работы сайта требуется cookies, пожалуйста включите их.</p>
+            <p>Для работы сайта требуются cookies, включи их</p>
             <script>
               if (navigator.cookieEnabled) { $("#cookies-blocked").hide(); }
             </script>
@@ -73,15 +73,31 @@
     {% endblock pagecontent %}
   </div>
 
-<!--
-Если тебе вдруг интересно, футер я убрал,
-чтобы тебе не трахали мозги по поводу ошибок,
-наклепанных мной.
-Ссылка на VK автора оригинального IDM, Юрия Юшманова: https://vk.com/llordrall
-Его GitHub: https://github.com/LordRalInc
-VK автора модификации: https://vk.com/iosiphpage
-Мне, кстати, очень интересно, увидит ли вообще кто-нибудь этот текст... xD
--->
+  <footer id="sticky-footer" class="py-5 bg-dark text-white-50">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6 text-center">
+          <small style="font-size: 12px;color: #8E40F6;">Юрий Юшманов</small>
+          <a href="https://github.com/LordRalInc" style = "text-decoration: none;">
+            <img src="/static/img/socials/github.png" style="width:61px; height:25px; background-color: #8E40F6;">
+          </a>
+          <a href="https://vk.com/llordrall">
+            <img src="/static/img/socials/vkmonochrome.png" style="width:25px; height:25px; background-color: #8E40F6;">
+          </a>
+        </div>
+        <div class="d-sm-none"><div class="p-1"></div></div>
+        <div class="col-sm-6 text-center">
+          <small style="font-size: 12px;color: #39eb51;">Иосиф Александрович</small>
+          <a href="https://github.com/Elchinchel" style = "text-decoration: none;"><img
+            src="/static/img/socials/github.png" style="width:61px; height:25px; background-color: #39eb51;">
+          </a>
+          <a href="https://vk.com/iosiphpage"><img
+            src="/static/img/socials/vkmonochrome.png" style="width:25px; height:25px; background-color: #39eb51;">
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
 
 </body>
 

@@ -1,6 +1,5 @@
-from .database import DB
-from .methods import Methods
+from .database import DB, DB_general, ExcDB, __version__, db_gen
 
 from .events import *
-from .handlers import *
+
 from .dispatcher import Dispatcher, dp

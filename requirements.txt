@@ -1,3 +1,0 @@
-markupsafe
-jinja2
-flask

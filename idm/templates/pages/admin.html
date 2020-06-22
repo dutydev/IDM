@@ -1,84 +1,398 @@
-{% extends 'layout.html' %}
-{% block pagecontent %}
+{% extends 'layout.html' %} {% block pagecontent %}
+<div>
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a role="tab" data-toggle="tab" class="nav-link" id="#CB-settings-link" href="#CB-settings">Настройка токенов</a></li>
+        <li class="nav-item"><a role="tab" data-toggle="tab" class="nav-link" id="#Responses-link" href="#Responses">Ответы дежурного</a></li>
+        <li class="nav-item"><a role="tab" data-toggle="tab" class="nav-link" id="#DynTemplates-link" href="#DynTemplates">Анимационные сигналы</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane" id="CB-settings">
+            <div>
+                <div class="py-3">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                {% if warn %}
+                                <div class="alert alert-{{ warn['type'] }}" role="alert">
+                                    {{ warn['text'] }}
+                                </div>
+                                {% endif %}
+                                <p class="text-center" style="color: #45bf64;">Добро пожаловать, {{ username }}</p>
+                                <div class="p-2"></div>
+                                <form action="/api/edit_current_user" method="post">
+                                    <div class="form-group"><label for="access_token">Основной токен VK</label><input type="text" class="form-control" name="access_token" id="access_token" placeholder="{{db.access_token}}">
+                                        <small id="access_token-help" class="form-text">Получить можно по <a
+                                        href="https://oauth.vk.com/authorize?client_id=2685278&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1"
+                                        target="_blank">этой ссылке</a>. Нажми "Разрешить", скопируй текст из адресной строки и вставь сюда.
+                                      </small>
+                                    </div>
+                                    <div class="form-group"><label for="me_token">Токен VK Me</label>
+                                        <input type="text" class="form-control" name="me_token" id="me_token" placeholder="{{db.me_token}}" />
+                                        <small id="me_token-help" class="form-text">Получить можно по <a
+                                        href="https://oauth.vk.com/authorize?client_id=6146827&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1"
+                                        target="_blank">этой ссылке</a>. Нажми "Разрешить", скопируй текст из адресной строки и вставь сюда.
+                                      </small>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group mr-auto"><button class="btn btn-primary">Сохранить</button>
+                                        </div>
+                                        <div class="form-group ml-auto-sm">
+                                            <button class="btn btn-secondary" name="id" value="{{db.duty_id}}" formaction="/api/connect_to_iris">Отправить конфигурационную фразу Ирису</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-<div class="py-5">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <h1>Настройки</h1>
-      </div>
-      <div class="col-md-12">
-        <form action="/api/edit_bot" method="post">
-
-          <div class="form-group">
-            <label for="secret">Секретный код дежурного</label>
-            <input type="text" class="form-control" name="secret" id="secret" aria-describedby="secret-help" onkeyup="phrase(this)"
-              placeholder="8+ символов без пробелов" pattern="([a-zA-Z0-9_]{8,})" value="{{db.secret}}" required>
-            <small id="secret-help" class="form-text text-muted">
-              Секретный код дежурного будет отправляться при каждом сигнале от Ириса. Её смысл в проверке достоверности запроса. Никому не говорите секретный код дежурного.
-            </small>
-          </div>
-
-          <div class="form-group">
-            <label for="access_token">Токен ВК</label>
-            <input type="text" class="form-control" name="access_token" id="access_token"
-              aria-describedby="access_token-help" placeholder="85 символов" pattern="([a-zA-Z0-9*]{85})" value="{{db.access_token}}" required>
-            <small id="access_token-help" class="form-text text-muted">
-              Как вариант получить токен от Kate Mobile 
-              <a href="https://vkhost.github.io/" target="_blank">тут</a>.
-            </small>
-          </div>
-
-          <div class="form-group">
-            <label for="me_token">Токен VK Me для отправки исчезающих сообщений ("бомб")</label>
-            <input type="text"
-              class="form-control" name="me_token" id="me_token" aria-describedby="me_token-help" placeholder="85 символов" pattern="([a-zA-Z0-9]{85})"
-              value="{{db.me_token}}>
-            <small id="me_token-help" class="form-text text-muted">
-              <a href="https://vkhost.github.io/" target="_blank">Тут</a>
-              же, только токен от VK Me.
-            </small>
-          </div>
-
-          <div class="form-group" style="display: none;">
-            <label for="me_token">Токен ВК Ми для скрытия онлайна</label>
-            <input type="text" class="form-control" name="me_token" id="me_token" aria-describedby="me_token-help"
-              placeholder="85 символов" pattern="([a-zA-Z0-9*]{85})" value="{{db.me_token}}">
-            <small id="me_token-help" class="form-text text-muted">Help text</small>
-          </div>
-
-          <div class="form-group" style="display: none;">
-            <label for="bp_token">Токен BotPod для добавления групп</label>
-            <input type="text" class="form-control" name="bp_token" id="bp_token" aria-describedby="bp_token-help"
-              placeholder="85 символов" pattern="([a-zA-Z0-9*]{85})" value="{{db.bp_token}}">
-            <small id="bp_token-help" class="form-text text-muted">Help text</small>
-          </div>
-          <input id="uid" name="uid" hidden>
-          <input id="token" name="token" hidden>
-
-          <script>           
-            $("#uid").val(cookies.get('uid'));
-            $("#token").val(cookies.get('token'));
-          </script>
-
-          <div class="form-group">
-            <button class="btn btn-primary" type="submit">Сохранить</button>
-          </div>
-        </form>
-      </div>
-      <div class="col-md-12">
-        <div class="form-group">
-          <p>Фраза, которую надо отправить в <a href="https://vk.me/-174105461" target="_blank">ЛС Iris</a>:</p>
-          <p>+api <span id="sectet_phrase_span">{{db.secret}}</span> https://<span id="host_span">{{db.host}}</span>/callback</p>
+            </div>
         </div>
-        <script type="text/javascript">
-          function phrase(e) {
-            $("#sectet_phrase_span").text($(e).val())
-          }
-        </script>
-      </div>
-    </div>
-  </div>
-</div>
+        <div role="tabpanel" class="tab-pane" id="Responses">
+            <div>
+                <div class="py-1">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <small class="text-muted">криво, да, я знаю, потом может переделаю, ацтань</small>
+                                <p class="text-center">&lt;br&gt; - перенос строки</p>
+                                <form action="/api/edit_responses" class="text-center" method="POST">
+                                    <div class="form-group"><button type="button" class="btn-sm btn-secondary" data-toggle="collapse" data-target="#chat">Привязка к чату</button>
+                                        <div id="chat" class="collapse">
+                                            <div class="form-group"><label for="chat_bind" style="color: #d89999;">Связка с чатом</label>
+                                                <small id="chat_bind-help" class="form-text text-muted">Отправляется при команде !связать (переменные: {имя} - название чата)</small>
+                                                <input type="text" class="form-control" name="chat_bind" id="chat_bind" />
+                                                <small id="" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['chat_bind']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="chat_subscribe" style="color: #d89999;">Подписка на сигналы в чате</label>
+                                                <small id="-help" class="form-text text-muted">Отправляется, когда вы становитесь дежурным в чате
+                                (переменные: {имя} - название чата, {ид} - Iris ID чата)</small>
+                                                <input type="text" class="form-control" name="chat_subscribe" id="chat_subscribe" />
+                                                <small id="chat_subscribe" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['chat_subscribe']}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><button type="button" class="btn-sm btn-secondary" data-toggle="collapse" data-target="#deletions">Удаление сообщений</button>
+                                        <div id="deletions" class="collapse">
+                                            <div class="form-group"><label for="del_self" style="color: #d89999;">Удаление своих сообщений</label>
+                                                <small id="del_self-help" class="form-text text-muted">Текст, на который редактируется сообщение с командой</small>
+                                                <input type="text" class="form-control" name="del_self" id="del_self" />
+                                                <small id="del_self" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['del_self']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="del_process" style="color: #d89999;">Удаление сообщений в чате</label>
+                                                <small id="del_process-help" class="form-text text-muted">Отправляется, когда приходит сигнал об удалении сообщений (-смс или запрещенные ссылки)</small>
+                                                <input type="text" class="form-control" name="del_process" id="del_process" />
+                                                <small id="del_process" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['del_process']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="del_success" style="color: #d89999;">Сообщения удалены</label>
+                                                <small id="del_success-help" class="form-text text-muted">Отправляется, когда все необходимые сообщения удалены</small>
+                                                <input type="text" class="form-control" name="del_success" id="del_success" />
+                                                <small id="del_success" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['del_success']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="del_err_924" style="color: #d89999;">Нет доступа</label>
+                                                <small id="del_err_924-help" class="form-text text-muted">Отправляется, когда дежурный не может удалить сообщения (например если он не администратор в чате)</small>
+                                                <input type="text" class="form-control" name="del_err_924" id="del_err_924" />
+                                                <small id="del_err_924" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['del_err_924']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="del_err_vk" style="color: #d89999;">Ошибка ВК</label>
+                                                <small id="del_err_vk-help" class="form-text text-muted">Отправляется, когда ВК присылает сообщение об ошибке ({ошибка} - ответ, присланный ВК)</small>
+                                                <input type="text" class="form-control" name="del_err_vk" id="del_err_vk" />
+                                                <small id="del_err_vk" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['del_err_vk']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="del_err_not_found" style="color: #d89999;">Не найдено</label>
+                                                <small id="del_err_not_found-help" class="form-text text-muted">Отправляется, если сообщения не найдены</small>
+                                                <input type="text" class="form-control" name="del_err_not_found" id="del_err_not_found" />
+                                                <small id="del_err_not_found" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['del_err_not_found']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="del_err_unknown" style="color: #d89999;">Неизвестная ошибка</label>
+                                                <small id="del_err_unknown-help" class="form-text text-muted">Отправляется в случае остальных ошибок</small>
+                                                <input type="text" class="form-control" name="del_err_unknown" id="del_err_unknown" />
+                                                <small id="del_err_unknown" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['del_err_unknown']}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><button type="button" class="btn-sm btn-secondary text-center" data-toggle="collapse" data-target="#user-return">Возвращение пользователей</button>
+                                        <div id="user-return" class="collapse">
+                                            <div class="form-group"><label for="user_ret_ban_expired" style="color: #d89999;">Истек срок бана</label>
+                                                <small id="user_ret_ban_expired-help" class="form-text text-muted">Отправляется, когда истекает срок бана пользователя и дежурный пытается добавить его в чат
+                                              ({ссылка} - имя и фамилия пользователя, {имя} - название чата)</small>
+                                                <input type="text" class="form-control" name="user_ret_ban_expired" id="user_ret_ban_expired" />
+                                                <small id="user_ret_ban_expired" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['user_ret_ban_expired']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="user_ret_process" style="color: #d89999;">Возврат пользователя</label>
+                                                <small id="user_ret_process-help" class="form-text text-muted">Отправляется в процессе возврата пользователя в чат
+                                              ({ссылка} - имя и фамилия пользователя, {имя} - название чата)</small>
+                                                <input type="text" class="form-control" name="user_ret_process" id="user_ret_process" />
+                                                <small id="user_ret_process" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['user_ret_process']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="user_ret_success" style="color: #d89999;">Успешный возврат</label>
+                                                <small id="user_ret_success-help" class="form-text text-muted">Отправляется, если пользователь успешно добавлен в чат
+                                              ({ссылка} - имя и фамилия пользователя, {имя} - название чата)
+                                            </small>
+                                                <input type="text" class="form-control" name="user_ret_success" id="user_ret_success" />
+                                                <small id="user_ret_success" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['user_ret_success']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="user_ret_err_no_access" style="color: #d89999;">Нет доступа</label>
+                                                <small id="user_ret_err_no_access-help" class="form-text text-muted">Отправляется, если дежурный не может добавить пользователя
+                                              (пользователь уже в беседе или не в друзьх дежурного) ({ссылка} - имя и фамилия пользователя, {имя} - название чата)
+                                            </small>
+                                                <input type="text" class="form-control" name="user_ret_err_no_access" id="user_ret_err_no_access" />
+                                                <small id="user_ret_err_no_access" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['user_ret_err_no_access']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="user_ret_err_vk" style="color: #d89999;">Ошибка ВК</label>
+                                                <small id="user_ret_err_vk-help" class="form-text text-muted">Отправляется, если ВК присылает ошибку на попытку добавить пользователя
+                                              ({ссылка} - имя и фамилия пользователя, {ошибка} - ответ ВК, {имя} - название чата)
+                                            </small>
+                                                <input type="text" class="form-control" name="user_ret_err_vk" id="user_ret_err_vk" />
+                                                <small id="user_ret_err_vk" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['user_ret_err_vk']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="user_ret_err_unknown" style="color: #d89999;">Неизвестная ошибка</label>
+                                                <small id="user_ret_err_unknown-help" class="form-text text-muted">Отправляется при возникновении других ошибок
+                                              ({ссылка} - имя и фамилия пользователя, {ошибка} - ответ ВК, {имя} - название чата)
+                                            </small>
+                                                <input type="text" class="form-control" name="user_ret_err_unknown" id="user_ret_err_unknown" />
+                                                <small id="user_ret_err_unknown" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['user_ret_err_unknown']}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><button type="button" class="btn-sm btn-secondary text-center" data-toggle="collapse" data-target="#to-group">Публикация в группу</button>
+                                        <div id="to-group" class="collapse">
+                                            <div class="form-group"><label for="to_group_success" style="color: #d89999;">Опубликовано</label>
+                                                <small id="to_group_success-help" class="form-text text-muted">Отправляется, если запись успешно опубликована</small>
+                                                <input type="text" class="form-control" name="to_group_success" id="to_group_success" />
+                                                <small id="to_group_success" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['to_group_success']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="to_group_err_forbidden" style="color: #d89999;">Публикация запрещена</label>
+                                                <small id="to_group_err_forbidden-help" class="form-text text-muted">Отправляется, если превышен лимит публикаций или у пользователя
+                                              недостаточно прав</small>
+                                                <input type="text" class="form-control" name="to_group_err_forbidden" id="to_group_err_forbidden" />
+                                                <small id="to_group_err_forbidden" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['to_group_err_forbidden']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="to_group_err_recs" style="color: #d89999;">Слишком много получаетелей</label>
+                                                <small id="to_group_err_recs-help" class="form-text text-muted">Не знаю, когда эта ошибка возникает, но раз ВК ее указали, она тут есть)</small>
+                                                <input type="text" class="form-control" name="to_group_err_recs" id="to_group_err_recs" />
+                                                <small id="to_group_err_recs" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['to_group_err_recs']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="to_group_err_link" style="color: #d89999;">Запрещено размещать ссылки</label>
+                                                <small id="to_group_err_link-help" class="form-text text-muted">Че тут добавить?</small>
+                                                <input type="text" class="form-control" name="to_group_err_link" id="to_group_err_link" />
+                                                <small id="to_group_err_link" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['to_group_err_link']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="to_group_err_vk" style="color: #d89999;">Ошибка ВК</label>
+                                                <small id="to_group_err_vk-help" class="form-text text-muted">({ошибка} - ответ ВК)</small>
+                                                <input type="text" class="form-control" name="to_group_err_vk" id="to_group_err_vk" />
+                                                <small id="to_group_err_vk" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['to_group_err_vk']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="to_group_err_unknown" style="color: #d89999;">Неизвестная ошибка</label>
+                                                <small id="to_group_err_unknown-help" class="form-text text-muted">Отправляется в случае других ошибок</small>
+                                                <input type="text" class="form-control" name="to_group_err_unknown" id="to_group_err_unknown" />
+                                                <small id="to_group_err_unknown" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['to_group_err_unknown']}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><button type="button" class="btn-sm btn-secondary text-center" data-toggle="collapse" data-target="#repeat">Команда "повтори"</button>
+                                        <div id="repeat" class="collapse">
+                                            <!-- <div class="form-group"><label for="repeat_forbidden_words">Запрещенные слова</label>
+                                            <small id="repeat_forbidden_words-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
+                                            <input type="text" class="form-control" name="repeat_forbidden_words" id="repeat_forbidden_words" />
+                                            <small id="repeat_forbidden_words" class="form-text text-muted">Текущее значение:</small>
+                                            <p>{{db.responses['repeat_forbidden_words']}}</p>
+                                        </div> -->
+                                            <div class="form-group"><label for="repeat_if_forbidden" style="color: #d89999;">Нет доступа</label>
+                                                <small id="repeat_if_forbidden-help" class="form-text text-muted">Отправляется, если пользователь, вызвавший команду, не находится в
+                                              списке доверенных</small>
+                                                <input type="text" class="form-control" name="repeat_if_forbidden" id="repeat_if_forbidden" />
+                                                <small id="repeat_if_forbidden" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['repeat_if_forbidden']}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><button type="button" class="btn-sm btn-secondary text-center" data-toggle="collapse" data-target="#pings">Пинг</button>
+                                        <div id="pings" class="collapse">
+                                            <div class="form-group"><label for="ping_duty" style="color: #d89999;">Команда ".д пинг"</label>
+                                                <small id="ping_duty-help" class="form-text text-muted">Отправляется, когда кто-то в чате отправляет вышеуказанную команду
+                                              ({ответ} - "ПОНГ", "КОНГ" и т.п. {время} - время в секундах (только цифры))
+                                            </small>
+                                                <input type="text" class="form-control" name="ping_duty" id="ping_duty" />
+                                                <small id="ping_duty" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['ping_duty']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="ping_myself" style="color: #d89999;">Команда ".с пинг"</label>
+                                                <small id="ping_myself-help" class="form-text text-muted">Ну ты понял ({ответ} - "ПОНГ", "КОНГ" и т.п.
+                                              {время} - время в секундах (только цифры) {обработано} - время между получением сигнала от ириса и отправкой сообщения
+                                              {пингвк} - время ответа ВКонтакте)</small>
+                                                <input type="text" class="form-control" name="ping_myself" id="ping_myself" />
+                                                <small id="ping_myself" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['ping_myself']}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><button type="button" class="btn-sm btn-secondary text-center" data-toggle="collapse" data-target="#infos">Информация о дежурном</button>
+                                        <div id="infos" class="collapse">
+                                            <div class="form-group"><label for="info_duty" style="color: #d89999;">Вызов из чата</label>
+                                                <small id="info_duty-help" class="form-text text-muted">Отправляется, когда кто-то вызывает команду ".д инфо" ({версия} - версия установленного приемника,
+                                              {дежурный} - твои имя и фамилия, {чаты} - количество связанных чатов (цифра), {ид} - идентификатор чата во вселенной ириса
+                                              {имя} - название чата)</small>
+                                                <input type="text" class="form-control" name="info_duty" id="info_duty" />
+                                                <small id="info_duty" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['info_duty']}}</p>
+                                            </div>
+                                            <div class="form-group"><label for="info_myself" style="color: #d89999;">Вызов самим собой (брух)</label>
+                                                <small id="info_myself-help" class="form-text text-muted">Отправляется, при вызове команды ".с инфо" ({версия} - версия установленного приемника,
+                                              {дежурный} - твои имя и фамилия, {чаты} - количество связанных чатов (цифра), {ид} - идентификатор чата во вселенной ириса
+                                              {имя} - название чата)</small>
+                                                <input type="text" class="form-control" name="info_myself" id="info_myself" />
+                                                <small id="info_myself" class="form-text text-muted">Текущее значение:</small>
+                                                <p>{{db.responses['info_myself']}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <button type="button" class="btn-sm btn-secondary text-center" data-toggle="collapse" data-target="#trusting">Доверенность</button>
+                                    <div id="trusting" class="collapse">
+                                        <div class="form-group"><label for="not_in_trusted">(не отправляется почти никогда, забей на это поле)</label>
+                                            <small id="not_in_trusted-help" class="form-text text-muted">потом добавлю сигналы для дежа, мож тогда понадобится</small>
+                                            <input type="text" class="form-control" name="not_in_trusted" id="not_in_trusted" />
+                                            <small id="not_in_trusted" class="form-text text-muted">Текущее значение:</small>
+                                            <p>{{db.responses['not_in_trusted']}}</p>
+                                        </div>
+                                        <div class="form-group"><label for="trusted_err_no_reply"></label>
+                                            <small id="trusted_err_no_reply-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
+                                            <input type="text" class="form-control" name="trusted_err_no_reply" id="trusted_err_no_reply" />
+                                            <small id="trusted_err_no_reply" class="form-text text-muted">Текущее значение:</small>
+                                            <p>{{db.responses['trusted_err_no_reply']}}</p>
+                                        </div>
+                                        <div class="form-group"><label for="trusted_err_in_tr"></label>
+                                            <small id="trusted_err_in_tr-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
+                                            <input type="text" class="form-control" name="trusted_err_in_tr" id="trusted_err_in_tr" />
+                                            <small id="trusted_err_in_tr" class="form-text text-muted">Текущее значение:</small>
+                                            <p>{{db.responses['trusted_err_in_tr']}}</p>
+                                        </div>
+                                        <div class="form-group"><label for="trusted_err_not_in_tr"></label>
+                                            <small id="trusted_err_not_in_tr-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
+                                            <input type="text" class="form-control" name="trusted_err_not_in_tr" id="trusted_err_not_in_tr" />
+                                            <small id="trusted_err_not_in_tr" class="form-text text-muted">Текущее значение:</small>
+                                            <p>{{db.responses['trusted_err_not_in_tr']}}</p>
+                                        </div>
+                                        <div class="form-group"><label for="trusted_success_add"></label>
+                                            <small id="trusted_success_add-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
+                                            <input type="text" class="form-control" name="trusted_success_add" id="trusted_success_add" />
+                                            <small id="trusted_success_add" class="form-text text-muted">Текущее значение:</small>
+                                            <p>{{db.responses['trusted_success_add']}}</p>
+                                        </div>
+                                        <div class="form-group"><label for="trusted_success_rem"></label>
+                                            <small id="trusted_success_rem-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
+                                            <input type="text" class="form-control" name="trusted_success_rem" id="trusted_success_rem" />
+                                            <small id="trusted_success_rem" class="form-text text-muted">Текущее значение:</small>
+                                            <p>{{db.responses['trusted_success_rem']}}</p>
+                                        </div>
+                                        <div class="form-group"><label for="trusted_list"></label>
+                                            <small id="trusted_list-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
+                                            <input type="text" class="form-control" name="trusted_list" id="trusted_list" />
+                                            <small id="trusted_list" class="form-text text-muted">Текущее значение:</small>
+                                            <p>{{db.responses['trusted_list']}}</p>
+                                        </div>
+                                    </div> -->
+                                    <div class="form-group"><button class="btn btn-primary" type="submit">Сохранить</button></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="DynTemplates">
+            <div class="py-4">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <small class="text-muted">(( Да, дизайн - говно, потом починю (нет) ))</small> {% if db.dyntemplates %}
+                            <div class="accordion" id="accordionAnims">
+                                {% for template in db.dyntemplates %}
+                                <div class="card">
+                                    <div class="card-header" id="{{template['name']}}-head">
+                                        <h5 class="mb-0">
+                                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#{{template['name']}}" aria-controls="{{template['name']}}">
+                              {{template['name']}}
+                            </button>
+                                        </h5>
+                                    </div>
+                                    <div id="{{template['name']}}" class="collapse" aria-labelledby="{{template['name']}}-head" data-parent="#accordionAnims">
+                                        <div class="card-body">
+                                            <form action="/api/edit_dyntemplates" method="POST">
+                                                <div class="form-row">
+                                                    <div class="col-md-4 col-lg-6">
+                                                        <label for="{{template['name']}}-name">Название:</label>
+                                                        <input name="new_name" id="{{template['name']}}-name" value="{{template['name']}}" placeholder="Не может содержать пробелы" pattern="[^ ]+" class="form-control mb-1" />
+                                                    </div>
+                                                    <div class="col-md-4 col-lg-3">
+                                                        <label for="{{template['name']}}-speed">Задержка между кадрами:</label>
+                                                        <input type="number" step="0.1" name="speed" class="form-control mb-1" id="{{template['name']}}-speed" value="{{template['speed']}}" />
+                                                    </div>
+                                                    <div class="col-md-4 col-lg-3">
+                                                        <label for="{{template['name']}}-qty">Количество кадров:</label>
+                                                        <input type="number" name="length" class="form-control mb-1" id="{{template['name']}}-qty" value="{{template['frames']|length}}" />
+                                                    </div>
+                                                </div>
+                                                <p>Кадры:</p>
+                                                {% for i in range(template['frames']|length) %}
+                                                <input type="text" name="frame{{i}}" class="form-control mb-1" value="{{template['frames'][i]}}" /> {% endfor %}
+                                                <div class="form-row">
+                                                    <div class="form-group mr-auto">
+                                                        <button class="form-group btn btn-secondary" name="temp_name" value="{{template['name']}}">Сохранить</button>
+                                                    </div>
+                                                    <div class="form-group ml-auto-sm">
+                                                        <button class="btn btn-danger" name="name" formaction="/api/delete_anim" value="{{template['name']}}">Удалить</button>
+                                                    </div>
+                                                  </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p class="text-center">У тебя пока нет ни одной анимки<br>Но это легко решается нажатием на кнопку ниже ;)</p>
+                            {% endif %}
+                            <form action="/api/add_dyntemplate" method="POST">
+                                <button class="btn btn-secondary mt-2">Добавить новую анимку</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var c_tab = /#.+/.exec(location);
+        if (!c_tab) {
+            c_tab = '#CB-settings'
+        } else {
+            c_tab = c_tab[0]
+        }
+        $(c_tab).tab('show');
+        document.getElementById(c_tab + '-link').className = 'nav-link active'
+    </script>
+</div>
 {% endblock pagecontent %}
