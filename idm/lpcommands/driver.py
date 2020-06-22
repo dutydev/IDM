@@ -74,7 +74,7 @@ class DriverLP:
     def launch(self, update, db, vk, time, msg = 0):
         'Запускает выполнение команды, если она есть в списке зарегистрированных'
         nd = ND(update, db, vk, time, parse(msg, 1) if msg else 0)
-        name = nd[5]
+        name = nd.msg['command']
         logger(f'Выполняю команду "{name}"')
         if name in self.commands_list:
             return self.commands_functions[name](nd)

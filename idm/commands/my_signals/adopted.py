@@ -3,8 +3,9 @@ from ...objects import dp, MySignalEvent
 from ...lpcommands import bomb, msg_del, dlp, ND
 from ...lpcommands.anims import animation_names
 
+
 def nd_adapt(event):
-    return [0, event.msg['id'], 0, event.chat.peer_id, 0, event.msg['text'].replace('.с ', ''),
+    return [0, event.msg['id'], 0, event.chat.peer_id, 0, event.msg['text'],
     0, {"reply": event.msg.get('reply_message')}]
 
 
