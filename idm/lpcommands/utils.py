@@ -122,11 +122,11 @@ def execme(code: str) -> int:
     return vk('execute', code = code)
 
 
-def gen_secret(chars = 'abcdefghijklmnopqrstuvwxyz0123456789_-'):
+def gen_secret(chars = 'abcdefghijklmnopqrstuvwxyz0123456789'):
     secret = ''
     length = random.randint(64, 80)
     while len(secret) < length:
-        secret += chars[random.randint(0, 37)]
+        secret += chars[random.randint(0, 35)]
     return secret
 
 
