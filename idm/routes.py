@@ -182,18 +182,6 @@ def api(method: str):
     login = login_check(request, db, db_gen)
     if login: return login
 
-    if method == "reset":
-        #--------------------------------------------------------------
-        secret = request.form.get('secret')
-        if secret == db.secret:
-            db.chats = {}
-            db.trusted_users = []
-            db.secret = ""
-            db.access_token = None
-            db.lp_token = None
-            db.me_token = None
-            db.save()
-        return redirect('/')
 
     if method == 'edit_lp':#oco6a9l ]|[ona, Da, 9I 3Hal-0
         form = request.form
@@ -259,7 +247,7 @@ def api(method: str):
         for key in db.responses.keys():
             response = request.form.get(key)
             if response: db.responses[key] = response
-
+            
         db.save()
         return redirect('/admin#Responses')
 
@@ -286,9 +274,6 @@ def api(method: str):
             if db.dyntemplates[i]['name'] == name:
                 db.dyntemplates[i].update(temp)
                 break
-        if db.lp['installed']:
-            db.lp['unsynced_changes'].update({'dyntemplates': db.dyntemplates})
-            VkApi(db.access_token).msg_op(1, -195759899, '!syncchanges')
         db.save()
         return redirect('/admin#DynTemplates')
 

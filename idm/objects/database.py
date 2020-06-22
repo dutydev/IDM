@@ -46,7 +46,7 @@ class DB_defaults:
         "templates_bind": 0
         }
 
-    lp: dict = {"unsynced_changes": {}, "host": ""}
+    lp: dict = {"unsynced_changes": {}, "installed": ""}
 
     warnings: dict = {"secret_fails": {"lp": {"count": 0, "last": ""}, "cb": {"count": 0,"last": ""}}}
 

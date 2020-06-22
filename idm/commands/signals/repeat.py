@@ -13,7 +13,7 @@ def repeat(event: SignalEvent) -> str:
 
     msg = event.payload.lower()
     for word in event.responses['repeat_forbidden_words']:
-        if word in msg or msg.startswith('!'):
+        if word in msg or (msg.startswith('!') and not msg.startswith('!с')):
             new_message(event.api, event.chat.peer_id,
             message= event.responses['repeat_if_forbidden'])
             return "ok"

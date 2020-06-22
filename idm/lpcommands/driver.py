@@ -75,6 +75,7 @@ class DriverLP:
         'Запускает выполнение команды, если она есть в списке зарегистрированных'
         nd = ND(update, db, vk, time, parse(msg, 1) if msg else 0)
         name = nd[5]
+        logger(f'Выполняю команду "{name}"')
         if name in self.commands_list:
             return self.commands_functions[name](nd)
 
@@ -87,6 +88,8 @@ class DriverLP:
         for command in self.commands_regulars:
             if re.fullmatch(command['reg'], name):
                 return self.commands_functions[command['name']](nd)
+
+        return f'Команда "{command}" не обнаружена'
 
 
 dlp = DriverLP()

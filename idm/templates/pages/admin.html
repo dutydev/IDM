@@ -219,9 +219,16 @@
                                             <small id="repeat_forbidden_words" class="form-text text-muted">Текущее значение:</small>
                                             <p>{{db.responses['repeat_forbidden_words']}}</p>
                                         </div> -->
-                                            <div class="form-group"><label for="repeat_if_forbidden" style="color: #d89999;">Нет доступа</label>
-                                                <small id="repeat_if_forbidden-help" class="form-text text-muted">Отправляется, если пользователь, вызвавший команду, не находится в
-                                              списке доверенных</small>
+                                        <div class="form-group"><label for="not_in_trusted" style="color: #d89999;">Нет доступа</label>
+                                            <small id="not_in_trusted-help" class="form-text text-muted">Отправляется, если пользователь, вызвавший команду, не находится в
+                                          списке доверенных</small>
+                                            <input type="text" class="form-control" name="not_in_trusted" id="not_in_trusted" />
+                                            <small id="not_in_trusted" class="form-text text-muted">Текущее значение:</small>
+                                            <p>{{db.responses['not_in_trusted']}}</p>
+                                        </div>
+                                            <div class="form-group"><label for="repeat_if_forbidden" style="color: #d89999;">Запрещенная команда</label>
+                                                <small id="repeat_if_forbidden-help" class="form-text text-muted">Отправляется, если в тексте присутствуют слова
+                                                    "передать", "купить", "повысить", "завещание", "модер" или текст начинается с восклицательного знака (!)</small>
                                                 <input type="text" class="form-control" name="repeat_if_forbidden" id="repeat_if_forbidden" />
                                                 <small id="repeat_if_forbidden" class="form-text text-muted">Текущее значение:</small>
                                                 <p>{{db.responses['repeat_if_forbidden']}}</p>

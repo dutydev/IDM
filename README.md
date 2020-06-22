@@ -51,6 +51,10 @@ git clone https://github.com/elchinchel/IDM
 
 Поздравляю, у тебя теперь есть дежурный. Подключиться к нужному чату можно, написав в нем команду `+api`
 
+### Внимание! Через три месяца на бесплатном тарифе сайт отключается!
+Чтобы этого не произошло, нужно как минимум раз в три месяца заходить в аккаунт и нажимать на эту кнопку\
+[![](https://sun9-45.userapi.com/jCRPUmhR1BziUy5dWC-9RFd6ymSU9zbNC3DgCg/AlaKKXFA_Ko.jpg)](https://sun9-45.userapi.com/jCRPUmhR1BziUy5dWC-9RFd6ymSU9zbNC3DgCg/AlaKKXFA_Ko.jpg)
+
 ### Как создать приложение ВК
 Переходим по ссылке [https://vk.com/editapp?act=create](https://vk.com/editapp?act=create "https://vk.com/editapp?act=create"), в поле платформа выбираем *сайт*
 
@@ -62,6 +66,7 @@ git clone https://github.com/elchinchel/IDM
 
 
 ## Сигналы
+(здесь не все, потом дополню)\
 Команды могут начинаться как с "!с", так и с ".с"
 
 ### Доступные в любом чате с Iris
