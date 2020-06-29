@@ -12,27 +12,14 @@ def handler(event: Event, func):
     try:
         return func(event)
     except VkApiResponseException as e:
-        data = {
-                "тип":"vk_api",
-                "код_ошибки":e.error_code,
-                "сообщение":e.error_msg,
-                "параметры":e.request_params,
-                "traceback":traceback.format_exc()
-        }
+        data = f"Ошибка VK\nКод ошибки:{e.error_code}\nСообщение:{e.error_msg}\nПараметры:{e.request_params}\n{traceback.format_exc()}"
         logger.error(data)
         return data
     except Exception as e:
-        data = {
-            "тип":e.__class__.__name__,
-            "ошибка":f"{e}",
-            "traceback":traceback.format_exc()
-        }
+        data = traceback.format_exc()
         logger.error(data)
         return data
     except:
-        data = {
-            "тип":"неизвестный",
-            "traceback":traceback.format_exc()
-        }
+        data = traceback.format_exc()
         logger.error(data)
         return data

@@ -44,6 +44,7 @@ def att_parse(attachments):
     if attachments:
         for i in attachments:
             att_t = i['type']
+            if att_t in {'link', 'article'}: continue
             atts.append(att_t + str(i[att_t]['owner_id']) +
             '_' + str(i[att_t]['id']))
             if i[att_t].get('access_key'):

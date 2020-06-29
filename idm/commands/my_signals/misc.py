@@ -1,7 +1,7 @@
 from ...objects import dp, MySignalEvent, DB
 from ...utils import edit_message, new_message, delete_message, sticker_message
 from ...lpcommands.utils import msg_op, exe
-from datetime import datetime, date
+from datetime import datetime, date, timezone, timedelta
 import time, re, requests, os, io
 from microvk import VkApi
 
@@ -34,9 +34,14 @@ def allo(event: MySignalEvent) -> str:
 
 @dp.my_signal_event_register('время')
 def timecheck(event: MySignalEvent) -> str:
-    ct = datetime.now()
+    ct = datetime.now(timezone(timedelta(hours=+3))).strftime("%d of %B %Y (%j day in year)\n%H:%M:%S (%I:%M %p)")
     new_message(event.api, event.chat.peer_id, message = ct)
-        
+    return "ok"
+
+
+@dp.my_signal_event_register('ошибка')
+def raise_error(event: MySignalEvent) -> str:
+    raise Exception('Whoops!')
 
 @dp.my_signal_event_register('взлом')
 def ass_crackin(event: MySignalEvent) -> str:

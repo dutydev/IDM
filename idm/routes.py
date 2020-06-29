@@ -370,8 +370,12 @@ def callback():
         return 'Неверная секретка', 500
 
     d = dp.event_run(event)
-    if d == "ok": d = {"response":"ok"}
-    return json.dumps(d, ensure_ascii = False)
+    if d == "ok":
+        return json.dumps({"response":"ok"}, ensure_ascii = False)
+    elif type(d) == dict:
+        return json.dumps(d, ensure_ascii = False)
+    else:
+        return r"\\\\\ашипка хэз бин произошла/////" + '\n' + d
 
 
 @app.errorhandler(404)
