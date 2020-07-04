@@ -35,12 +35,12 @@ def tr_user_op(event, error, typ):
         ссылка = user_f(tr_user)))
     return "ok"
 
-@dp.my_signal_event_register('+дов')
+@dp.my_signal_event_register('+дов', "доверять")
 def add_trusted_user(event: MySignalEvent) -> str:
     return tr_user_op(event, 'in_tr', 'add')
 
 
-@dp.my_signal_event_register('-дов')
+@dp.my_signal_event_register('-дов', "перестать")
 def remove_trusted_user(event: MySignalEvent) -> str:
     return tr_user_op(event, 'not_in_tr', 'rem')
 
