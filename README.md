@@ -40,6 +40,8 @@ git clone https://github.com/elchinchel/IDM
 
 [![](https://sun9-58.userapi.com/BQNI2zd65Erkq0AU9DlMfohvqJ8id8rFZ0yx3A/UVdo0UBPYSo.jpg)](https://sun9-58.userapi.com/BQNI2zd65Erkq0AU9DlMfohvqJ8id8rFZ0yx3A/UVdo0UBPYSo.jpg)
 
+*(По дальнейшим действиям есть **[более подробная статья](vk.com/@idmmod-install)**)*
+
 Вводим данные, нажимаем *Установить в CallBack режиме*.
 
 Если все прошло успешно, откроется страница с виджетом ВКонтакте. Авторизуемся.
