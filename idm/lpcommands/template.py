@@ -42,6 +42,12 @@ def template(nd: ND):
     msg = nd.msg
 
     category = 'без категории'
+
+    try:
+        msg['args'].remove('') # костыли на костылях, но переделывать это в нормальный код я уже не буду
+    except:
+        pass
+
     spl = " ".join(msg['args']).split('|')
     if len(spl) > 1: category = spl[1]
     if category.lower() == 'все': category = 'без категории'
@@ -149,6 +155,11 @@ def template(nd: ND):
 def dyntemplate(nd: ND):
     msg = nd.msg
 
+    try:
+        msg['args'].remove('') # костыли на костылях, но переделывать это в нормальный код я уже не буду
+    except:
+        pass
+
     name = " ".join(msg['args'])
     if 'скорость' in msg['args']:
         spd = float(msg['args'][msg['args'].index('скорость') + 1])
@@ -160,9 +171,10 @@ def dyntemplate(nd: ND):
         if msg['args']:
             if msg['args'][0] != 'анимки':
                 return "ok"
-        message = "Ваши динамические шаблоны:"
+        message = "Ваши анимки:"
         message += tmp_op(0, nd.db, tmp_type = 'dyn')
-    
+        if message == "Ваши анимки:":
+            message = "У вас нет ни одной анимки :("
         msg_op(2, nd[3], message, nd[1])
         return "ok"
 
@@ -179,7 +191,7 @@ def dyntemplate(nd: ND):
 
         tmp_op(2, nd.db, {"name": name,"speed": spd, "frames": msg['payload'].split('#$')}, 'dyn')
 
-        msg['text'] = (f'✅ Динамический шаблон "{name}" сохранен.'
+        msg['text'] = (f'✅ Анимка "{name}" сохранена\n' +
         '(здесь очень кривая реализация, лучше пользуйтесь сайтом)')
 
         msg_op(2, nd[3], msg['text'], msg_id = nd[1], disable_mentions = 1)
@@ -188,7 +200,7 @@ def dyntemplate(nd: ND):
 
     if msg['command'] == '-анимка':    
         if tmp_op(3, nd.db, {'name':name}, 'dyn'):
-            msg_op(2, nd[3], f'✅ Динамический шаблон "{name}" удален.', nd[1])
+            msg_op(2, nd[3], f'✅ Анимка "{name}" удалена', nd[1])
             return "ok"
 
 
