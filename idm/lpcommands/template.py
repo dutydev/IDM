@@ -142,7 +142,7 @@ def template(nd: ND):
             msg['id'] = msg['reply']['id'] if msg['reply'] else []
             if not temp['payload']: temp['payload'] = msg['payload']
             msg_op(2, bind if bind else nd[3], temp['payload'], keep_forward_messages = 1,
-                attachment=",".join(temp['attachments'], msg_id = nd[1]))
+                attachment=",".join(temp['attachments']), msg_id = nd[1])
             temp['payload'] = ''
             return "ok"
 
