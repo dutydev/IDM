@@ -1,4 +1,4 @@
-# IDM - Iris Duty Manager
+# IrCA Duty - дежурный Iris Chat Manager
 
 ## Содержание
 1. [Как установить](https://github.com/Elchinchel/IDM-SC-mod#Как-установить)
@@ -18,20 +18,20 @@
 Далее открываем вкладку *Web*
 Кликаем на *Add a new web app*
 В появившемся окошке *next*  -> *Flask* -> *Python3.8*\
-В путь вводим /home/`имя аккаунта`/IDM/start.py
+В путь вводим /home/`имя аккаунта`/ICAD/start.py
 
-[![](https://sun9-31.userapi.com/Ubm9YfJYjw435e9Fd4XOfDVWKJY08rNnaZFBLQ/m2rdSYuu1JY.jpg)](https://sun9-31.userapi.com/Ubm9YfJYjw435e9Fd4XOfDVWKJY08rNnaZFBLQ/m2rdSYuu1JY.jpg)
+[![](https://sun1-88.userapi.com/7GyijrmWOq2WKYg-RqZMsZjn_5J9FAN0yTv8hA/EzO72_mIHwc.jpg)](https://sun1-88.userapi.com/7GyijrmWOq2WKYg-RqZMsZjn_5J9FAN0yTv8hA/EzO72_mIHwc.jpg)
 
 Тыкаем на вкладку *Consoles*. Ищем блок *Start a new console*, в нем выбираем *Bash*
 
 После загрузки набираем в консоли
 (это две команды, после каждой нужно нажимать Enter)
 ```bash
-rm -rf IDM
-git clone https://github.com/elchinchel/IDM
+rm -rf ICAD
+git clone https://github.com/elchinchel/ICAD
 ```
 Убедитесь, что после выполнения второй команды в консоли присутствует текст, выделенный на картинке
-[![](https://sun9-29.userapi.com/QzKneavZ1EPwJB074i-vuX4-o3EjrELuwI1yiw/JXxdYdolJuE.jpg)](https://sun9-29.userapi.com/QzKneavZ1EPwJB074i-vuX4-o3EjrELuwI1yiw/JXxdYdolJuE.jpg)
+[![](https://sun1-25.userapi.com/jHRFDx7NyayBffN6AKCK4_Daxu7tBDoCCFulyw/nTtDNh3aeD0.jpg)](https://sun1-25.userapi.com/jHRFDx7NyayBffN6AKCK4_Daxu7tBDoCCFulyw/nTtDNh3aeD0.jpg)
 
 
 Далее переходим во вкладку *Web* и нажимаем на кнопку *Reload* `имя аккаунта`.pythonanywhere.com
@@ -61,19 +61,19 @@ git clone https://github.com/elchinchel/IDM
 ### Как создать приложение ВК
 Переходим по ссылке [https://vk.com/editapp?act=create](https://vk.com/editapp?act=create "https://vk.com/editapp?act=create"), в поле платформа выбираем *сайт*
 
-Адрес сайта и базовый домен `https://{имя вашего аккаунта}.pythonanywhere.com`
+Адрес сайта и базовый домен `http://{имя вашего аккаунта}.pythonanywhere.com`
 
-[![](https://sun9-35.userapi.com/c854028/v854028210/1f14ef/nivEJzpzMZ4.jpg)](https://sun9-35.userapi.com/c854028/v854028210/1f14ef/nivEJzpzMZ4.jpg)`
+[![](https://sun1-83.userapi.com/g4A8pmmIpssJtHlXUqb1K6OcPOVsmePa2Wb6WA/oaGRBEOYixc.jpg)](https://sun1-83.userapi.com/g4A8pmmIpssJtHlXUqb1K6OcPOVsmePa2Wb6WA/oaGRBEOYixc.jpg)`
 
 Кликаем на *подключить сайт*.
 
 ## Как обновить
 Вводим в консоль эти команды
 ``` bash
-cp -r IDM/database database
-rm -rf IDM
-git clone https://github.com/elchinchel/IDM
-cp -rf database IDM
+cp -r ICAD/database database
+rm -rf ICAD
+git clone https://github.com/elchinchel/ICAD
+cp -rf database ICAD
 ```
 Перезагружаем сайт на вкладке *Web*
 

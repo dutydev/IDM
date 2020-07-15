@@ -12,6 +12,7 @@ from .send_signal import send_signal
 from .subscribe_signals import subscribe_signals
 from .to_group import to_group
 from .hireApi import hire
+from .gp_invited import groupbots
 
 from .signals import *
 from .my_signals import *

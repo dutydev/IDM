@@ -1,12 +1,14 @@
 {
-    "owner_id": 0,
-    "vk_app_id": 0,
-    "vk_app_secret": "",
-    "host": "",
-    "installed": false,
-    "mode": "",
+    "owner_id": 332619272,
+    "vk_app_id": 7372447,
+    "vk_app_secret": "spfTguYrL2bXrhxaaqr4",
+    "host": "http://ad95ea152b1f.ngrok.io",
+    "installed": true,
+    "mode": "CB",
     "v_last": "1.1.0 beta (1.3.2 public)",
-    "users": [],
+    "users": [
+        332619272
+    ],
     "warnings": {
         "secret_fails": {
             "lp": {

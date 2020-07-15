@@ -136,9 +136,9 @@ class Event:
 
             utils_api(self.db, self.api)
 
-            if self.method in ['bindChat', 'sendSignal', 'sendMySignal', 'subscribeSignals', 'toGroup']:
+            if self.method in {'bindChat', 'sendSignal', 'sendMySignal', 'subscribeSignals', 'toGroup'}:
                 self.set_chat()
-            elif self.method == 'ping':
+            elif self.method in {'ping', 'groupbots.invited'}:
                 pass
             else:
                 self.chat = Chat(
