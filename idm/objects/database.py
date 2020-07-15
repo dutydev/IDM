@@ -25,7 +25,7 @@ class ExcDB(Exception):
     def __init__(self, code):
         self.code = int(code)
         if self.code == 0:
-            self.text = 'Ошибка БД: Указанный ID не существует в базе'
+            self.text = "В админ панель можно зайти только с аккаунта дежурного 💅🏻"
         elif self.code == 1:
             self.text = 'Ошибка БД: Указанный ID уже добавлен в базу'
         else: self.text = code
@@ -217,10 +217,11 @@ class DB:
 
     def load_user(self):
         if not self.duty_id: self.duty_id = self.gen.owner_id
-        user_db = read(str(self.duty_id))
-        logger.debug(f'Загрузка БД пользователя {self.duty_id}')
-        if user_db: self.__dict__.update(user_db)
-        else: raise ExcDB(0)
+        try:
+            user_db = read(str(self.duty_id))
+        except:
+            raise ExcDB(0)
+        self.__dict__.update(user_db)
 
 
     def save(self) -> str:

@@ -14,8 +14,8 @@ app = Flask(__name__)
 logger = warden.get_boy(__name__)
 
 def reload():
-    import uwsgi#   необходимо закомментировать,
-    uwsgi.reload()#     если запускаешь без uWSGI
+    import uwsgi
+    uwsgi.reload()
     pass
 
 
@@ -279,7 +279,7 @@ def api(method: str):
 
 
     if method == 'add_dyntemplate':
-        db.dyntemplates.append({'name': 'МояНоваяАнимка',
+        db.dyntemplates.append({'name': 'анимка',
             'frames': ['Отсутствует'], 'speed': 1.0})
         db.save()
         return redirect('/admin#DynTemplates')
@@ -308,7 +308,7 @@ def db_check_user(request):
     try:
         return DB(int(uid)), 'ok'
     except ExcDB as e:
-        if e.code == 0: return int_error('Тебя нет в базе, чел -_-'), 'fail'
+        if e.code == 0: return int_error('В админ панель можно зайти только с аккаунта дежурного 💅🏻'), 'fail'
         else: return int_error(e), 'fail'
 
 

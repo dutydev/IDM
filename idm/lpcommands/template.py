@@ -6,6 +6,14 @@ from ..objects import DB
 from ..sync import tmp_sync
 from microvk import VkApi
 import time, requests, io
+from multiprocessing import Process
+from typing import List, Any
+
+
+def player(pic: list, delay: float, nd: List[Any], vk):
+        for i in range(len(pic)):
+            msg_op(2, nd[3], f'{pic[i]}', nd[1], keep_forward_messages = 1, api = vk)
+            time.sleep(delay)
 
 
 def tmp_op(mode, db, data = {}, tmp_type = ''):# mode: 0 - список, 1 - получение, 2 - запись, 3 - удаление
@@ -206,9 +214,7 @@ def dyntemplate(nd: ND):
 
     if msg['command'] == 'анимка':
         temp = tmp_op(1, nd.db, {'name':name}, 'dyn')
-        for frame in temp['frames']:
-            msg_op(2, nd[3], frame, nd[1], keep_forward_messages = 1)
-            time.sleep(temp['speed'])
+        Process(target=player, args=(temp['frames'], temp['speed'], nd, nd.vk)).start()
         return "ok"
 
 
