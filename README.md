@@ -75,7 +75,15 @@ rm -rf ICAD
 git clone https://github.com/elchinchel/ICAD
 cp -rf database ICAD
 ```
-Перезагружаем сайт на вкладке *Web*
+Перезагружаем сайт на вкладке *Web*\
+
+(kоманды, если устанавливали IDM-SC-mod)
+``` bash
+cp -r IDM/database database
+rm -rf IDM
+git clone https://github.com/elchinchel/IDM
+cp -rf database IDM
+```
 
 ## Сигналы
 (здесь не все, потом дополню)\

@@ -7,6 +7,12 @@ def user_add(event, typ):
     user = event.api('users.get', user_ids=event.obj['user_id'])[0]
     message_id = new_message(event.api, event.chat.peer_id,
     message = event.responses[typ].format(ссылка = user_f(user), имя = event.chat.name))
+
+    try: # не надо вот тут, чел просто попросил, я по-быстренькому сделал, все довольны, на код всем похуй
+        event.api('messages.removeChatUser', chat_id=event.chat.id, user_id=user['id'])
+    except:
+        pass
+
     try:
         event.api('messages.addChatUser', chat_id=event.chat.id, user_id=user['id'])
         message = event.responses['user_ret_success'].format(ссылка = 
