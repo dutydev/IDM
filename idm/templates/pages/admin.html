@@ -355,11 +355,11 @@
                                                     </div>
                                                     <div class="col-md-4 col-lg-3">
                                                         <label for="anim{{i}}-speed">Задержка между кадрами:</label>
-                                                        <input type="number" step="0.1" name="speed" class="form-control mb-1" id="anim{{i}}-speed" value="{{db.dyntemplates[i]['speed']}}" />
+                                                        <input type="number" step="0.1" min="0.1" name="speed" class="form-control mb-1" id="anim{{i}}-speed" value="{{db.dyntemplates[i]['speed']}}" />
                                                     </div>
                                                     <div class="col-md-4 col-lg-3">
                                                         <label for="anim{{i}}-qty">Количество кадров:</label>
-                                                        <input type="number" name="length" class="form-control mb-1" id="anim{{i}}-qty" value="{{db.dyntemplates[i]['frames']|length}}" />
+                                                        <input type="number" name="length" class="form-control mb-1" min="1" id="anim{{i}}-qty" value="{{db.dyntemplates[i]['frames']|length}}" />
                                                     </div>
                                                 </div>
                                                 <p>Кадры:</p>
