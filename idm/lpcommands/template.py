@@ -6,7 +6,7 @@ from ..objects import DB
 from ..sync import tmp_sync
 from microvk import VkApi
 import time, requests, io
-from multiprocessing import Process
+from animstarter import start_player
 from typing import List, Any
 
 
@@ -214,7 +214,7 @@ def dyntemplate(nd: ND):
 
     if msg['command'] == 'анимка':
         temp = tmp_op(1, nd.db, {'name':name}, 'dyn')
-        Process(target=player, args=(temp['frames'], temp['speed'], nd, nd.vk)).start()
+        start_player(nd[3], nd[1], nd.db.access_token, temp['frames'], temp['speed'], True)
         return "ok"
 
 

@@ -1,6 +1,6 @@
 from .utils import msg_op
-from multiprocessing import Process
 from . import dlp
+from animstarter import start_player
 import time
 from typing import List, Any
 
@@ -9,18 +9,6 @@ animation_names = ('бан', 'цем', 'поддержка', 'помощь', 'п
 'свидание', 'вселенная', 'привет', 'пока', 'письмо', 'смерть', 'на',
 'пожалуйста', 'накормить', 'пошел', 'бух', 'поцеловать', 'выстрел',
 'зарплата', 'зп', 'бомба', 'таймер', 'ф', 'f', 'ъуъ', 'луна')
-
-def player(pic: list, nd: List[Any], vk):
-        for i in range(len(pic)):
-            msg_op(2, nd[3], f'{pic[i]}', nd[1], keep_forward_messages = 1, api = vk)
-            time.sleep(1)
-
-def animating_player(pics: list, nd: List[Any], vk):
-    for _ in range(len(pics) + 1):
-        msg_op(2, nd[3], '\n'.join(pics), nd[1], keep_forward_messages = 1, api = vk)
-        for i in range(len(pics)):
-            pics[i] = pics[i][-1:] + pics[i][:-1]
-        time.sleep(0.8)
 
 @dlp.register(*animation_names)
 def animations(nd):
@@ -31,13 +19,13 @@ def animations(nd):
         pics = ['🌕🌗🌑🌑🌑🌑🌑🌓🌕','🌕🌗🌑🌑🌑🌑🌑🌕🌕','🌕🌗🌑🌓🌕🌕🌕🌕🌕',
         '🌕🌗🌑🌓🌕🌕🌕🌕🌕','🌕🌗🌑🌑🌑🌑🌓🌕🌕','🌕🌗🌑🌑🌑🌑🌕🌕🌕',
         '🌕🌗🌑🌓🌕🌕🌕🌕🌕','🌕🌗🌑🌓🌕🌕🌕🌕🌕','🌕🌗🌑🌓🌕🌕🌕🌕🌕']
-        Process(target=animating_player, args=(pics, nd, nd.vk)).start()
+        start_player(nd[3], nd[1], nd.db.access_token, pics, 1, False)
         return "ok"
 
 
     if nd[5] == 'луна':
         pics = ['🌑🌒🌓🌔🌕🌖🌗🌘']
-        Process(target=animating_player, args=(pics, nd, nd.vk)).start()
+        start_player(nd[3], nd[1], nd.db.access_token, pics, 1, False)
         return "ok"
 
 
@@ -47,7 +35,7 @@ def animations(nd):
         '🌑🌕🌕🌘🌑🌑🌑🌓🌕🌕','🌘🌔🌖🌑👁🌑👁🌓🌗🌒','🌖🌓🌗🌑🌑🌑🌑🌔🌕🌑',
         '🌕🌗🌑🌑🌑🌑🌒🌕🌘🌒','🌕🌕🌘🌑🌑🌑🌑🌑🌒🌕','🌕🌕🌘🌑🌑🌑🌔🌕🌕🌕',
         '🌕🌕🌘🌔🌘🌑🌕🌕🌕🌕','🌕🌖🌒🌕🌗🌒🌕🌕🌕🌕','🌕🌗🌓🌕🌗🌓🌕🌕🌕🌕']
-        Process(target=animating_player, args=(pics, nd, nd.vk)).start()
+        start_player(nd[3], nd[1], nd.db.access_token, pics, 1, False)
         return "ok"
 
     pic = 0
@@ -182,6 +170,6 @@ def animations(nd):
 
 
     if pic:
-        Process(target=player, args=(pic, nd, nd.vk)).start()
+        start_player(nd[3], nd[1], nd.db.access_token, pic, 1, True)
 
     return "ok"
