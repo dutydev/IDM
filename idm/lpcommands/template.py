@@ -149,8 +149,17 @@ def template(nd: ND):
             bind = nd.db.settings['templates_bind']
             msg['id'] = msg['reply']['id'] if msg['reply'] else []
             if not temp['payload']: temp['payload'] = msg['payload']
-            msg_op(2, bind if bind else nd[3], temp['payload'], keep_forward_messages = 1,
-                attachment=",".join(temp['attachments']), msg_id = nd[1])
+            temp['attachments'].extend(nd.msg['attachments'])
+            atts = ",".join(temp['attachments'])
+            if atts.startswith('audio_message'):
+                nd.vk('execute', code = """API.messages.send({"peer_id":%d,"message":"%s",
+                "attachment":"%s","reply_to":"%s","random_id":0});
+                API.messages.delete({"message_ids":%d,"delete_for_all":1});""" %
+                (nd[3], nd.msg['payload'].replace('\n', '<br>'), atts,
+                nd.msg['reply']['id'] if nd.msg['reply'] else '', nd[1]))
+            else:
+                msg_op(2, bind if bind else nd[3], temp['payload'], keep_forward_messages = 1,
+                    attachment=atts, msg_id = nd[1])
             temp['payload'] = ''
             return "ok"
 
