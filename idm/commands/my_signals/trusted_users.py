@@ -1,5 +1,5 @@
 from ...objects import dp, MySignalEvent
-from ...utils import new_message, edit_message, user_f
+from ...utils import new_message, edit_message, ment_user
 from ...lpcommands.utils import find_user_mention
 
 def tr_user_op(event, error, typ):
@@ -32,7 +32,7 @@ def tr_user_op(event, error, typ):
 
     edit_message(event.api, event.chat.peer_id, event.msg['id'], 
         message= event.responses[f'trusted_success_{typ}'].format(
-        ссылка = user_f(tr_user)))
+        ссылка = ment_user(tr_user)))
     return "ok"
 
 @dp.my_signal_event_register('+дов', "доверять")

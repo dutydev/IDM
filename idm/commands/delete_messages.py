@@ -1,5 +1,5 @@
 from ..objects import dp, Event
-from ..utils import new_message, edit_message, delete_message
+from ..utils import new_message, edit_message, delete_message, ment_user
 from ..lpcommands.utils import exe, get_msgs
 from datetime import datetime
 import time
@@ -70,8 +70,7 @@ def delete_messages_from_user(event: Event) -> str:
             msg_ids = msg_ids[:len(msg_ids) - (len(msg_ids) - amount)]
 
     if not msg_ids:
-        edit_message(event.api, event.chat.peer_id, msg_id,
-        message=event.responses['del_err_not_found'])
+        new_message(event.api, event.chat.peer_id, message=event.responses['del_err_not_found'])
         return "ok"
 
     return msg_delete(event, del_info(event), msg_ids)
@@ -88,28 +87,72 @@ def delete_by_type(event: Event) -> str:
     elif typ == 'article': typ = 'link'
 
     msg_ids = []
-    ct = datetime.now().timestamp()
+    ct = (event.obj['time'] + 86400 if event.obj.get('time')
+          else datetime.now().timestamp())
 
-    for msg in get_msgs(event.chat.peer_id):
-        atts = msg.get('attachments')
-        if ct - msg['date'] > 86400: break
-        if typ == 'forwarded' and msg['fwd_messages']:
-            msg_ids.append(msg['id'])
-        elif atts:
-            for att in atts:
-                if att['type'] == typ:
-                    msg_ids.append(msg['id'])
-                elif typ == 'doc' and att.get('doc'):
-                    if att['doc'].get('ext') == 'gif':
-                        msg_ids.append(msg['id'])
-                elif typ == 'link' and att.get('link'):
-                    if att['link'].get('description') == 'Article':
-                        msg_ids.append(msg['id'])
+    amount = event.obj.get('amount', 1000)
+
+    null_admins = False
+
+    if not event.obj['admin_ids']:
+        null_admins = True
+        event.obj['admin_ids'] = []
+    else:
+        if type(event.obj['admin_ids']) == str:
+            event.obj['admin_ids'] = event.obj['admin_ids'].split(',')
+        if type(event.obj['admin_ids'][0]) == str:
+            event.obj['admin_ids'] = [int(i) for i in event.obj['admin_ids']]
+
+    users = {}
+    def append(msg):
+        msg_ids.append(msg['id'])
+        users.update({msg['from_id']: users.get(msg['from_id'], 0) + 1})
+
+    if typ in {'any', 'period'}:
+        for msg in get_msgs(event.chat.peer_id):
+            if ct - msg['date'] > 86400 or len(msg_ids) == amount:
+                break
+            if msg['from_id'] in event.obj['admin_ids']:
+                continue
+            append(msg)
+    else:
+        for msg in get_msgs(event.chat.peer_id):
+            atts = msg.get('attachments')
+            if ct - msg['date'] > 86400 or len(msg_ids) == amount:
+                break
+            if msg['from_id'] in event.obj['admin_ids']:
+                continue
+            if typ == 'forwarded' and msg['fwd_messages']:
+                append(msg)
+            elif atts:
+                for att in atts:
+                    if att['type'] == typ:
+                        append(msg)
+                    elif typ == 'doc' and att.get('doc'):
+                        if att['doc'].get('ext') == 'gif':
+                            append(msg)
+                    elif typ == 'link' and att.get('link'):
+                        if att['link'].get('description') == 'Article':
+                            append(msg)
 
     if not msg_ids:
-        edit_message(event.api, event.chat.peer_id, msg_id,
-        message=event.responses['del_err_not_found'])
+        new_message(event.api, event.chat.peer_id, message=event.responses['del_err_not_found'])
         return "ok"
 
-    return msg_delete(event, del_info(event), msg_ids)
+    event.obj['silent'] = True
+
+    msg_delete(event, del_info(event), msg_ids)
+
+    if null_admins:
+        new_message(event.api, event.chat.peer_id, message = 'Ирис не прислал список администраторов. Попробуй обновить чат (команда "обновить чат")')
+        return "ok"
+
+    message = 'Удалены сообщения следующих пользователей:\n'
+
+    for user in event.api('users.get', user_ids = ','.join([str(i) for i in users.keys()])):
+        message += f'{ment_user(user)} ({users.get(user["id"])})\n'
+
+    new_message(event.api, event.chat.peer_id, message = message, disable_mentions = 1)
+    return "ok"
+
 

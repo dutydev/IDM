@@ -20,7 +20,7 @@ def get_msg(vk: VkApi, chat_id: int, local_id: int)-> typing.Union[dict, None]:
         return None
 
 
-def user_f(user):
+def ment_user(user):
     return f"[id{user['id']}|{user['first_name']} {user['last_name']}]"
 
 

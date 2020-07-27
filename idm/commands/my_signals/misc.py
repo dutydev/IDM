@@ -31,6 +31,10 @@ def allo(event: MySignalEvent) -> str:
     new_message(event.api, event.chat.peer_id, message='Че с деньгами?', attachment = 'audio332619272_456239384')
     return "ok"
 
+@dp.my_signal_event_register('тест')
+def test(event: MySignalEvent) -> dict:
+    return {"response":"error","error_code":"0","error_message":"Опа, кастомки подвезли"}
+
 
 @dp.my_signal_event_register('время')
 def timecheck(event: MySignalEvent) -> str:
@@ -171,7 +175,7 @@ def message(event: MySignalEvent) -> str:
 @dp.my_signal_event_register('свалить')
 def gtfo(event: MySignalEvent) -> str:
     new_message(event.api, event.chat.peer_id, message='Процесс сваливания начат ✅')
-    for i in 1, 2, 3, 4, 5:
+    for _ in 1, 2, 3, 4, 5:
         time.sleep(3)
         new_message(event.api, event.chat.peer_id, message='ирис рулетка')
     new_message(event.api, event.chat.peer_id,
@@ -227,7 +231,7 @@ def zh(event: MySignalEvent) -> str:
         new_message(event.api, event.chat.peer_id, message = '❗ Слишком длинное сообщение, будет прокручено не полностью')
         rng = 15
     msg = new_message(event.api, event.chat.peer_id, message = mes)
-    for i in range(rng):
+    for _ in range(rng):
         mes = mes[-1:] + mes[:-1]
         edit_message(event.api, event.chat.peer_id, msg, message = mes)
         time.sleep(1)
