@@ -140,7 +140,8 @@ def delete_by_type(event: Event) -> str:
         return "ok"
 
     event.obj['silent'] = True
-
+    event.api.raise_excepts = False
+    
     msg_delete(event, del_info(event), msg_ids)
 
     if null_admins:
