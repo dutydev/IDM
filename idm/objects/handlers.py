@@ -39,7 +39,7 @@ class Handler:
             return data
         except:                       
             data = {
-                "тип":"неизвесный",
+                "тип":"неизвестный",
                 "traceback":traceback.format_exc()
             }
             logger.exception(data) 
@@ -77,7 +77,7 @@ class SignalHandler:
             return data
         except:                       
             data = {
-                "тип":"неизвесный",
+                "тип":"неизвестный",
                 "traceback":traceback.format_exc()
             }
             logger.exception(data) 
@@ -116,7 +116,7 @@ class MySignalHandler:
             return data
         except:                       
             data = {
-                "тип":"неизвесный",
+                "тип":"неизвестный",
                 "traceback":traceback.format_exc()
             }
             logger.exception(data) 

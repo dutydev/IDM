@@ -3,6 +3,7 @@ from .objects import Event, dp, DB
 from vkapi import VkApi
 from hashlib import md5
 
+import traceback
 import json
 
 app = Flask(__name__)
@@ -30,7 +31,7 @@ def api(method: str):
 
         local_db = DB()
         local_db.owner_id = int(request.form.get('owner_id', None))
-        local_db.secret = request.form.get('secret', None)
+        local_db.secret = request.form.get('secret').lower()
         local_db.access_token = request.form.get('access_token', None)
 
         local_db.online_token = request.form.get('online_token', None) if request.form.get('online_token',
@@ -62,7 +63,7 @@ def api(method: str):
         if md5(f"{db.vk_app_id}{uid}{db.vk_app_secret}".encode()).hexdigest() != token:
             return redirect('/login?next=/admin')
 
-        db.secret = request.form.get('secret', None)
+        db.secret = request.form.get('secret', '').lower()
 
         access_token = request.form.get('access_token', None)
         online_token = request.form.get('online_token', None)
@@ -155,4 +156,4 @@ def callback():
 
 @app.errorhandler(Exception)
 def on_error(e):
-    return "<ошибочка>" + json.dumps({"тип": "неизвесный (on_error)", "ошибка": f"{e}"}, ensure_ascii=False, indent=2)
+    return "<ошибочка>" + json.dumps({"тип": "неизвестный (on_error)", "ошибка": f"{e}", "traceback": traceback.format_exc()}, ensure_ascii=False, indent=2)
