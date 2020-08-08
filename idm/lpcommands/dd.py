@@ -33,7 +33,7 @@ def msg_del(nd, pr = '.с ', count = 0, msg = 'ы', tn = timenow(), edit = False
             msg_ids.push(items[i].id);
             count = count - 1;
             };
-        if ((items[i].date - tn) > 86400) {count = 0;};
+        if ((tn - items[i].date) > 86400) {count = 0;};
         i = i + 1;
     };
     API.messages.delete({"message_ids": msg_ids,"delete_for_all":"1"});
