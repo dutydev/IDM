@@ -29,8 +29,10 @@ def login_check(request, db: DB, db_gen: DB_general, check_owner = False):
     token = request.cookies.get('token')
     if not db_gen.installed:
         return redirect('/install')
-    if not uid or uid != db.duty_id:
+    if not uid:
         return redirect('/login?next=/admin')
+    if uid != db.duty_id:
+        return int_error('Зайти в панель управления можно только с аккаунта, на который установлен дежурный')
     if md5(f"{db_gen.vk_app_id}{uid}{db_gen.vk_app_secret}".encode()).hexdigest() != token:
         return redirect('/login?next=/admin')
     if check_owner and uid != db_gen.owner_id:

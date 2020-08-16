@@ -4,6 +4,24 @@ from microvk import VkApi
 
 @dp.event_handle('bindChat')
 def bind_chat(event: Event) -> str:
+    for chat in event.api("messages.getConversations", count=100, filter="all")['items']:
+        conv = chat['conversation']
+        if conv['peer']['type'] == "chat":
+            message = event.api('messages.getByConversationMessageId', peer_id=conv['peer']['id'],
+                conversation_message_ids=event.msg['conversation_message_id'])['items']
+            if not message:
+                continue
+            if message[0]['from_id'] == event.msg['from_id'] and message[0]['date'] == event.msg['date']:
+                event.db.chats.update({
+                        event.obj['chat']: {
+                            "peer_id": conv['peer']['id'],
+                            "name": conv['chat_settings']['title'],
+                            "installed": False
+                    }
+                })
+                event.chat.peer_id = conv['peer']['id']
+                event.db.save()
+                break
     msg_op(1, event.chat.peer_id, event.responses['chat_bind'].format(
     имя = event.chat.name))
     return "ok"

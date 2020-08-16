@@ -12,8 +12,12 @@ pings = {
     "tick": "tick-tock-tack"
 }
 
-@dp.my_signal_event_register(*pings.keys())
+@dp.my_signal_event_register(*pings.keys(), 'пингб')
 def ping(event: MySignalEvent) -> str:
+    if event.command == 'пингб':
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message='PONG')
+        return "ok"
+
     c_time = datetime.now().timestamp()
     delta = round(c_time - event.msg['date'], 2)
 
