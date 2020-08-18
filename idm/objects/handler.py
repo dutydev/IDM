@@ -14,6 +14,8 @@ def handler(event: Event, func):
     except VkApiResponseException as e:
         data = f"Ошибка VK\nКод ошибки:{e.error_code}\nСообщение:{e.error_msg}\nПараметры:{e.request_params}\n{traceback.format_exc()}"
         logger.error(data)
+        if e.error_code in {14, 924}:
+            return {"response": "vk_error","error_code": e.error_code, "error_message": e.error_msg}
         return data
     except Exception as e:
         data = traceback.format_exc()

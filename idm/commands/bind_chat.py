@@ -20,6 +20,7 @@ def bind_chat(event: Event) -> str:
                     }
                 })
                 event.chat.peer_id = conv['peer']['id']
+                event.chat.name = conv['chat_settings']['title']
                 event.db.save()
                 break
     msg_op(1, event.chat.peer_id, event.responses['chat_bind'].format(
