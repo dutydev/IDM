@@ -278,3 +278,8 @@ class MySignalEvent(Event):
             self.args = args[1:]
 
         self.payload = payload
+
+    def msg_op(self, mode, text = '', **kwargs):
+        '1 - новое сообщение, 2 - редактирование, 3 - удаление для всех'
+        msg_id = self.msg['id'] if mode in {2, 3, 4} else 0
+        self.api.msg_op(mode, self.chat.peer_id, text, msg_id, **kwargs)

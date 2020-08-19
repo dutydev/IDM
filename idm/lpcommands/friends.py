@@ -1,5 +1,5 @@
 # да-да, я знаю про повтор кода, отстань
-from .utils import msg_op, parseByID, find_user_mention, parse
+from .utils import msg_op, parseByID, find_mention_by_message, parse
 from microvk import VkApiResponseException
 from . import dlp
 
@@ -7,13 +7,8 @@ from . import dlp
 @dlp.register_startswith('+др', '+друг', '-др', '-друг')
 def change_friend_status(nd) -> str:
     msg = nd.msg
-    if msg['args']:
-        user_id = find_user_mention(msg['args'][0])
-    else:
-        user_id = 0
-    if msg['reply'] or user_id:    
-        if msg['reply']:
-            user_id = msg['reply']['from_id']
+    user_id = find_mention_by_message(msg, nd.vk)
+    if user_id:
         if msg['command'].startswith('-др'):
             try:
                 status = nd.vk('friends.delete', user_id = user_id)
@@ -48,13 +43,8 @@ def change_friend_status(nd) -> str:
 @dlp.register_startswith('+чс', '-чс')
 def ban_user(nd):
     msg = nd.msg
-    if msg['args']:
-        user_id = find_user_mention(msg['args'][0])
-    else:
-        user_id = 0
-    if msg['reply'] or user_id:
-        if msg['reply']:
-            user_id = msg['reply']['from_id']
+    user_id = find_mention_by_message(msg, nd.vk)
+    if user_id:
         if msg['command'] == '+чс':
             try:
                 if nd.vk('account.ban', owner_id = user_id) == 1:

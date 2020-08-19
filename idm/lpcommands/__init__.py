@@ -11,4 +11,3 @@ from .bomb import bomb
 from .misc import mention_search, tosms
 from .service_commands import service_commands
 from .friends import change_friend_status, ban_user
-from .ignore import sleep

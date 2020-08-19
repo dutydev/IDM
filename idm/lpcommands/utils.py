@@ -2,6 +2,7 @@
 from microvk import VkApi
 from ..objects import DB, DB_general
 from datetime import datetime
+from typing import Union
 from time import sleep
 import requests
 import random
@@ -36,7 +37,7 @@ def parse(msg, atts = []):
     if atts == 1:
         atts = att_parse(msg['attachments'])
 
-    return {'args': args, 'payload': payload, 'command': cmd, 'attachments': atts,
+    return {'text': msg['text'], 'args': args, 'payload': payload, 'command': cmd, 'attachments': atts,
             'reply': msg.get('reply_message'), "fwd": msg.get('fwd_messages')}
 
 def att_parse(attachments):
@@ -132,17 +133,49 @@ def gen_secret(chars = 'abcdefghijklmnopqrstuvwxyz0123456789'):
 
 
 def find_user_mention(text):
-    uid = re.search(r'\[id\d*\|', text)
-    if uid: uid = int(uid[0][3:-1])
+    uid = re.findall(r'\[(id|public|club)(\d*)\|', text)
+    if uid:
+        if uid[0][0] != 'id':
+            uid = 0 - int(uid[0][1])
+        else:
+            uid = int(uid[0][1])
     return uid
 
-def find_mention_by_message(msg):
+def find_user_by_link(text, vk):
+    user = re.findall(r"vk.com\/(id\d*|[^ \n]*\b)", text)
+    if user:
+        try:
+            return vk('users.get', user_ids = user)[0]['id']
+        except:
+            pass
+
+def find_mention_by_message(msg: dict, vk: VkApi) -> Union[int, None]:
+    'Возвращает ID пользователя, если он есть в сообщении, иначе None'
     user_id = None
     if msg['args']:
         user_id = find_user_mention(msg['args'][0])
-    elif msg['reply']:
+    if msg['reply'] and not user_id:
         user_id = msg['reply']['from_id']
+    if not user_id:
+        user_id = find_user_by_link(msg['text'], vk)
+    if msg['fwd'] and not user_id:
+        user_id = msg['fwd'][0]['from_id']
+    print(f'UID: {user_id}' if user_id else 'UID not found!')
     return user_id
+
+def find_mention_by_event(event, vk: VkApi) -> Union[int, None]:
+    'Возвращает ID пользователя, если он есть в сообщении, иначе None'
+    user_id = None
+    if event.args:
+        user_id = find_user_mention(event.args[0])
+    if event.reply_message and not user_id:
+        user_id = event.reply_message['from_id']
+    if not user_id:
+        user_id = find_user_by_link(event.msg['text'], vk)
+    if event.msg['fwd_messages'] and not user_id:
+        user_id = event.msg['fwd_messages'][0]['from_id']
+    return user_id
+
 
 def set_online_privacy(db, mode = 'only_me'):
     url = ('https://api.vk.me/method/account.setPrivacy?v=5.109&key=online&value=%s&access_token=%s'

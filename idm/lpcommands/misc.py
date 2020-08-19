@@ -5,12 +5,7 @@ from datetime import datetime
 from microvk import VkApiResponseException
 import time, re
 
-def whois(nd):
-    msg = parseByID(nd[1])
-    
-    user = vk('users.get', user_ids = msg['reply']['from_id'],
-    fields = '''sex, country, city, domain, followers_count, subdomain,
-    can_write_private_message''')
+
 
 @dlp.register('пуши', 'уведы')
 def mention_search(nd):
