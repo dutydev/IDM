@@ -1,4 +1,4 @@
-from ..objects import dp, Event, MySignalEvent, DB
+from ..objects import dp, Event, MySignalEvent, DB, Chat
 from ..lpcommands.utils import msg_op, get_msg
 from microvk import VkApi
 
@@ -12,16 +12,12 @@ def bind_chat(event: Event) -> str:
             if not message:
                 continue
             if message[0]['from_id'] == event.msg['from_id'] and message[0]['date'] == event.msg['date']:
-                event.db.chats.update({
-                        event.obj['chat']: {
-                            "peer_id": conv['peer']['id'],
-                            "name": conv['chat_settings']['title'],
-                            "installed": False
-                    }
-                })
-                event.chat.peer_id = conv['peer']['id']
-                event.chat.name = conv['chat_settings']['title']
+                chat_dict = { "peer_id": conv['peer']['id'],
+                              "name": conv['chat_settings']['title'],
+                              "installed": False }
+                event.db.chats.update({event.obj['chat']: chat_dict})
                 event.db.save()
+                event.chat = Chat(chat_dict, event.obj['chat'])
                 break
     msg_op(1, event.chat.peer_id, event.responses['chat_bind'].format(
     имя = event.chat.name))

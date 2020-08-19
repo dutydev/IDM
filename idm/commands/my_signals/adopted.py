@@ -21,6 +21,6 @@ def bombcb(event: MySignalEvent) -> str:
     return bomb(nd_adapt(event), event.db, event.api, event.msg)
 
 
-@dp.my_signal_event_register('-смс')
+@dp.my_signal_event_register('-смс', 'дд')
 def delete_self_message(event: MySignalEvent) -> str:
     return msg_del(nd_adapt(event), msg = event.responses['del_self'], vk = event.api)

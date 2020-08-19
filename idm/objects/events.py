@@ -32,7 +32,7 @@ class Chat:
     iris_id: str
     name: str
 
-    def __init__(self, data: dict, iris_id: str, installed: bool):
+    def __init__(self, data: dict, iris_id: str):
         self.peer_id = data.get('peer_id', 0)
         self.id = self.peer_id - 2000000000
         self.name = data.get('name', '')
@@ -71,7 +71,7 @@ class Event:
             return
         if self.obj['chat'] in self.db.chats.keys():
             self.chat = Chat(
-                self.db.chats[self.obj['chat']], self.obj['chat'], self.obj['chat'])
+                self.db.chats[self.obj['chat']], self.obj['chat'])
             if self.msg != (None, {}):
                 self.set_msg()
             return
@@ -96,8 +96,7 @@ class Event:
                                 }
                             }
                         )
-                        self.chat = Chat(self.db.chats[self.obj['chat']],
-                        self.obj['chat'], self.obj['chat'])
+                        self.chat = Chat(self.db.chats[self.obj['chat']], self.obj['chat'])
                         
                         self.db.save()
                         self.set_msg()
@@ -141,8 +140,7 @@ class Event:
             elif self.method in {'ping', 'groupbots.invited', 'bindChat'}:
                 pass
             else:
-                self.chat = Chat(
-                    self.db.chats[self.obj['chat']], self.obj['chat'], self.obj['chat'])
+                self.chat = Chat(self.db.chats[self.obj['chat']], self.obj['chat'])
 
 
         logger.info(self.__str__().replace('\n', ' '))
