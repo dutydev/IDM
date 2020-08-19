@@ -22,6 +22,7 @@ def read(name: str):
 class ExcDB(Exception):
     code: int
     text: str
+
     def __init__(self, code):
         self.code = int(code)
         if self.code == 0:
@@ -219,7 +220,7 @@ class DB:
         if not self.duty_id: self.duty_id = self.gen.owner_id
         try:
             user_db = read(str(self.duty_id))
-        except:
+        except FileNotFoundError:
             raise ExcDB(0)
         self.__dict__.update(user_db)
 

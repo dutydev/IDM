@@ -29,12 +29,8 @@ def login_check(request, db: DB, db_gen: DB_general, check_owner = False):
     token = request.cookies.get('token')
     if not db_gen.installed:
         return redirect('/install')
-    if not uid:
-        return redirect('/login?next=/admin')
-    if uid != db.duty_id:
-        return int_error('Зайти в панель управления можно только с аккаунта, на который установлен дежурный')
     if md5(f"{db_gen.vk_app_id}{uid}{db_gen.vk_app_secret}".encode()).hexdigest() != token:
-        return redirect('/login?next=/admin')
+        return int_error('Ошибка авторизации, попробуй очистить cookies или перелогиниться')
     if check_owner and uid != db_gen.owner_id:
         return abort(403)
 
@@ -64,6 +60,8 @@ def lp_installed(db_gen):
             <br>Теперь управление модулем осуществляется через
             <a href="{db_gen.host}">{db_gen.host}</a><br>
             <br>Этот сайт больше недоступен'''.replace('    ', ''))
+
+
 
 @app.route('/')
 def index():
@@ -310,6 +308,7 @@ def db_check_user(request):
     try:
         return DB(int(uid)), 'ok'
     except ExcDB as e:
+
         if e.code == 0: return int_error('В админ панель можно зайти только с аккаунта дежурного 💅🏻'), 'fail'
         else: return int_error(e), 'fail'
 
@@ -399,6 +398,7 @@ def json_error(e):
 
 @app.errorhandler(ExcDB)
 def db_error(e):
+    logger.error(f'Ошибка при обработке запроса:\n{e}\n{traceback.format_exc()}')
     return int_error(e.text)
 
 @app.errorhandler(Exception)
