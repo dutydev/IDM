@@ -1,4 +1,4 @@
-__version__ = '1.1.0 beta'
+__version__ = '1.1.1 beta'
 import os
 from os import path as p
 import json
