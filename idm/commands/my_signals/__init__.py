@@ -6,3 +6,4 @@ from .debug import debughelp
 from .private_message_send import send_private
 from .misc import *
 from .offline import hide_online
+from .updating import start_update

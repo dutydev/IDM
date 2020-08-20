@@ -401,6 +401,11 @@ def db_error(e):
     logger.error(f'Ошибка при обработке запроса:\n{e}\n{traceback.format_exc()}')
     return int_error(e.text)
 
+@app.errorhandler(json.decoder.JSONDecodeError)
+def decode_error(e):
+    logger.error(f'Ошибка при декодировании данных:\n{e}\n{traceback.format_exc()}')
+    return f'Произошла ошибка при декодировании данных, проверьте файлы в ICAD/database<br>Место, где споткнулся декодер: {e}'
+
 @app.errorhandler(Exception)
 def on_error(e):
     logger.error(f'Ошибка при обработке запроса:\n{e}\n{traceback.format_exc()}')

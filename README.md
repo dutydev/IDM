@@ -74,8 +74,9 @@ cp -rf ICAD/database database
 rm -rf ICAD
 git clone https://github.com/elchinchel/ICAD
 cp -rf database ICAD
+rm -rf database
 ```
-Перезагружаем сайт на вкладке *Web*\
+**Перезагружаем сайт на вкладке *Web***\
 
 (kоманды, если устанавливали IDM-SC-mod)
 ``` bash
@@ -83,6 +84,7 @@ cp -rf IDM/database database
 rm -rf IDM
 git clone https://github.com/elchinchel/IDM
 cp -rf database IDM
+rm -rf database
 ```
 
 ## Сигналы
@@ -128,7 +130,7 @@ cp -rf database IDM
 
 Спасибо за идеи и помощь в тестировании:
 
->[Аня Фельченко](https://vk.com/klubnishhhka)
+>[Аня Фельченко](https://vk.com/id324036713)
 >
 >[Степа Та](https://vk.com/st_ta)
 
