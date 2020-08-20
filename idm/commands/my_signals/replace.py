@@ -12,5 +12,5 @@ def replace(event: MySignalEvent) -> str:
         text = text.replace('кркр', '😎')
         text = text.replace('мдаа', '😐')
         text = text.replace('хмхм', '🤔')
-    new_message(event.api, event.chat.peer_id, message=text1)
+    new_message(event.api, event.chat.peer_id, message=text)
     return "ok"
