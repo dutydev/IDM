@@ -5,49 +5,45 @@ from ...lpcommands.utils import set_online_privacy, msg_op
 
 try:
     import uwsgi
+    updable = True
 except ImportError:
+    updable = False
     print('Обновление и анимации могут не работать')
 
 path = os.getcwd()
 
 @dp.my_signal_event_register('обновить')
 def start_update(event: MySignalEvent):
+    if not updable:
+        event.msg_op(2, '❌ Недоступно')
+        return "ok"
     event.msg_op(2, '⏱ Начинаю процесс обновления...')
-    ICAD = False
-    for foldername in os.listdir():
-        if foldername == "ICAD":
-            ICAD = True
-            break
     with open(os.path.join(path, "updater.py"), 'w', encoding="utf-8") as data:
-        data.write(get_updater(ICAD, event.db.access_token, event.msg['id'], event.chat.peer_id))
+        data.write(get_updater(event.db.access_token, event.msg['id'], event.chat.peer_id))
     subprocess.run(f"python3 {path}/updater.py", shell=True)
     uwsgi.reload()
     return "ok"
 
 
-def get_updater(ICAD: bool, token: str, message_id: int, peer_id: int):
+def get_updater(token: str, message_id: int, peer_id: int):
     return """
 import os
 import requests
 import subprocess
-folder = 'ICAD' if %s else 'IDM'
 def edit(text):
     requests.post(f'https://api.vk.com/method/messages.edit?v=5.100&lang=ru&access_token='+'%s',
                   data = {'message_id': %s, 'message': text, 'peer_id': %s}).json()
 commands = [
-    f'cp -rf {folder}/database database',
-    f'rm -rf {folder}',
-    f'git clone https://github.com/elchinchel/{folder}',
-    f'cp -rf database {folder}',
-    'rm -rf database'
+    f'cd ICAD',
+    'git fetch',
+    'git reset --hard HEAD'
 ]
 fail = False
 for cmd in commands:
     if subprocess.run(cmd, shell=True).returncode != 0:
         fail = True
-
 if fail:
     edit('Произошла какая-то беда, может обновилось, а может сдохло. На всякий случай помянем')
 else:
     edit('Как будто началось успешно, не дергай сервер полминутки...')
-    """ %  (ICAD, token, message_id, peer_id)
+    """ %  (token, message_id, peer_id)

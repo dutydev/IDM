@@ -1,4 +1,4 @@
-__version__ = '1.1.1 beta'
+__version__: str
 import os
 from os import path as p
 import json
@@ -17,6 +17,21 @@ def read(name: str):
     with open(p.join(path, f'{name}.json'), "r", encoding="utf-8") as file:
         return json.loads(file.read())
 
+gen_raw = {
+    "owner_id": 0,
+    "vk_app_id": 0,
+    "vk_app_secret": "",
+    "host": "",
+    "installed": False,
+    "mode": "",
+    "users": [],
+}
+
+try:
+    read('general')
+except FileNotFoundError:
+    with open(p.join(path, 'general.json'), "w", encoding="utf-8") as file:
+        file.write(json.dumps(gen_raw, ensure_ascii=False, indent=4))
 
 
 class ExcDB(Exception):
@@ -48,8 +63,6 @@ class DB_defaults:
         }
 
     lp: dict = {"unsynced_changes": {}, "installed": ""}
-
-    warnings: dict = {"secret_fails": {"lp": {"count": 0, "last": ""}, "cb": {"count": 0,"last": ""}}}
 
     responses: dict = {
         "del_self": "&#13;",
@@ -122,9 +135,7 @@ class DB_general:
     users: list = []
     host: str = ""
     installed: bool = False
-    v_last: str = __version__
     mode: str = ""
-    warnings: dict =  DB_defaults.warnings
     vk_app_id: int = 0
     vk_app_secret: str = ""
     group_id = -195759899
@@ -136,9 +147,7 @@ class DB_general:
         self.owner_id = self.general['owner_id']
         self.host = self.general['host']
         self.installed = self.general['installed']
-        self.v_last = self.general['v_last']
         self.mode = self.general['mode']
-        self.warnings =  self.general['warnings']
         self.vk_app_id = self.general['vk_app_id']
         self.vk_app_secret = self.general['vk_app_secret']
 
@@ -165,9 +174,7 @@ class DB_general:
         self.general['users'] = self.users
         self.general['host'] = self.host
         self.general['installed'] = self.installed
-        self.general['v_last'] = self.v_last
         self.general['mode'] = self.mode
-        self.general['warnings'] = self.warnings
         self.general['vk_app_id'] = self.vk_app_id
         self.general['vk_app_secret'] = self.vk_app_secret
         self.general['owner_id'] = self.owner_id
@@ -207,9 +214,7 @@ class DB:
         self.users = db_gen.users
         self.host = db_gen.host
         self.installed = db_gen.installed
-        self.v_last = db_gen.v_last
         self.mode = db_gen.mode
-        self.warnings =  db_gen.warnings
         self.vk_app_id = db_gen.vk_app_id
         self.vk_app_secret = db_gen.vk_app_secret
         self.load_user()

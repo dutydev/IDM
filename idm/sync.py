@@ -14,13 +14,8 @@ def tmp_op_sync(mode, data = {}, db = 0, tmp_type = ''):# mode: 2 - запись
 
 
 def secret_fail_lp(jdata, db: DB_general):
-    fails = db.warnings['secret_fails']['lp']
     secret = jdata['secret']
     if secret != db.secret:
-        if secret != fails['last']:
-            fails['count'] += 1
-            fails['last'] = secret
-            db.save()
         return 'Неверное секретное слово', 500
 
 

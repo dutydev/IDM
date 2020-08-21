@@ -127,7 +127,6 @@ class Event:
                 raise ExceptToJson('Неверный ID дежурного')
 
             self.time = datetime.now().timestamp()
-            self.fails = self.db.gen.warnings['secret_fails']['cb']
             self.api = VkApi(self.db.access_token, raise_excepts=True)
             self.method = _data.get('method', 'ping')
             self.attachments = []
