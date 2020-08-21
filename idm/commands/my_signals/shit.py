@@ -11,3 +11,4 @@ stickers = {
 def sticker(event: MySignalEvent) -> str:
     event.msg_op(3)
     event.msg_op(1, sticker_id=stickers.get(event.command))
+    return "ok"
