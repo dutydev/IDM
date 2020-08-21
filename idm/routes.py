@@ -4,7 +4,7 @@ from flask import (Flask, redirect, request, render_template,
 from .objects import Event, dp, DB, ExcDB, ExceptToJson, DB_general
 from .lpcommands.utils import gen_secret, set_online_privacy
 from .sync import lpsync, secret_fail_lp
-from microvk import VkApi
+from microvk import VkApi, VkApiResponseException
 from hashlib import md5
 from wtflog import warden
 import json, requests, re, time, traceback
@@ -45,13 +45,13 @@ def format_tokens(tokens: list):
     return tokens
 
 
-def check_tokens(tokens:list):
+def check_tokens(tokens: list):
     user_ids = []
     for i in range(len(tokens)):
         try:
-            user_ids.append(VkApi(tokens[i])('users.get')[0]['id'])
+            user_ids.append(VkApi(tokens[i], raise_excepts=True)('users.get')[0]['id'])
             time.sleep(0.4)
-        except:
+        except VkApiResponseException:
             return int_error("Неверный токен, попробуйте снова")
     return user_ids
 

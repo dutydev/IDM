@@ -182,8 +182,9 @@ def gtfo(event: MySignalEvent) -> str:
     message='Так, щас капчу словлю, поэтому хватит\nНе расстраивайся, повезет в следующий раз')
     try:
         sticker_message(event.api, event.chat.peer_id, 17762)
-        return "ok"
     except:
+        pass
+    finally:
         return "ok"
 
 @dp.my_signal_event_register('повтори')

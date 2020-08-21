@@ -10,7 +10,7 @@ except ImportError:
     updable = False
     print('Обновление и анимации могут не работать')
 
-path = os.getcwd()
+path = os.path.join(os.getcwd(), 'ICAD')
 
 @dp.my_signal_event_register('обновить')
 def start_update(event: MySignalEvent):
@@ -35,7 +35,7 @@ def edit(text):
                   data = {'message_id': %s, 'message': text, 'peer_id': %s}).json()
 commands = [
     f'cd ICAD',
-    'git fetch',
+    'git fetch --all',
     'git reset --hard HEAD'
 ]
 fail = False
