@@ -134,3 +134,4 @@ test*.py
 *.log.backup
 LP.py
 *.bat
+/database/general.json

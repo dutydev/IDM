@@ -1,4 +1,4 @@
-__version__: str
+__version__ = str()
 import os
 from os import path as p
 import json
@@ -27,11 +27,19 @@ gen_raw = {
     "users": [],
 }
 
+def create_general():
+    try:
+        with open(p.join(path, 'general.json'), "w", encoding="utf-8") as file:
+                file.write(json.dumps(gen_raw, ensure_ascii=False, indent=4))
+    except FileNotFoundError:
+        os.mkdir(path)
+        create_general()
+
 try:
     read('general')
 except FileNotFoundError:
-    with open(p.join(path, 'general.json'), "w", encoding="utf-8") as file:
-        file.write(json.dumps(gen_raw, ensure_ascii=False, indent=4))
+    create_general()
+    
 
 
 class ExcDB(Exception):
