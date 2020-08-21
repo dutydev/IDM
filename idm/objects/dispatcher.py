@@ -15,7 +15,7 @@ class Dispatcher:
 
     def event_register(self, method: str, func):
         logger.debug(f'Зарегистрирован новый ивент для метода {method}')
-        self.events.update({method: func})#append(Handler(method, func))
+        self.events.update({method: func})
 
     def event_handle(self, method: str):
         def decorator(func):
