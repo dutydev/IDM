@@ -34,9 +34,8 @@ def edit(text):
     requests.post(f'https://api.vk.com/method/messages.edit?v=5.100&lang=ru&access_token='+'%s',
                   data = {'message_id': %s, 'message': text, 'peer_id': %s}).json()
 commands = [
-    f'cd ICAD',
     'git fetch --all',
-    'git reset --hard HEAD'
+    'git reset --hard origin/master-beta'
 ]
 fail = False
 for cmd in commands:
