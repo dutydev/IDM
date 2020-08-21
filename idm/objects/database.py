@@ -1,4 +1,3 @@
-__version__ = str()
 import os
 from os import path as p
 import json
