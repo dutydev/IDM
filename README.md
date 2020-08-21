@@ -73,8 +73,8 @@ git clone https://github.com/elchinchel/ICAD
 **Команды только для версий от 1.1.1 beta rev.1 (проверить можно командой .с инфо)**
 ``` bash
 cd ICAD
-git fetch
-git reset --hard HEAD
+git fetch --all
+git reset --hard origin/master-beta
 ```
 **Команды для старых версий**
 ``` bash

@@ -20,7 +20,7 @@ def start_update(event: MySignalEvent):
     event.msg_op(2, '⏱ Начинаю процесс обновления...')
     with open(os.path.join(path, "updater.py"), 'w', encoding="utf-8") as data:
         data.write(get_updater(event.db.access_token, event.msg['id'], event.chat.peer_id))
-    subprocess.run(f"python3 {path}/updater.py", shell=True)
+    event.msg_op(1, subprocess.run(f"python3 {path}/updater.py", shell=True, cwd=path, capture_output=True))
     uwsgi.reload()
     return "ok"
 
