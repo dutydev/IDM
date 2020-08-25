@@ -1,11 +1,6 @@
-from .info import info
-from .ping import ping
-from .adopted import weird_bunch_of_commands, bombcb, delete_self_message
-from .trusted_users import add_trusted_user, remove_trusted_user, trusted_users
-from .debug import debughelp
-from .private_message_send import send_private
-from .misc import *
-from .offline import hide_online
-from .updating import start_update
-from .farm import farming
-from .shit import sticker
+import os
+for name in os.listdir(os.path.dirname(__file__)):
+    if not name.endswith('.py') or name in {'__init__.py', '__pycache__'}:
+        continue
+    name = name.replace('.py', '')
+    exec(f"from .{name} import __name__")

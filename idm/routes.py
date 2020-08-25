@@ -396,6 +396,12 @@ def int_error(e):
 def json_error(e):
     return e.response
 
+@app.errorhandler(VkApiResponseException)
+def vk_error(e: VkApiResponseException):
+    return json.dumps({
+        "response": "vk_error","error_code": e.error_code, "error_message": e.error_msg
+        }, ensure_ascii = False)
+
 @app.errorhandler(ExcDB)
 def db_error(e):
     logger.error(f'Ошибка при обработке запроса:\n{e}\n{traceback.format_exc()}')

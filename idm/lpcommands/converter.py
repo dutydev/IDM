@@ -59,7 +59,7 @@ def fonts_list(nd: ND) -> str:
     2. 𝚝𝚢𝚙𝚎𝚠𝚛𝚒𝚝𝚎𝚛 (typewriter)
     3. 𝓈𝒸𝓇𝒾𝓅𝓉 (script)
     4. 𝓼𝓬𝓻𝓲𝓹𝓽_𝓫𝓸𝓵𝓭 (script_bold)
-    5. zɾƃlɟq_ɟʞuʍ (upside_down)
+    5. uʍop_ǝpᴉsdn (upside_down)
     6. ᴛɪɴʏ_ᴄᴀᴘs (tiny_caps)
     7. ᑕOᗰIᑕ (comic)
     8. 𝐬𝐞𝐫𝐢𝐟_𝐛 (serif_b)
