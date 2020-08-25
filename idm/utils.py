@@ -1,4 +1,4 @@
-from microvk import VkApi
+from microvk import VkApi, VkApiResponseException
 import typing
 
 
@@ -16,7 +16,9 @@ def get_msg(vk: VkApi, chat_id: int, local_id: int)-> typing.Union[dict, None]:
         if len(data['items']) != 0:
             return data['items'][0]
         return None
-    except:
+    except VkApiResponseException as e:
+        raise e
+    except Exception:
         return None
 
 
