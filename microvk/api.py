@@ -40,12 +40,7 @@ class VkApi:
             elif 'error' in r.keys():
                 logger.warning(f"Запрос {method} не выполнен: {r['error']}")
                 if self.raise_excepts:
-                    if r['error']['error_code'] == 5:
-                        raise Exception('tokenfail')
-                    if r['error']['error_code'] == 6:
-                        raise Exception('toomanyrequests')
-                    else:
-                        raise VkApiResponseException(**r["error"])
+                    raise VkApiResponseException(**r["error"])
             return r
         elif self.raise_excepts:
             raise Exception('networkerror')

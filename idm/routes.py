@@ -360,14 +360,7 @@ def login():
 def callback():
     event = Event(request)
 
-    secret = event.secret
-
-    if secret != event.db.secret:
-        fails = event.fails
-        if secret != fails['last']:
-            fails['count'] += 1
-            fails['last'] = secret
-            event.db.gen.save()
+    if event.secret != event.db.secret:
         return 'Неверная секретка', 500
 
     d = dp.event_run(event)
