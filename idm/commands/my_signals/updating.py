@@ -20,7 +20,9 @@ def start_update(event: MySignalEvent):
     event.msg_op(2, '⏱ Начинаю процесс обновления...')
     with open(os.path.join(path, "updater.py"), 'w', encoding="utf-8") as data:
         data.write(get_updater(event.db.access_token, event.msg['id'], event.chat.peer_id))
-    event.msg_op(1, subprocess.run(f"python3 {path}/updater.py", shell=True, cwd=path, capture_output=True))
+    out = subprocess.run(f"python3 {path}/updater.py", shell=True, cwd=path, capture_output=True)
+    with open(os.path.join(os.getcwd(), "update.log"), 'w', encoding="utf-8") as data:
+        data.write(str(out))
     uwsgi.reload()
     return "ok"
 
@@ -42,7 +44,7 @@ for cmd in commands:
     if subprocess.run(cmd, shell=True).returncode != 0:
         fail = True
 if fail:
-    edit('Произошла какая-то беда, может обновилось, а может сдохло. На всякий случай помянем')
+    edit('❌ Помянем (скинь update.log из /home/логин/)')
 else:
-    edit('Как будто началось успешно, не дергай сервер полминутки...')
+    edit('✅ Ок, не трогай сервер секунд пять...')
     """ %  (token, message_id, peer_id)
