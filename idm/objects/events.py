@@ -102,7 +102,7 @@ class Event:
                         self.db.chats.update({self.obj['chat']: chat_dict})
                         self.db.save()
                         self.chat = Chat(chat_dict, self.obj['chat'])
-                        self.set_msg()
+                        self.set_msg(message[0])
                         break
             return
         self.chat = None
