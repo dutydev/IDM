@@ -58,11 +58,14 @@ class Event:
     reply_message: dict
     responses: dict
 
-    def set_msg(self):
-        ct = datetime.now().timestamp()
-        self.msg = utils.get_msg(
-            self.api, self.chat.peer_id, self.msg['conversation_message_id'])
-        self.vk_response_time = datetime.now().timestamp() - ct
+    def set_msg(self, msg: dict = None):
+        if msg is None:
+            ct = datetime.now().timestamp()
+            self.msg = utils.get_msg(
+                self.api, self.chat.peer_id, self.msg['conversation_message_id'])
+            self.vk_response_time = datetime.now().timestamp() - ct
+        else:
+            self.msg = msg
         self.parse_attachments()
         self.reply_message = self.msg.get("reply_message", None)
 
@@ -78,7 +81,9 @@ class Event:
 
         if self.msg:
             cmid_key = 'conversation_message_id'
+            ct = datetime.now().timestamp()
             chats = self.api("messages.getConversations", count=100)['items']
+            self.vk_response_time = datetime.now().timestamp() - ct
             for chat in chats:
                 diff = chat['last_message'][cmid_key] - self.msg[cmid_key]
                 if diff > 100 or diff < -100:
