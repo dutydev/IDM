@@ -4,7 +4,10 @@ from microvk import VkApi
 
 @dp.event_handle('bindChat')
 def bind_chat(event: Event) -> str:
-    for chat in event.api("messages.getConversations", count=100, filter="all")['items']:
+    for chat in event.api("messages.getConversations", count=100)['items']:
+        diff = chat['last_message']['conversation_message_id'] - event.msg['conversation_message_id']
+        if diff > 100 or diff < -100:
+            continue
         conv = chat['conversation']
         if conv['peer']['type'] == "chat":
             message = event.api('messages.getByConversationMessageId', peer_id=conv['peer']['id'],

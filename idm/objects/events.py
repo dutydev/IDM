@@ -76,29 +76,27 @@ class Event:
                 self.set_msg()
             return
 
-        if self.msg not in [None, {}]:
-            chats = self.api("messages.getConversations",
-                             count=100, filter="all")
-            for item in chats['items']:
-                conver = item['conversation']
-                if conver['peer']['type'] == "chat":
-                    message = utils.get_msg(
-                        self.api, conver['peer']['id'], self.msg['conversation_message_id'])
-                    if message == None:
+        if self.msg:
+            cmid_key = 'conversation_message_id'
+            chats = self.api("messages.getConversations", count=100)['items']
+            for chat in chats:
+                diff = chat['last_message'][cmid_key] - self.msg[cmid_key]
+                if diff > 100 or diff < -100:
+                    continue
+                conv = chat['conversation']
+                if conv['peer']['type'] == "chat":
+                    message = self.api('messages.getByConversationMessageId',
+                                       peer_id=conv['peer']['id'],
+                                       conversation_message_ids=self.msg[cmid_key])['items']
+                    if not message:
                         continue
-                    if message['from_id'] == self.msg['from_id'] and message['date'] == self.msg['date']:
-                        self.db.chats.update(
-                            {
-                                self.obj['chat']: {
-                                    "peer_id": conver['peer']['id'],
-                                    "name": conver['chat_settings']['title'],
-                                    "installed": False
-                                }
-                            }
-                        )
-                        self.chat = Chat(self.db.chats[self.obj['chat']], self.obj['chat'])
-                        
+                    if (message[0]['from_id'] == self.msg['from_id'] and message[0]['date'] == self.msg['date']):
+                        chat_dict = { "peer_id": conv['peer']['id'],
+                                    "name": conv['chat_settings']['title'],
+                                    "installed": False }
+                        self.db.chats.update({self.obj['chat']: chat_dict})
                         self.db.save()
+                        self.chat = Chat(chat_dict, self.obj['chat'])
                         self.set_msg()
                         break
             return
