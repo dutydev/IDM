@@ -1,6 +1,6 @@
 # я тоже ничего разобрать в этой каше не могу, ты не одинок
 from flask import (Flask, redirect, request, render_template,
-    send_from_directory, abort)
+    send_from_directory, abort, make_response)
 from .objects import Event, dp, DB, ExcDB, ExceptToJson, DB_general
 from .lpcommands.utils import gen_secret, set_online_privacy
 from .sync import lpsync, secret_fail_lp
@@ -13,26 +13,24 @@ app = Flask(__name__)
 
 logger = warden.get_boy(__name__)
 
-def reload():
-    import uwsgi
-    uwsgi.reload()
-    pass
-
+auth: str = {
+    'token': '',
+    'user': 0
+    }
 
 def get_mask(token:str) -> str:
         if len(token) != 85: return 'Не установлен'
         return token[:4] + "*" * 77 + token[81:]
 
 
-def login_check(request, db: DB, db_gen: DB_general, check_owner = False):
-    uid = db.duty_id
-    token = request.cookies.get('token')
+def login_check(request, db: DB, db_gen: DB_general):
+    # uid = db.duty_id
+    # token = request.cookies.get('token')
     if not db_gen.installed:
         return redirect('/install')
-    if md5(f"{db_gen.vk_app_id}{uid}{db_gen.vk_app_secret}".encode()).hexdigest() != token:
+    # if md5(f"{db_gen.vk_app_id}{uid}{db_gen.vk_app_secret}".encode()).hexdigest() != token:
+    if request.cookies.get('auth') != auth['token']:
         return int_error('Ошибка авторизации, попробуй очистить cookies или перелогиниться')
-    if check_owner and uid != db_gen.owner_id:
-        return abort(403)
 
 
 def format_tokens(tokens: list):
@@ -55,12 +53,6 @@ def check_tokens(tokens: list):
             return int_error("Неверный токен, попробуйте снова")
     return user_ids
 
-def lp_installed(db_gen):
-    return int_error(f'''(нет, не ошибка)<br>Установка прошла успешно<br>
-            <br>Теперь управление модулем осуществляется через
-            <a href="{db_gen.host}">{db_gen.host}</a><br>
-            <br>Этот сайт больше недоступен'''.replace('    ', ''))
-
 
 
 @app.route('/')
@@ -71,10 +63,19 @@ def index():
 
 
 
-@app.route('/reload')
-def reload_page():
-    reload()
-    return 'ok'
+@app.route('/auth', methods=["POST"])
+def do_auth():
+    global auth
+    user_id = check_tokens(format_tokens([request.form.get('access_token')]))
+    if type(user_id) != list: return user_id
+    auth['user'] = user_id[0]
+    DB(user_id[0])  # ловим исключение, если юзер не в БД
+    response = make_response()
+    new_auth = md5(gen_secret().encode()).hexdigest()
+    auth['token'] = new_auth
+    response.set_cookie("auth", value=new_auth)
+    response.headers['location'] = "/"
+    return response, 302
 
 
 
@@ -115,8 +116,8 @@ def api(method: str):
         db.me_token = tokens[1]
         
         db.secret = gen_secret()
-        db_gen.vk_app_id = int(request.form.get('vk_app_id'))
-        db_gen.vk_app_secret = request.form.get('vk_app_secret')
+        # db_gen.vk_app_id = int(request.form.get('vk_app_id'))
+        # db_gen.vk_app_secret = request.form.get('vk_app_secret')
         db_gen.host = "http://" + request.host
         db_gen.installed = True
         db.trusted_users.append(db.duty_id)
@@ -132,96 +133,11 @@ def api(method: str):
         return redirect('/login?next=/admin')
 
 
-    if method == 'setup_lp':#--------------------------------------------------------------
-        if request.data:
-            jdata = json.loads(request.data)
-            db = DB(jdata['user_id'])
-            fail = secret_fail_lp(jdata, db)
-            if fail:
-                return fail
-            db.lp['installed'] = True
-            db.save()
-            return json.dumps({"token": db.lp_token,
-            "me_token": db.me_token, "host": db_gen.host})
-        else:
-            if db_gen.installed:
-                return redirect('/')
-            url = 'http://' + re.search(r'(\w*\.)?\w*\.\w*',
-            request.form.get('url'))[0]
-            if url == 'http://' + request.host:
-                return int_error('Вы должны указать адрес сайта ранее установленного дежурного')
-            uid = int(request.form.get('user_id'))
-            r = requests.post(url + '/api/setup_lp',
-            data = json.dumps({"secret": request.form.get('secret'),
-            "user_id": uid})).text
-            if r == 'Неверное секретное слово': return int_error(r)
-            try:
-                jdata = json.loads(r)
-            except:
-                return int_error('Неверный адрес или дежурный не настроен')
-            db_gen.add_user(uid, True)
-
-            db = DB(uid)
-            db.access_token = jdata['token']
-            db.me_token = jdata['me_token']
-            db.secret = request.form.get('secret')
-            db.save()
-            
-            db_gen.host = jdata['host']
-            db_gen.installed = True
-            db_gen.mode = 'LP-CB'
-            db_gen.save()
-            reload()
-            return int_error(f'''(нет, не ошибка)<br>Установка прошла успешно<br>
-            <br>Теперь управление модулем осуществляется через
-            <a href="{db_gen.host}">{db_gen.host}</a><br>
-            <br>Этот сайт больше недоступен'''.replace('    ', ''))
-
-    db = DB(request.cookies.get('uid'))
+    db = DB(auth['user'])
 
     login = login_check(request, db, db_gen)
     if login: return login
 
-
-    if method == 'edit_lp':#oco6a9l ]|[ona, Da, 9I 3Hal-0
-        form = request.form
-        sets = db.settings
-
-        if form['farm'] == 'off':
-            sets['farm']['on'] = sets['farm']['soft'] = False
-        else:
-            sets['farm']['on'] = True
-            if form['farm'] == 'soft': sets['farm']['soft'] = True
-        
-        if form['lp_token']:
-            db.lp_token = format_tokens([form['lp_token']])[0]
-        if form['prefix']: sets['prefix'] = form['prefix'] + ' '
-
-        if form['del_requests'] == 'on': sets['del_requests'] = True
-        else: sets['del_requests'] = False
-
-        if form['friends_add'] == 'on': sets['friends_add'] = True
-        else: sets['friends_add'] = False
-
-        if form['online'] == 'on' and sets['online'] == False:
-            sets['online'] = True
-        else: sets['online'] = False
-
-        if form['offline'] == 'on':
-            if sets['online']: sets['online'] = False
-            set_online_privacy(db)
-            sets['offline'] = True
-        elif sets['offline']:
-            set_online_privacy(db, 'all')
-            sets['offline'] = False
-
-        db_orig = DB(request.cookies.get('uid'))
-        if db_orig.settings != db.settings:
-            db.lp['unsynced_changes'].update({'settings': db.settings})
-
-        db.save()
-        VkApi(db.access_token).msg_op(1, -195759899, '!syncchanges')
-        return redirect('/')
 
     if method == "edit_current_user":#--------------------------------------------------------------
         tokens = format_tokens([request.form.get('access_token', ''),
@@ -303,8 +219,8 @@ def edit_user():
 
 
 def db_check_user(request):
-    uid = request.cookies.get('uid')
-    if not uid: return redirect('/login'), 'fail'
+    uid = auth['user']
+    if uid == 0: return redirect('/login'), 'fail'
     try:
         return DB(int(uid)), 'ok'
     except ExcDB as e:
@@ -351,8 +267,7 @@ def admin():
 
 @app.route('/login')
 def login():
-    db = DB_general()
-    return render_template('pages/login.html', vk_app_id = db.vk_app_id)
+    return render_template('pages/login.html')
 
 
 
@@ -376,7 +291,6 @@ def callback():
 def page_not_found(e):
     return render_template('errors/404.html'), 404
 
-
 @app.errorhandler(403)
 def forbidden(e):
     return render_template('errors/403.html'), 403
@@ -396,8 +310,10 @@ def vk_error(e: VkApiResponseException):
         }, ensure_ascii = False)
 
 @app.errorhandler(ExcDB)
-def db_error(e):
+def db_error(e: ExcDB):
     logger.error(f'Ошибка при обработке запроса:\n{e}\n{traceback.format_exc()}')
+    if e.code == 0 and auth['user'] == 0:
+        return redirect('/login')
     return int_error(e.text)
 
 @app.errorhandler(json.decoder.JSONDecodeError)

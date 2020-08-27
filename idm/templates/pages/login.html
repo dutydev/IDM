@@ -3,17 +3,32 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-4"></div>
+        <!-- <div class="col-4"></div>
         <div class="col-4">
 
             <div id="vk_auth"></div>
 
         </div>
-        <div class="col-4"></div>
+        <div class="col-4"></div> -->
+        <div class="py-3">
+            <div class="col-md-12">
+                <form action="/auth" method="post">
+                    <div class="form-group"><label for="access_token">Токен VK</label><input type="text" class="form-control" name="access_token" id="access_token">
+                        <small id="access_token-help" class="form-text">Получить можно по <a
+                        href="https://oauth.vk.com/authorize?client_id=2685278&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1"
+                        target="_blank">этой ссылке</a>. Нажми "Разрешить", скопируй текст из адресной строки и вставь сюда.
+                    </small>
+                    </div>
+                    <div class="form-group mr-auto">
+                        <button class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
     var params = window
         .location
         .search
@@ -39,5 +54,5 @@
                 }
             }
         });    
-</script>
+</script> -->
 {% endblock pagecontent %}
