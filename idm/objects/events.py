@@ -18,8 +18,8 @@ logger = warden.get_boy(__name__)
 class ExceptToJson(Exception):
     response: str
 
-    def __init__(self, message, code = '', mode = ''):
-        if mode == 'iris':
+    def __init__(self, message='', code: int = 0, iris: bool = False):
+        if iris:
             self.response = json.dumps({'response': 'error',
             'error_code': code, 'error_message': message}, ensure_ascii = False)
         else:
@@ -81,6 +81,8 @@ class Event:
 
         if self.msg:
             cmid_key = 'conversation_message_id'
+            if self.msg[cmid_key] is None:
+                raise ExceptToJson(code=10, iris=True)
             ct = datetime.now().timestamp()
             chats = self.api("messages.getConversations", count=100)['items']
             self.vk_response_time = datetime.now().timestamp() - ct
