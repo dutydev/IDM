@@ -31,6 +31,14 @@ def allo(event: MySignalEvent) -> str:
     new_message(event.api, event.chat.peer_id, message='Че с деньгами?', attachment = 'audio332619272_456239384')
     return "ok"
 
+
+@dp.my_signal_event_register('рестарт')
+def restart(event: MySignalEvent) -> str:
+    import uwsgi
+    uwsgi.reload()
+    return "ok"
+
+
 @dp.my_signal_event_register('тест')
 def test(event: MySignalEvent) -> dict:
     return {"response":"error","error_code":"0","error_message":"Опа, кастомки подвезли"}

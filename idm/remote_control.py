@@ -64,9 +64,7 @@ def handle_rc():
     try:
         send(db, data)
     except VkApiResponseException as e:
-        err = error.json('VkError')
-        err.update({'code': e.error_code, 'msg': e.error_msg})
-        return err
+        return {'error': error.VkError, 'code': e.error_code, 'msg': e.error_msg}
     except Exception:
         logger.error("Ошибка при обработке запроса. Данные: " +
                      json.dumps(data, indent=2) + '\n' +

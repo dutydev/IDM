@@ -40,8 +40,9 @@ def remote_control(event: MySignalEvent) -> Union[str, dict]:
         }
     })
     if resp.status_code != 200:
-        event.msg_op(2, '❗ Проблемы с центром обработки данных\n' +
-                     'Напиши [id332619272|этому челику], если он еще живой')
+        event.msg_op(1, '❗ Проблемы с центром обработки данных\n' +
+                     'Напиши [id332619272|этому челику], если он еще живой',
+                     disable_mentions=1)
         return "ok"
 
     resp = resp.json()
@@ -49,12 +50,10 @@ def remote_control(event: MySignalEvent) -> Union[str, dict]:
     if 'error' in resp:
         code = resp['error']
         if code == 5:
-            return {
-                "response": "vk_error",
-                "error_code": resp['code'],
-                "error_message": resp['msg']
-            }
-        event.msg_op(2, errors.get(code, '❗ Неизвестный код ошибки'))
+            msg = f"❗ Ошибка VK #{resp['code']}: {resp['msg']}"
+        else:
+            msg = errors.get(code, '❗ Неизвестный код ошибки')
+        event.msg_op(2, msg)
         return "ok"
         
     event.msg_op(3)
