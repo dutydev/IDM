@@ -1,11 +1,11 @@
 from ...objects import dp, MySignalEvent
 from ...utils import new_message, edit_message, ment_user
-from ...lpcommands.utils import find_user_mention
+from ...lpcommands.utils import find_mention_by_event
 
 def tr_user_op(event, error, typ):
-    tr_id = find_user_mention(event.msg['text'])
+    tr_id = find_mention_by_event(event)
 
-    if event.reply_message == None:
+    if not tr_id:
         edit_message(event.api, event.chat.peer_id, event.msg['id'],
         message = event.responses['trusted_err_no_reply'])
         return "ok"

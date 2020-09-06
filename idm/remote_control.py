@@ -83,7 +83,7 @@ def send(db: DB, data: dict):
     msg = parse(msg, True)
 
     if msg['reply']:
-        replies = {'reply_to': msg['reply']}
+        replies = {'reply_to': msg['reply']['id']}
     elif msg['fwd']:
         replies = {'forward_messages': ','.join(
             [str(fwd['id']) for fwd in msg['fwd']]

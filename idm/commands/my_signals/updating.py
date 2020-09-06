@@ -21,18 +21,23 @@ path = cwd if already_in else os.path.join(cwd, 'ICAD')
 
 @dp.my_signal_event_register('обновить')
 def start_update(event: MySignalEvent):
-    event.msg_op(2, '⏱ Начинаю процесс обновления...' +
-                 '' if PA else '\nРабота не на pythonanywhere не гарантируется')
+    event.msg_op(2, '⏱ Начинаю процесс обновления...' if PA else
+                    '\nРабота не на pythonanywhere не гарантируется')
     with open(os.path.join(path, "updater.py"), 'w', encoding="utf-8") as data:
         data.write(get_updater(event.db.access_token, event.msg['id'], event.chat.peer_id))
     out = subprocess.run(f"python3 {path}/updater.py", shell=True, cwd=path, capture_output=True)
     with open(os.path.join(os.getcwd(), "update.log"), 'w', encoding="utf-8") as data:
         data.write(str(out))
-    uwsgi.reload()
+    if PA:
+        uwsgi.reload()
     return "ok"
 
 
 def get_updater(token: str, message_id: int, peer_id: int):
+    if PA:
+        msg = '✅ Ок, не трогай сервер секунд пять...'
+    else:
+        msg = '✅ Перезапусти скрипт'
     return """
 import os
 import requests
@@ -51,5 +56,5 @@ for cmd in commands:
 if fail:
     edit('❌ Помянем (скинь update.log из рабочей директории)')
 else:
-    edit('✅ Ок, не трогай сервер секунд пять...')
-    """ %  (token, message_id, peer_id)
+    edit('%s')
+    """ %  (token, message_id, peer_id, msg)
