@@ -2,7 +2,14 @@ import os
 import json
 import subprocess
 
-path = os.getcwd()
+cwd = os.getcwd()
+
+already_in = False
+for name in os.listdir(cwd):
+    if name == 'animplayer.py':
+        already_in = True
+
+path = cwd if already_in else os.path.join(cwd, 'ICAD')
 
 def start_player(peer, msg_id, token, pics, delay, play_list):
     animdata = {
@@ -13,6 +20,6 @@ def start_player(peer, msg_id, token, pics, delay, play_list):
         "pics": pics,
         "play_list": play_list
     }
-    with open(os.path.join(path, "animdata"), 'w', encoding="utf-8") as data:
+    with open(os.path.join(cwd, "animdata"), 'w', encoding="utf-8") as data:
         data.write(json.dumps(animdata, ensure_ascii=False))
-    subprocess.Popen(f"python3 {os.getcwd()}/ICAD/animplayer.py", shell=True)
+    subprocess.Popen(f"python3 {path}/animplayer.py", shell=True)

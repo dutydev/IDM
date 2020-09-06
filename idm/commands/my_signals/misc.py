@@ -2,7 +2,7 @@ from ...objects import dp, MySignalEvent, DB
 from ...utils import edit_message, new_message, delete_message, sticker_message
 from ...lpcommands.utils import msg_op, exe
 from datetime import datetime, date, timezone, timedelta
-import time, re, requests, os, io
+import time, re, requests, os, io, json
 from microvk import VkApi
 
 
@@ -36,6 +36,7 @@ def allo(event: MySignalEvent) -> str:
 def restart(event: MySignalEvent) -> str:
     import uwsgi
     uwsgi.reload()
+    event.msg_op(2, '...в процессе...')
     return "ok"
 
 
@@ -81,35 +82,29 @@ def desriptioncall(event: MySignalEvent) -> str:
     delete_message(event.api, event.chat.peer_id, msg)
     return "ok"
 
+
 @dp.my_signal_event_register('auth')
 def authmisc(event: MySignalEvent) -> str:
     new_message(event.api, event.chat.peer_id, attachment = 'video155440394_168735361', reply_to = event.msg['id'])
     return "ok"
 
+
 @dp.my_signal_event_register('опрос')
 def pollcreate(event: MySignalEvent) -> str:
-    ans = ['','','','','','','','','','','']
-    c = 0
-    i = 0
-    anss = event.payload
-    while c != -1 and i < 10:
-        c = anss.find('\n')
-        if c == -1:
-            i += 1
-            continue
-        ans[i] = anss[:c]
-        anss = anss[c+1:]
-        i += 1
-    if i == 10:
-        ans[10] = '⚠ Максимальное количество ответов - 10'
-        i = 9
-    ans[i] = anss
-    anss = f'''["{ans[0]}","{ans[1]}","{ans[2]}","{ans[3]}","{ans[4]}",
-    "{ans[5]}","{ans[6]}","{ans[7]}","{ans[8]}","{ans[9]}"]'''
-    poll = event.api('polls.create', question = " ".join(event.args), add_answers = anss)
-    edit_message(event.api, event.chat.peer_id, event.msg['id'], message = ans[10],
-    attachment = f"poll{poll['owner_id']}_{poll['id']}")
+    answers = event.payload.split('\n')
+    if not answers:
+        event.msg_op(2, 'Необходимо указать варианты ответов (с новой строки)')
+        return
+    if len(answers) > 10:
+        answers = answers[:10]
+        warning = '⚠️ Максимальное количество ответов - 10'
+    else:
+        warning = ''
+    poll = event.api('polls.create', question=" ".join(event.args),
+                 add_answers=json.dumps(answers, ensure_ascii=False))
+    event.msg_op(2, warning, attachment=f"poll{poll['owner_id']}_{poll['id']}")
     return "ok"
+
 
 @dp.my_signal_event_register('спам')
 def spam(event: MySignalEvent) -> str:
@@ -131,6 +126,7 @@ def spam(event: MySignalEvent) -> str:
             new_message(event.api, event.chat.peer_id, message = f'spamming {i+1}/{count}')
             time.sleep(delay)
     return "ok"
+
 
 @dp.my_signal_event_register('прочитать')
 def readmes(event: MySignalEvent) -> str:
@@ -180,6 +176,7 @@ def message(event: MySignalEvent) -> str:
     new_message(event.api, event.chat.peer_id, message=msg)
     return "ok"
 
+
 @dp.my_signal_event_register('свалить')
 def gtfo(event: MySignalEvent) -> str:
     new_message(event.api, event.chat.peer_id, message='Процесс сваливания начат ✅')
@@ -195,6 +192,7 @@ def gtfo(event: MySignalEvent) -> str:
     finally:
         return "ok"
 
+
 @dp.my_signal_event_register('повтори')
 def repeat(event: MySignalEvent) -> str:
     delay = 0.1
@@ -204,6 +202,7 @@ def repeat(event: MySignalEvent) -> str:
     time.sleep(delay)
     new_message(event.api, event.chat.peer_id, message=site)
     return "ok"
+
 
 @dp.my_signal_event_register('статус')
 def status(event: MySignalEvent) -> str:
@@ -216,10 +215,12 @@ def status(event: MySignalEvent) -> str:
         edit_message(event.api, event.chat.peer_id, msg, message='Ошибка установки статуса')
     return "ok"
 
+
 @dp.my_signal_event_register('бот')
 def imhere(event: MySignalEvent) -> str:
     sticker_message(event.api, event.chat.peer_id, 11247)
     return "ok"
+
 
 @dp.my_signal_event_register('кто')
 def whois(event: MySignalEvent) -> str:
@@ -231,6 +232,7 @@ def whois(event: MySignalEvent) -> str:
     new_message(event.api, event.chat.peer_id,
     message = f"{type}\nID: {var['object_id']}")
     return "ok"
+
 
 @dp.my_signal_event_register('ж')
 def zh(event: MySignalEvent) -> str:
