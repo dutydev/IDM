@@ -1,3 +1,5 @@
+# тут (да и не только тут) есть много странных костылей,
+# большинство из них предназначено для обратной совместимости (ну или мне просто лень было их убирать)
 import os
 from os import path as p
 import json
@@ -8,6 +10,9 @@ logger = warden.get_boy(__name__)
 
 get_dir = p.dirname # p = это os.path, если че)
 path = p.join(get_dir(get_dir(get_dir(__file__))), 'database')
+
+
+db_gen: "DB_general"
 
 
 def read(name: str):
@@ -22,8 +27,7 @@ gen_raw = {
     "vk_app_secret": "",
     "host": "",
     "installed": False,
-    "mode": "",
-    "users": [],
+    "mode": ""
 }
 
 def create_general():
@@ -58,18 +62,8 @@ class ExcDB(Exception):
 class DB_defaults:
 
     settings: dict = {
-        "prefix": ".л ",
-        "farm": {"on": False,"soft": False,"last_time": 0},
-        "friends_add": False,
-        "user_delete": {},
-        "ignore_list": [],
-        "del_requests": False,
-        "online": False,
-        "offline": False,
-        "templates_bind": 0
-        }
-
-    lp: dict = {"unsynced_changes": {}, "installed": ""}
+        "silent_deleting": False
+    }
 
     responses: dict = {
         "del_self": "&#13;",
@@ -114,17 +108,16 @@ class DB_defaults:
         "trusted_list": "Доверенные пользователи:"
     }
 
-    def load_user(self, instance = 0) -> dict:
+    @staticmethod
+    def load_user(instance: "DB" = None) -> dict:
         if not instance:
             instance = DB
         return {
             "access_token": instance.access_token,
             "me_token": instance.me_token,
-            "lp_token": instance.lp_token,
             "secret": instance.secret,
             "responses": instance.responses,
             "informed": instance.informed,
-            "lp": instance.lp,
             "settings": instance.settings,
             "trusted_users": instance.trusted_users,
             "chats": instance.chats,
@@ -139,7 +132,6 @@ class DB_general:
     path: str = path
     general: dict = {}
     owner_id: int = 0
-    users: list = []
     host: str = ""
     installed: bool = False
     mode: str = ""
@@ -150,7 +142,6 @@ class DB_general:
     def __init__(self):
         logger.debug('Инициализация основной БД')
         self.general = read('general')
-        self.users = self.general['users']
         self.owner_id = self.general['owner_id']
         self.host = self.general['host']
         self.installed = self.general['installed']
@@ -164,12 +155,11 @@ class DB_general:
         global db_gen
         db_gen = DB_general()
 
-    def add_user(self, user_id: int, owner: bool = False):
-        if user_id in self.users: raise ExcDB(1)
-        self.users.append(user_id)
-        if owner: self.owner_id = user_id
+    def set_user(self, user_id: int):
+        if user_id == self.owner_id: raise ExcDB(1)
+        self.owner_id = user_id
         with open(p.join(path, f'{user_id}.json'), "w", encoding="utf-8") as file:
-            file.write(json.dumps(DB_defaults().load_user(), ensure_ascii=False, indent=4))
+            file.write(json.dumps(DB_defaults.load_user(), ensure_ascii=False, indent=4))
         self.save()
         self.update_general
         return DB(user_id)
@@ -178,7 +168,6 @@ class DB_general:
     def save(self) -> str:
         'Сохранение основной БД'
         logger.debug("Сохраняю основную базу данных")
-        self.general['users'] = self.users
         self.general['host'] = self.host
         self.general['installed'] = self.installed
         self.general['mode'] = self.mode
@@ -199,7 +188,6 @@ class DB:
 
     access_token: str = "Не установлен"
     me_token: str = "Не установлен"
-    lp_token: str = "Не установлен"
     secret: str = ""
     chats: dict = {}
     trusted_users: list = []
@@ -209,23 +197,22 @@ class DB:
     informed: bool = False
     responses: dict = DB_defaults.responses
 
-    lp: dict =  DB_defaults.lp
     settings: dict = DB_defaults.settings
 
 
-    def __init__(self, user_id: int = 0):
-        if not user_id: user_id = db_gen.owner_id
+    def __init__(self, user_id: int = None):
+        user_id = user_id or db_gen.owner_id
+        if user_id != db_gen.owner_id:
+            raise ExcDB(0)
         self.gen = db_gen
-        self.duty_id = int(user_id)
+        self.duty_id = int(db_gen.owner_id)
         self.full_db = db_gen.general
-        self.users = db_gen.users
         self.host = db_gen.host
         self.installed = db_gen.installed
         self.mode = db_gen.mode
         self.vk_app_id = db_gen.vk_app_id
         self.vk_app_secret = db_gen.vk_app_secret
         self.load_user()
-
 
 
     def load_user(self):
@@ -241,9 +228,8 @@ class DB:
         'Сохраняет БД пользователя, которая открыта в данном экземпляре DB'
         logger.debug("Сохраняю базу данных")
         with open(p.join(path, f'{str(self.duty_id)}.json'), "w", encoding="utf-8") as file:
-            file.write(json.dumps(DB_defaults().load_user(self), ensure_ascii=False, indent = 4))
+            file.write(json.dumps(DB_defaults.load_user(self), ensure_ascii=False, indent = 4))
         return "ok"
 
 
 DB_general().update_general# инициализация основной БД при запуске скрипта
-

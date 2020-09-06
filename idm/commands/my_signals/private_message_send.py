@@ -13,7 +13,7 @@ def send_private(event: MySignalEvent) -> str:
     if event.command == 'в':
         if event.args[0] != 'лс':
             return "ok"
-    uid = find_mention_by_event(event, event.api)
+    uid = find_mention_by_event(event)
     if uid:
         if not (event.payload or event.attachments):
             if event.args and event.reply_message:

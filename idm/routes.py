@@ -1,4 +1,5 @@
-# я тоже ничего разобрать в этой каше не могу, ты не одинок
+# я тоже ничего разобрать в этой каше не могу, ты не одинок'
+# обещаю разгрести это барахло и вырезать остатки от лп, когда будет время
 from flask import (Flask, redirect, request, render_template,
     send_from_directory, abort, make_response)
 from .objects import Event, dp, DB, ExcDB, ExceptToJson, DB_general
@@ -7,6 +8,7 @@ from .sync import lpsync, secret_fail_lp
 from microvk import VkApi, VkApiResponseException
 from hashlib import md5
 from wtflog import warden
+from typing import List, Union
 import json, requests, re, time, traceback
 
 app = Flask(__name__)
@@ -33,7 +35,7 @@ def login_check(request, db: DB, db_gen: DB_general):
         return int_error('Ошибка авторизации, попробуй очистить cookies или перелогиниться')
 
 
-def format_tokens(tokens: list):
+def format_tokens(tokens: list) -> List[Union[str, None]]:
     for i in range(len(tokens)):
         token = re.search(r'access_token=[a-z0-9]{85}', tokens[i])
         if token: token = token[0][13:]
@@ -109,8 +111,9 @@ def api(method: str):
         user_id = check_tokens(tokens)[0]
         if type(user_id) != int: return user_id
 
-        db_gen.add_user(user_id, True)
+        db_gen.set_user(user_id)
         db = DB(user_id)
+
 
         db.access_token = tokens[0]
         db.me_token = tokens[1]
@@ -140,11 +143,12 @@ def api(method: str):
 
 
     if method == "edit_current_user":#--------------------------------------------------------------
-        tokens = format_tokens([request.form.get('access_token', ''),
-            request.form.get('me_token', ''), request.form.get('lp_token', '')])
+        tokens = format_tokens([
+            request.form.get('access_token', ''),
+            request.form.get('me_token', '')
+        ])
         if tokens[0]: db.access_token = tokens[0]
         if tokens[1]: db.me_token = tokens[1]
-        if tokens[2]: db.lp_token = tokens[2]
         db.save()
         return redirect('/admin')
 
@@ -241,15 +245,9 @@ def admin():
     login = login_check(request, db, db_gen)
     if login: return login
 
-    if db.duty_id == db.full_db['owner_id']:
-        user_list = db_gen.users
-        owner = True
-    else:
-        user_list = [db.duty_id]
-        owner = False
 
     users = VkApi(db.access_token)('users.get', fields = 'photo_50',
-        user_ids = ','.join(str(u) for u in user_list))
+        user_ids=db.duty_id)
     if type(users) == dict:
         username = 'unknown'
         warning = {'type':'danger', 'text':'Ошибка доступа, смени токены'}
@@ -260,9 +258,8 @@ def admin():
     db.access_token = get_mask(db.access_token)
     db.me_token = get_mask(db.me_token)
 
-    return render_template('pages/admin.html', db = db, users = users, owner = owner,
-        farm = db.settings['farm'], prefix = db.settings['prefix'].replace(' ', ''),
-        warn = warning, username = username)
+    return render_template('pages/admin.html', db = db, users = users,
+                           warn = warning, username = username)
 
 
 @app.route('/login')

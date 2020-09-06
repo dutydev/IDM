@@ -1,8 +1,6 @@
-from ..objects import dp, Event, MySignalEvent, DB
-from ..lpcommands.utils import msg_op
-from microvk import VkApi
+from ..objects import dp
 
 
 @dp.event_handle('ping')
-def ping(event: Event) -> str:
+def ping(event) -> str:
     return "ok"

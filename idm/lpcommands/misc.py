@@ -1,4 +1,4 @@
-from .utils import msg_op, user_info, MSI, ExcReload, get_last_th_msgs
+from .utils import msg_op, user_info, MSI, get_last_th_msgs
 from ..objects import DB
 from . import dlp, ND
 from datetime import datetime
@@ -23,30 +23,6 @@ def mention_search(nd):
     msg_op(1, nd[3], msg, forward_messages = ','.join(msg_ids))
     return "ok"
 
-
-# def pollcreate(event: MySignalEvent) -> str:
-#     ans = ['','','','','','','','','','','']
-#     c = 0
-#     i = 0
-#     anss = event.payload
-#     while c != -1 and i < 10:
-#         c = anss.find('\n')
-#         if c == -1:
-#             i += 1
-#             continue
-#         ans[i] = anss[:c]
-#         anss = anss[c+1:]
-#         i += 1
-#     if i == 10:
-#         ans[10] = '⚠ Максимальное количество ответов - 10'
-#         i = 9
-#     ans[i] = anss
-#     anss = f'''["{ans[0]}","{ans[1]}","{ans[2]}","{ans[3]}","{ans[4]}",
-#     "{ans[5]}","{ans[6]}","{ans[7]}","{ans[8]}","{ans[9]}"]'''
-#     poll = event.api('polls.create', question = " ".join(event.args), add_answers = anss)
-#     edit_message(event.api, event.chat.peer_id, event.msg['id'], message = ans[10],
-#     attachment = f"poll{poll['owner_id']}_{poll['id']}")
-#     return "ok"
 
 @dlp.register_startswith('ксмс')
 def tosms(nd):

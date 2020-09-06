@@ -1,5 +1,6 @@
 # да, я знаю, что здесь код получился особенно отбитым
 # потом переделаю
+# upd: о господи боже мой, какой ужас, нахрена я это делал
 from .utils import msg_op, parseByID, att_parse, parse
 from . import dlp, ND
 from ..objects import DB

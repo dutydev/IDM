@@ -7,3 +7,5 @@ logger.info('Запуск IDM...')
 from . import objects, utils, commands, sync
 from .routes import app
 from .objects import db_gen as db, __version__
+
+from .remote_control import __name__

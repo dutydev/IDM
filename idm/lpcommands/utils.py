@@ -9,8 +9,8 @@ import random
 import re
 
 
-class ExcReload(Exception):
-    pass
+vk: VkApi
+db: DB
 
 
 def utils_api(db_ext: DB = None, api: VkApi = None):
@@ -19,11 +19,11 @@ def utils_api(db_ext: DB = None, api: VkApi = None):
     db = db_ext
     vk = api
 
-def parseByID(msg_id, atts = []):
+def parseByID(msg_id, atts: bool = False):
     msg = (vk('messages.getById', message_ids = msg_id)['items'][0])
     return parse(msg, atts)
 
-def parse(msg, atts = []):
+def parse(msg, atts: bool = False):
     matches = re.findall(r'(\S+)|\n(.*)', msg['text'])
     del matches[0]
     cmd = matches.pop(0)[0].lower()
@@ -34,10 +34,10 @@ def parse(msg, atts = []):
             args.append(match[0])
         else:
             payload += f'{match[1]}\n'
-    if atts == 1:
+    if atts:
         atts = att_parse(msg['attachments'])
 
-    return {'text': msg['text'], 'args': args, 'payload': payload, 'command': cmd, 'attachments': atts,
+    return {'text': msg['text'], 'args': args, 'payload': payload, 'command': cmd, 'attachments': atts or [],
             'reply': msg.get('reply_message'), "fwd": msg.get('fwd_messages')}
 
 def att_parse(attachments):
@@ -124,11 +124,11 @@ def execme(code: str) -> int:
     return vk('execute', code = code)
 
 
-def gen_secret(chars = 'abcdefghijklmnopqrstuvwxyz0123456789'):
+def gen_secret(chars = 'abcdefghijklmnopqrstuvwxyz0123456789', length: int = None):
     secret = ''
-    length = random.randint(64, 80)
+    length = length or random.randint(64, 80)
     while len(secret) < length:
-        secret += chars[random.randint(0, 35)]
+        secret += chars[random.randint(0, len(chars)-1)]
     return secret
 
 
@@ -163,7 +163,7 @@ def find_mention_by_message(msg: dict, vk: VkApi) -> Union[int, None]:
     print(f'UID: {user_id}' if user_id else 'UID not found!')
     return user_id
 
-def find_mention_by_event(event, vk: VkApi) -> Union[int, None]:
+def find_mention_by_event(event: "MySignalEvent") -> Union[int, None]:
     'Возвращает ID пользователя, если он есть в сообщении, иначе None'
     user_id = None
     if event.args:
@@ -171,7 +171,7 @@ def find_mention_by_event(event, vk: VkApi) -> Union[int, None]:
     if event.reply_message and not user_id:
         user_id = event.reply_message['from_id']
     if not user_id:
-        user_id = find_user_by_link(event.msg['text'], vk)
+        user_id = find_user_by_link(event.msg['text'], event.api)
     if event.msg['fwd_messages'] and not user_id:
         user_id = event.msg['fwd_messages'][0]['from_id']
     return user_id

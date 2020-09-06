@@ -1,5 +1,4 @@
 from ...objects import dp, MySignalEvent
-from ...utils import edit_message
 # from random import choice
 
 stickers = {

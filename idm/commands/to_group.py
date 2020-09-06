@@ -1,3 +1,4 @@
+# TODO: переписать, добавить параметры
 import typing
 from ..utils import new_message, edit_message, get_msg
 from ..objects import dp, Event
