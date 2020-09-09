@@ -26,7 +26,7 @@ def anim_create(event: MySignalEvent) -> str:
     })
     event.db.save()
 
-    event.msg_op(2, f'✅ Анимка "{name}"' +
+    event.msg_op(2, f'✅ Анимка "{name}" ' +
                  ('перезаписана' if exist else 'сохранена') +
                  '\n(лучше делать это в админ панели)')
     return "ok"
