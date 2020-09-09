@@ -26,5 +26,5 @@ def desriptioncall(event: MySignalEvent) -> str:
 
 @dp.my_signal_event_register('auth')
 def authmisc(event: MySignalEvent) -> str:
-    event.msg_op(attachment = 'video155440394_168735361', reply_to = event.msg['id'])
+    event.msg_op(1, attachment = 'video155440394_168735361', reply_to = event.msg['id'])
     return "ok"
