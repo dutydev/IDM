@@ -1,7 +1,7 @@
-__version__ = '1.1.4 beta rev.3'
+__version__ = '1.2.0 beta'
 
 from .database import DB, DB_general, ExcDB, db_gen
 
 from .events import *
 
-from .dispatcher import Dispatcher, dp
+from . import dispatcher as dp

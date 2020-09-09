@@ -1,5 +1,5 @@
 from idm.objects import dp, MySignalEvent
-from idm.lpcommands.utils import find_mention_by_event
+from idm.utils import find_mention_by_event
 from typing import Union
 import requests
 

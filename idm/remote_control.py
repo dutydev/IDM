@@ -7,7 +7,8 @@ from typing import Union
 
 from idm import app
 from idm.objects import DB, db_gen, Chat
-from idm.lpcommands.utils import gen_secret, parse
+from idm.utils import gen_secret
+from idm.utils import Message
 from idm.commands.my_signals.remote import set_session, DC
 
 from microvk import VkApi, VkApiResponseException
@@ -80,16 +81,16 @@ def send(db: DB, data: dict):
     msg = vk("messages.getByConversationMessageId",
              conversation_message_ids=data['local_id'],
              peer_id=chat.peer_id)['items'][0]
-    msg = parse(msg, True)
+    msg = Message(msg)
 
-    if msg['reply']:
-        replies = {'reply_to': msg['reply']['id']}
-    elif msg['fwd']:
+    if msg.reply:
+        replies = {'reply_to': msg.reply['id']}
+    elif msg.fwd:
         replies = {'forward_messages': ','.join(
-            [str(fwd['id']) for fwd in msg['fwd']]
+            [str(fwd['id']) for fwd in msg.fwd]
         )}
     else:
         replies = {}
 
-    vk.msg_op(1, chat.peer_id, msg['payload'], **replies,
-              attachment=','.join(msg['attachments']))
+    vk.msg_op(1, chat.peer_id, msg.payload, **replies,
+              attachment=','.join(msg.attachments))

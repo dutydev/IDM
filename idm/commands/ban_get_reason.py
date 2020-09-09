@@ -1,8 +1,8 @@
 from ..objects import dp, Event
-from .. import utils
+from idm.api_utils import get_msg_id
 
-@dp.event_handle('banGetReason')
+@dp.event_register('banGetReason')
 def ban_get_reason(event: Event) -> str:
-    utils.new_message(event.api, event.chat.peer_id, message=event.obj['message'], 
-        reply_to=utils.get_msg_id(event.api, event.chat.peer_id, event.obj['local_id']))   
+    event.api.msg_op(1, event.chat.peer_id, event.obj['message'], 
+        reply_to=get_msg_id(event.api, event.chat.peer_id, event.obj['local_id']))   
     return "ok"

@@ -1,6 +1,6 @@
 from datetime import datetime
 from time import sleep
-from idm.lpcommands.utils import find_mention_by_event
+from idm.utils import find_mention_by_event
 from microvk import VkApiResponseException
 from ...objects import MySignalEvent, dp
 

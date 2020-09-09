@@ -1,16 +1,16 @@
 from ..objects import dp, Event
-from ..utils import new_message, edit_message, ment_user
+from ..utils import ment_user
 from microvk import VkApiResponseException
 import json
 
-def user_add(event, typ):
+def user_add(event: Event, typ: str):
     user = event.api('users.get', user_ids=event.obj['user_id'])[0]
-    message_id = new_message(event.api, event.chat.peer_id,
-    message = event.responses[typ].format(ссылка = ment_user(user), имя = event.chat.name))
+    message_id = event.api.msg_op(1, event.chat.peer_id,
+        event.responses[typ].format(ссылка = ment_user(user), имя = event.chat.name))
 
     try: # не надо вот тут, чел просто попросил, я по-быстренькому сделал, все довольны, на код всем похуй
         event.api('messages.removeChatUser', chat_id=event.chat.id, user_id=user['id'])
-    except:
+    except VkApiResponseException:
         pass
 
     try:
@@ -32,13 +32,15 @@ def user_add(event, typ):
         ment_user(user), имя = event.chat.name)
         ret = {"response":"error","error_code":"0","error_message":""}
 
-    edit_message(event.api, event.chat.peer_id, message_id, message=message)
+    event.api.msg_op(2, event.chat.peer_id, message, message_id)
     return ret
 
-@dp.event_handle('addUser')
+
+@dp.event_register('addUser')
 def add_user(event: Event) -> str:
     return user_add(event, 'user_ret_process')
 
-@dp.event_handle('banExpired')
+
+@dp.event_register('banExpired')
 def ban_expired(event: Event) -> str:
     return user_add(event, 'user_ret_ban_expired')

@@ -1,4 +1,4 @@
-# не хочу об этом разговаривать...
+# TODO: мертвый код
 import re
 from ..objects import DB
 from microvk import VkApi

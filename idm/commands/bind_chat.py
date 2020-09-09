@@ -1,12 +1,11 @@
 from ..objects import dp, Event, MySignalEvent, DB, Chat
-from ..lpcommands.utils import msg_op, get_msg
 from microvk import VkApi
 
-@dp.event_handle('bindChat')
+@dp.event_register('bindChat')
 def bind_chat(event: Event) -> str:
     for chat in event.api("messages.getConversations", count=100)['items']:
         diff = chat['last_message']['conversation_message_id'] - event.msg['conversation_message_id']
-        if diff > 100 or diff < -100:
+        if diff < 0 or diff > 50:
             continue
         conv = chat['conversation']
         if conv['peer']['type'] == "chat":
@@ -22,6 +21,5 @@ def bind_chat(event: Event) -> str:
                 event.db.save()
                 event.chat = Chat(chat_dict, event.obj['chat'])
                 break
-    msg_op(1, event.chat.peer_id, event.responses['chat_bind'].format(
-    имя = event.chat.name))
+    event.msg_op(1, event.responses['chat_bind'].format(имя = event.chat.name))
     return "ok"

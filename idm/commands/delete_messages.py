@@ -1,6 +1,6 @@
 from ..objects import dp, Event
-from ..utils import new_message, edit_message, delete_message, ment_user
-from ..lpcommands.utils import exe, get_msgs
+from ..utils import ment_user
+from idm.api_utils import get_msgs
 from datetime import datetime
 import time
 
@@ -11,10 +11,9 @@ def msg_delete(event, msg_id, msg_ids = []):
 
     def del_edit(key, err = ''):
         if not event.obj['silent']:
-            edit_message(event.api, event.chat.peer_id, msg_id,
-            message = event.responses[key].format(ошибка = err))
+            event.msg_op(2, event.responses[key].format(ошибка = err))
             time.sleep(3)
-            delete_message(event.api, event.chat.peer_id, msg_id)
+            event.msg_op(3)
 
     if msg_ids:
         code = """return API.messages.delete({delete_for_all: 1,
@@ -26,7 +25,7 @@ def msg_delete(event, msg_id, msg_ids = []):
         event.chat.peer_id, event.obj['local_ids'])
 
     while True:
-        ret = exe(code)
+        ret = event.api.exe(code)
         if not "error" in ret:
             del_edit('del_success')
             break
@@ -43,15 +42,15 @@ def msg_delete(event, msg_id, msg_ids = []):
 
 def del_info(event):
     if not event.obj['silent']:
-        return new_message(event.api, event.chat.peer_id, message=event.responses['del_process'])
+        return event.api.msg_op(1, event.chat.peer_id, event.responses['del_process'])
 
 
-@dp.event_handle('deleteMessages')
+@dp.event_register('deleteMessages')
 def delete_messages(event: Event) -> str:
     return msg_delete(event, del_info(event))
 
 
-@dp.event_handle('deleteMessagesFromUser')
+@dp.event_register('deleteMessagesFromUser')
 def delete_messages_from_user(event: Event) -> str:
     event.obj['silent'] = False
 
@@ -60,7 +59,7 @@ def delete_messages_from_user(event: Event) -> str:
     msg_ids = []
     ct = datetime.now().timestamp()
 
-    for msg in get_msgs(event.chat.peer_id):
+    for msg in get_msgs(event.chat.peer_id, event.api):
         if ct - msg['date'] >= 86400: break
         if msg['from_id'] in event.obj['member_ids'] and not msg.get('action'):
             msg_ids.append(msg['id'])
@@ -70,13 +69,13 @@ def delete_messages_from_user(event: Event) -> str:
             msg_ids = msg_ids[:len(msg_ids) - (len(msg_ids) - amount)]
 
     if not msg_ids:
-        new_message(event.api, event.chat.peer_id, message=event.responses['del_err_not_found'])
+        event.api.msg_op(1, event.chat.peer_id, event.responses['del_err_not_found'])
         return "ok"
 
     return msg_delete(event, del_info(event), msg_ids)
     
 
-@dp.event_handle('messages.deleteByType')
+@dp.event_register('messages.deleteByType')
 def delete_by_type(event: Event) -> str:
     event.obj['silent'] = False
 
@@ -109,14 +108,14 @@ def delete_by_type(event: Event) -> str:
         users.update({msg['from_id']: users.get(msg['from_id'], 0) + 1})
 
     if typ in {'any', 'period'}:
-        for msg in get_msgs(event.chat.peer_id):
+        for msg in get_msgs(event.chat.peer_id, event.api):
             if ct - msg['date'] > 86400 or len(msg_ids) == amount:
                 break
             if msg['from_id'] in event.obj['admin_ids']:
                 continue
             append(msg)
     else:
-        for msg in get_msgs(event.chat.peer_id):
+        for msg in get_msgs(event.chat.peer_id, event.api):
             atts = msg.get('attachments')
             if ct - msg['date'] > 86400 or len(msg_ids) == amount:
                 break
@@ -136,7 +135,7 @@ def delete_by_type(event: Event) -> str:
                             append(msg)
 
     if not msg_ids:
-        new_message(event.api, event.chat.peer_id, message=event.responses['del_err_not_found'])
+        event.api.msg_op(1, event.chat.peer_id, event.responses['del_err_not_found'])
         return "ok"
 
     event.obj['silent'] = True
@@ -145,7 +144,8 @@ def delete_by_type(event: Event) -> str:
     msg_delete(event, del_info(event), msg_ids)
 
     if null_admins:
-        new_message(event.api, event.chat.peer_id, message = 'Ирис не прислал список администраторов. Попробуй обновить чат (команда "обновить чат")')
+        event.api.msg_op(1, event.chat.peer_id, 'Ирис не прислал список администраторов.' +
+                         'Попробуй обновить чат (команда "обновить чат")')
         return "ok"
 
     message = 'Удалены сообщения следующих пользователей:\n'
@@ -153,7 +153,7 @@ def delete_by_type(event: Event) -> str:
     for user in event.api('users.get', user_ids = ','.join([str(i) for i in users.keys()])):
         message += f'{ment_user(user)} ({users.get(user["id"])})\n'
 
-    new_message(event.api, event.chat.peer_id, message = message, disable_mentions = 1)
+    event.api.msg_op(1, event.chat.peer_id, message, disable_mentions = 1)
     return "ok"
 
 

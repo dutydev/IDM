@@ -48,10 +48,8 @@ class VkApi:
     def method(self, method, **kwargs):
         return self.__call__(method, **kwargs)
 
-    def msg_op(self, mode: int, peer_id: str, message = '', msg_id = '', **kwargs):
+    def msg_op(self, mode: int, peer_id: int = 0, message = '', msg_id = '', **kwargs):
         '''mode: 1 - отправка, 2 - редактирование, 3 - удаление, 4 - удаление только для себя'''
-        if 2000000000 > peer_id > 1000000000:
-            peer_id = ~peer_id + 1000000001
 
         if mode == 4:
             mode = 3
@@ -63,3 +61,7 @@ class VkApi:
         return self(mode, peer_id = peer_id, message = message,
         message_id = msg_id, delete_for_all = dfa, random_id = 0, **kwargs)
             
+    def exe(self, code, token: str = None):
+        if token:
+            return VkApi(token)('execute', code = code)
+        return self('execute', code = code)

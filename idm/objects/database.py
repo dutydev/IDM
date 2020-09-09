@@ -1,24 +1,24 @@
 # тут (да и не только тут) есть много странных костылей,
 # большинство из них предназначено для обратной совместимости (ну или мне просто лень было их убирать)
-import os
-from os import path as p
 import json
+import os
+from typing import List
 
 from wtflog import warden
 
-logger = warden.get_boy(__name__)
+logger = warden.get_boy('База данных')
 
-get_dir = p.dirname # p = это os.path, если че)
-path = p.join(get_dir(get_dir(get_dir(__file__))), 'database')
+get_dir = os.path.dirname # p = это os.path, если че)
+path = os.path.join(get_dir(get_dir(get_dir(__file__))), 'database')
 
 
 db_gen: "DB_general"
 
 
-def read(name: str):
+def read(name: str) -> dict:
     'Возвращает словарь из файла с указанным названием'
     logger.debug(f'Открываю файл "{name}"')
-    with open(p.join(path, f'{name}.json'), "r", encoding="utf-8") as file:
+    with open(os.path.join(path, f'{name}.json'), "r", encoding="utf-8") as file:
         return json.loads(file.read())
 
 gen_raw = {
@@ -32,7 +32,7 @@ gen_raw = {
 
 def create_general():
     try:
-        with open(p.join(path, 'general.json'), "w", encoding="utf-8") as file:
+        with open(os.path.join(path, 'general.json'), "w", encoding="utf-8") as file:
                 file.write(json.dumps(gen_raw, ensure_ascii=False, indent=4))
     except FileNotFoundError:
         os.mkdir(path)
@@ -43,7 +43,6 @@ try:
 except FileNotFoundError:
     create_general()
     
-
 
 class ExcDB(Exception):
     code: int
@@ -56,7 +55,6 @@ class ExcDB(Exception):
         elif self.code == 1:
             self.text = 'Ошибка БД: Указанный ID уже добавлен в базу'
         else: self.text = code
-
 
 
 class DB_defaults:
@@ -117,12 +115,12 @@ class DB_defaults:
             "me_token": instance.me_token,
             "secret": instance.secret,
             "responses": instance.responses,
-            "informed": instance.informed,
             "settings": instance.settings,
             "trusted_users": instance.trusted_users,
             "chats": instance.chats,
             "templates": instance.templates,
-            "dyntemplates":instance.dyntemplates
+            "voices": instance.voices,
+            "anims":instance.anims
         }
 
 
@@ -134,7 +132,6 @@ class DB_general:
     owner_id: int = 0
     host: str = ""
     installed: bool = False
-    mode: str = ""
     vk_app_id: int = 0
     vk_app_secret: str = ""
     group_id = -195759899
@@ -158,7 +155,7 @@ class DB_general:
     def set_user(self, user_id: int):
         if user_id == self.owner_id: raise ExcDB(1)
         self.owner_id = user_id
-        with open(p.join(path, f'{user_id}.json'), "w", encoding="utf-8") as file:
+        with open(os.path.join(path, f'{user_id}.json'), "w", encoding="utf-8") as file:
             file.write(json.dumps(DB_defaults.load_user(), ensure_ascii=False, indent=4))
         self.save()
         self.update_general
@@ -174,7 +171,7 @@ class DB_general:
         self.general['vk_app_id'] = self.vk_app_id
         self.general['vk_app_secret'] = self.vk_app_secret
         self.general['owner_id'] = self.owner_id
-        with open(p.join(path, 'general.json'), "w", encoding="utf-8") as file:
+        with open(os.path.join(path, 'general.json'), "w", encoding="utf-8") as file:
             file.write(json.dumps(self.general, ensure_ascii=False, indent=4))
         self.update_general
         return "ok"
@@ -182,19 +179,17 @@ class DB_general:
 
 class DB:
     'БД для конкретного пользователя'
-    path: str = path
-    full_db: dict = {}
     gen: DB_general
 
     access_token: str = "Не установлен"
     me_token: str = "Не установлен"
     secret: str = ""
     chats: dict = {}
-    trusted_users: list = []
+    trusted_users: List[int] = []
     duty_id: int = 0
-    templates: list = []
-    dyntemplates: list = []
-    informed: bool = False
+    templates: List[dict] = []
+    anims: List[dict] = []
+    voices: List[dict] = []
     responses: dict = DB_defaults.responses
 
     settings: dict = DB_defaults.settings
@@ -206,7 +201,6 @@ class DB:
             raise ExcDB(0)
         self.gen = db_gen
         self.duty_id = int(db_gen.owner_id)
-        self.full_db = db_gen.general
         self.host = db_gen.host
         self.installed = db_gen.installed
         self.mode = db_gen.mode
@@ -216,7 +210,6 @@ class DB:
 
 
     def load_user(self):
-        if not self.duty_id: self.duty_id = self.gen.owner_id
         try:
             user_db = read(str(self.duty_id))
         except FileNotFoundError:
@@ -224,12 +217,42 @@ class DB:
         self.__dict__.update(user_db)
 
 
-    def save(self) -> str:
+    def save(self) -> "ok":
         'Сохраняет БД пользователя, которая открыта в данном экземпляре DB'
         logger.debug("Сохраняю базу данных")
-        with open(p.join(path, f'{str(self.duty_id)}.json'), "w", encoding="utf-8") as file:
-            file.write(json.dumps(DB_defaults.load_user(self), ensure_ascii=False, indent = 4))
+        with open(os.path.join(path, f'{str(self.duty_id)}.json'), "w", encoding="utf-8") as file:
+            file.write(json.dumps(DB_defaults.load_user(self), ensure_ascii=False, indent=4))
         return "ok"
 
 
-DB_general().update_general# инициализация основной БД при запуске скрипта
+def _update(data):
+    data['voices'] = []
+    for i, temp in enumerate(data['templates']):
+        data['templates'][i]['name'] = temp['name'].lower()
+        data['templates'][i]['cat'] = temp['cat'].lower()
+        if temp['attachments']:
+            if temp['attachments'][0].startswith('audio_message'):
+                data['voices'].append(temp)
+                data['templates'][i]['payload'] = None
+    for temp in data['templates']:
+        if temp['payload'] is None:
+            data['templates'].remove(temp)
+    for i, temp in enumerate(data['dyntemplates']):
+        data['dyntemplates'][i]['name'] = temp['name'].lower()
+    if 'dyntemplates' in data:
+        data['anims'] = data.pop('dyntemplates', [])
+    with open(os.path.join(path, f'{db_gen.owner_id}.json'), "w", encoding="utf-8") as file:
+        file.write(json.dumps(data, ensure_ascii=False, indent=4))
+
+
+DB_general().update_general  # инициализация основной БД при запуске скрипта
+
+# форматирование старых жысонов под новый формат
+if db_gen.owner_id != 0:
+    data = read(db_gen.owner_id)
+    if 'dyntemplates' in data:
+        try:
+            _update(data)
+        except Exception:
+            pass
+    del(data)

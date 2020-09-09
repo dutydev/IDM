@@ -1,14 +1,14 @@
 import os
 import subprocess
-from ...objects import dp, MySignalEvent
-from ...lpcommands.utils import set_online_privacy, msg_op
+from platform import system
+from idm.objects import dp, MySignalEvent
 
-try:
-    import uwsgi
-    PA = True
-except ImportError:
-    PA = False
-    print('Обновление и анимации могут не работать')
+# try:
+#     import uwsgi
+#     PA = True
+# except ImportError:
+#     PA = False
+#     print('Обновление и анимации могут не работать')
 
 cwd = os.getcwd()
 
@@ -18,6 +18,7 @@ for name in os.listdir(cwd):
         already_in = True
 
 path = cwd if already_in else os.path.join(cwd, 'ICAD')
+runner = 'python3' if system() == 'Linux' else 'py'
 
 @dp.my_signal_event_register('обновить')
 def start_update(event: MySignalEvent):
@@ -25,7 +26,7 @@ def start_update(event: MySignalEvent):
                     '\nРабота не на pythonanywhere не гарантируется')
     with open(os.path.join(path, "updater.py"), 'w', encoding="utf-8") as data:
         data.write(get_updater(event.db.access_token, event.msg['id'], event.chat.peer_id))
-    out = subprocess.run(f"python3 {path}/updater.py", shell=True, cwd=path, capture_output=True)
+    out = subprocess.run(f"{runner} {path}/updater.py", shell=True, cwd=path, capture_output=True)
     with open(os.path.join(os.getcwd(), "update.log"), 'w', encoding="utf-8") as data:
         data.write(str(out))
     if PA:

@@ -1,9 +1,9 @@
-from .. import utils
 from ..objects import dp, Event
-from microvk import VkApiResponseException
+from idm.api_utils import get_msg_id
 
-@dp.event_handle('printBookmark')
+
+@dp.event_register('printBookmark')
 def print_bookmark(event: Event) -> str:
-    utils.new_message(event.api, event.chat.peer_id, message=event.obj['description'],
-        reply_to=utils.get_msg_id(event.api, event.chat.peer_id, event.obj['conversation_message_id']))
+    event.api.msg_op(event.api, event.chat.peer_id, message=event.obj['description'],
+        reply_to=get_msg_id(event.api, event.chat.peer_id, event.obj['conversation_message_id']))
     return "ok"

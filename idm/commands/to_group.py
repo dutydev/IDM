@@ -1,12 +1,12 @@
 # TODO: переписать, добавить параметры
 import typing
-from ..utils import new_message, edit_message, get_msg
+from idm.api_utils import get_msg
 from ..objects import dp, Event
 from microvk import VkApiResponseException
 import re
 import requests
 
-@dp.event_handle('toGroup')
+@dp.event_register('toGroup')
 def to_group(event: Event) -> str:
     def parse_attachments(event: Event) -> typing.Tuple[str, typing.List[str]]:
         def get_payload(text: str) -> str:
@@ -60,18 +60,18 @@ def to_group(event: Event) -> str:
         data = event.api('wall.post', owner_id=(-1) * event.obj['group_id'], from_group=1, message=text, 
             attachments=",".join(attachments))
 
-        new_message(event.api, event.chat.peer_id, message=event.responses['to_group_success'],
+        event.send(event.responses['to_group_success'],
             attachment=f"wall-{event.obj['group_id']}_{data['post_id']}")
     except VkApiResponseException as e:
         if e.error_code == 214:
-            new_message(event.api, event.chat.peer_id, message=event.responses['to_group_err_forbidden'])
+            event.send(event.responses['to_group_err_forbidden'])
         elif e.error_code == 220:
-            new_message(event.api, event.chat.peer_id, message=event.responses['to_group_err_recs'])
+            event.send(event.responses['to_group_err_recs'])
         elif e.error_code == 222:
-            new_message(event.api, event.chat.peer_id, message=event.responses['to_group_err_link'])
+            event.send(event.responses['to_group_err_link'])
         else:
-            new_message(event.api, event.chat.peer_id, message=event.responses['to_group_err_vk'] + str({e.error_msg}))
+            event.send(event.responses['to_group_err_vk'] + str({e.error_msg}))
     except:
-        new_message(event.api, event.chat.peer_id, message=event.responses['to_group_err_unknown'])
+        event.send(event.responses['to_group_err_unknown'])
 
     return "ok"

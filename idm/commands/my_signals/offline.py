@@ -1,5 +1,5 @@
 from ...objects import dp, MySignalEvent
-from ...lpcommands.utils import set_online_privacy, msg_op
+from idm.api_utils import set_online_privacy
 
 
 @dp.my_signal_event_register('+оффлайн')
@@ -8,7 +8,7 @@ def hide_online(event: MySignalEvent):
         msg = '🍭 Онлайн скрыт'
     else:
         msg = '🐶 Произошла ошибка'
-    msg_op(2, event.chat.peer_id, msg, event.msg['id'])
+    event.msg_op(2, msg)
     return "ok"
 
 
@@ -18,6 +18,6 @@ def reveal_online(event: MySignalEvent):
         msg = '🍒 Онлайн открыт для всех'
     else:
         msg = '🐶 Произошла ошибка'
-    msg_op(2, event.chat.peer_id, msg, event.msg['id'])
+    event.msg_op(2, msg)
     return "ok"
     

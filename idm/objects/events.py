@@ -1,18 +1,18 @@
 import json
 import re
+from datetime import datetime
+from typing import List
 
 from flask import Request
 
 from microvk import VkApi
+from wtflog import warden
 
-from datetime import datetime
-
-from .. import utils
-from ..lpcommands.utils import utils_api
+from idm.api_utils import get_msg
+from idm.utils import Message
 from . import DB
 
-from wtflog import warden
-logger = warden.get_boy(__name__)
+logger = warden.get_boy('События callback')
 
 
 class ExceptToJson(Exception):
@@ -51,22 +51,21 @@ class Event:
     time: float
     vk_response_time: float
     obj: dict
-    fails: dict
     secret: str
     chat: Chat
-    attachments: list
+    attachments: List[str]
     reply_message: dict
     responses: dict
 
     def set_msg(self, msg: dict = None):
         if msg is None:
             ct = datetime.now().timestamp()
-            self.msg = utils.get_msg(
-                self.api, self.chat.peer_id, self.msg['conversation_message_id'])
+            self.msg = get_msg(self.api, self.chat.peer_id,
+                               self.msg['conversation_message_id'])
             self.vk_response_time = datetime.now().timestamp() - ct
         else:
             self.msg = msg
-        self.parse_attachments()
+        self.parse()
         self.reply_message = self.msg.get("reply_message", None)
 
     def set_chat(self):
@@ -75,8 +74,6 @@ class Event:
         if self.obj['chat'] in self.db.chats.keys():
             self.chat = Chat(
                 self.db.chats[self.obj['chat']], self.obj['chat'])
-            if self.msg != (None, {}):
-                self.set_msg()
             return
 
         if self.msg:
@@ -88,7 +85,7 @@ class Event:
             self.vk_response_time = datetime.now().timestamp() - ct
             for chat in chats:
                 diff = chat['last_message'][cmid_key] - self.msg[cmid_key]
-                if diff > 100 or diff < -100:
+                if diff < 0 or diff > 50:
                     continue
                 conv = chat['conversation']
                 if conv['peer']['type'] == "chat":
@@ -109,8 +106,7 @@ class Event:
             return
         self.chat = None
 
-    def __init__(self, request: Request, data_: dict=None):
-
+    def __init__(self, request: Request):
         if request != None and request.data == b'':
             self.user_id = None
             self.msg = None
@@ -118,10 +114,7 @@ class Event:
             self.secret = None
             self.method = 'ping'
         else:
-            if data_ == None:
-                _data = json.loads(request.data)
-            else:
-                _data = data_
+            _data = json.loads(request.data)
             self.secret = _data.get('secret')
             self.obj = _data.get('object', {})
             self.msg = _data.get('message', {})
@@ -137,8 +130,6 @@ class Event:
             self.attachments = []
             self.responses = self.db.responses
 
-            utils_api(self.db, self.api)
-
             if self.method in {'sendSignal', 'sendMySignal', 'subscribeSignals', 'toGroup'}:
                 self.set_chat()
             elif self.method in {'ping', 'groupbots.invited', 'bindChat'}:
@@ -146,24 +137,21 @@ class Event:
             else:
                 self.chat = Chat(self.db.chats[self.obj['chat']], self.obj['chat'])
 
+        logger.info(self.__str__())
 
-        logger.info(self.__str__().replace('\n', ' '))
-
-    def parse_attachments(self):
-        for attachment in self.msg.get('attachments', []):
-            a_type = attachment['type']
-            if a_type in ['link']:
-                continue
-            self.attachments.append(
-                f"{a_type}{attachment[a_type]['owner_id']}_{attachment[a_type]['id']}_{attachment[a_type]['access_key']}"
-            )
+    def parse(self):
+        msg = Message(self.msg)
+        self.attachments = msg.attachments
+        self.command = msg.command
+        self.payload = msg.payload
+        self.args = msg.args
 
     def __str__(self) -> str:
         return f"""Новое событие от Iris callback API
             Метод: {self.method}
             Пользователь: {self.db.duty_id}
-            Данные: {json.dumps(self.obj, ensure_ascii=False)}
-            Сообщение: {json.dumps(self.msg, ensure_ascii=False)}
+            Данные: {json.dumps(self.obj, ensure_ascii=False, indent=4)}
+            Сообщение: {json.dumps(self.msg, ensure_ascii=False, indent=4)}
             """.replace("    ", "")
 
 
@@ -183,50 +171,28 @@ class SignalEvent(Event):
         return f"""Новое событие от Iris callback API
             Метод: {self.method}
             Команда: {self.command}
-            Агрументы: {self.args}
+            Аргументы: {self.args}
             Пользователь: {self.db.duty_id}
-            Данные: {json.dumps(self.obj, ensure_ascii=False)}
-            Сообщение: {json.dumps(self.msg, ensure_ascii=False)}
+            Данные: {json.dumps(self.obj, ensure_ascii=False, indent=4)}
+            Сообщение: {json.dumps(self.msg, ensure_ascii=False, indent=4)}
             """.replace("    ", "")
-
-    def parse(self):
-        regexp = r"(^[\S]+)|([\S]+)|(\n[\s\S \n]+)"
-        _args = re.findall(regexp, self.msg['text'])
-        args = []
-        payload = ""
-
-        for arg in _args:
-            if arg[1] != '':
-                args.append(arg[1])
-            if arg[2] != '':
-                payload = arg[2][1:]
-
-        if len(args) == 1:
-            self.command = args[0].lower()
-            self.args = None
-        else:
-            self.command = args[0].lower()
-            self.args = args[1:]
-
-        self.payload = payload
 
     def __init__(self, event: Event):
         self.event = event
         self.time = event.time
-        self.vk_response_time = event.vk_response_time
         self.api = event.api
         self.db = event.db
         self.method = event.method
         self.obj = event.obj
-        self.secret = event.secret
-        self.attachments = event.attachments
-        self.chat = event.chat
         self.msg = event.msg
-        self.reply_message = event.reply_message
+        self.secret = event.secret
+        self.chat = event.chat
         self.responses = event.responses
 
-        self.parse()
-        logger.debug(self.__str__().replace('\n', ' '))
+        logger.debug(self.__str__())
+
+    def send(self, text = '', **kwargs):
+        self.api.msg_op(1, self.chat.peer_id, text, **kwargs)
 
 
 class MySignalEvent(Event):
@@ -246,40 +212,15 @@ class MySignalEvent(Event):
         self.event = event
         self.api = event.api
         self.time = event.time
-        self.vk_response_time = event.vk_response_time
         self.db = event.db
         self.method = event.method
         self.obj = event.obj
-        self.secret = event.secret
-        self.attachments = event.attachments
-        self.chat = event.chat
         self.msg = event.msg
-        self.reply_message = event.reply_message
+        self.secret = event.secret
+        self.chat = event.chat
         self.responses = event.responses
 
-        self.parse()
-        logger.debug(self.__str__().replace('\n', ' '))
-
-    def parse(self):
-        regexp = r"(^[\S]+)|([\S]+)|(\n[\s\S \n]+)"
-        _args = re.findall(regexp, self.msg['text'])
-        args = []
-        payload = ""
-
-        for arg in _args:
-            if arg[1] != '':
-                args.append(arg[1])
-            if arg[2] != '':
-                payload = arg[2][1:]
-
-        if len(args) == 1:
-            self.command = args[0].lower()
-            self.args = None
-        else:
-            self.command = args[0].lower()
-            self.args = args[1:]
-
-        self.payload = payload
+        logger.debug(self.__str__())
 
     def msg_op(self, mode, text = '', **kwargs):
         '1 - новое сообщение, 2 - редактирование, 3 - удаление для всех'

@@ -1,5 +1,4 @@
-from .utils import msg_op, parseByID, parse
-from . import dlp, ND
+from idm.objects import dp, MySignalEvent
 import time
 
 eng = u"~!@#$%^&qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?"
@@ -27,34 +26,32 @@ fonts = {
 translit = u'ё|!|"|№|;|%|:|?|y|ts|u|k|e|n|g|sh|sch|z|kh||f|y|v|a|p|r|o|l|d|zh|e|ya|ch|s|m|i|t||b|yu|.|Y|TS|U|K|E|N|G|SH|SCH|Z|KH||F|Y|B|A|P|R|O|L|D|ZH|E|/|YA|CH|S|M|I|T||B|YU|'
 translit = dict(zip(rus, translit.split('|')))
 
-@dlp.register_startswith('конв', '-конв')
-def conv_text(nd: ND):
-    msg = nd.msg
-    if msg['command'] not in {'конв','-конв'}:
-        return "ok"
-    trans_table = dict(zip(eng, rus)) if msg['command'] == 'конв' else dict(zip(rus, eng))
-    s = ''
-    if msg['args']:
-        s = " ".join(msg['args'])
-    if msg['payload']:
-        s = s + '\n' + msg['payload']
-    if msg['reply']:
-        s = s + '\n' + msg['reply']['text']
-    if msg['fwd']:
-        for i in msg['fwd']: s += '\n\n' + i['text']
 
-    if s == '': msg_op(2, nd[3], 'Нет данных 🤦', nd[1])
+@dp.my_signal_event_register('конв', '-конв')
+def conv_text(event: MySignalEvent) -> str:
+    trans_table = dict(zip(eng, rus)) if event.command == 'конв' else dict(zip(rus, eng))
+    s = ''
+    if event.args:
+        s = " ".join(event.args)
+    if event.payload:
+        s = s + '\n' + event.payload
+    if event.reply_message:
+        s = s + '\n' + event.reply_message['text']
+    if event.msg['fwd_messages']:
+        for i in event.msg['fwd_messages']: s += '\n\n' + i['text']
+
+    if s == '':
+        event.msg_op(2, 'Нет данных 🤦')
+        return "ok"
 
     message = u''.join([trans_table.get(c, c) for c in s])
-    time.sleep(1)
-    msg_op(2, nd[3], f'🔁 Конвертировано:\n\n{message}', nd[1])
+    event.msg_op(2, f'🔁 Конвертировано:\n\n{message}', keep_forward_messages=1)
     return "ok"
 
 
-
-@dlp.register('шрифты')
-def fonts_list(nd: ND) -> str:
-    msg_op(1, nd[3], """
+@dp.my_signal_event_register('шрифты')
+def fonts_list(event: MySignalEvent) -> str:
+    event.msg_op(2, """
     1. 𝕠𝕦𝕥𝕝𝕚𝕟𝕖 (outline)
     2. 𝚝𝚢𝚙𝚎𝚠𝚛𝚒𝚝𝚎𝚛 (typewriter)
     3. 𝓈𝒸𝓇𝒾𝓅𝓉 (script)
@@ -73,18 +70,18 @@ def fonts_list(nd: ND) -> str:
     return "ok"
 
 
-@dlp.register_startswith('шрифт')
-def fonts_convert(nd: ND) -> str:
+@dp.my_signal_event_register('шрифт')
+def fonts_convert(event: MySignalEvent) -> str:
     dest = False
-    if nd.msg['args']:
-        if nd.msg['args'][0] in fonts.keys():
-            dest = fonts[nd.msg['args'][0]]
-            s = ''.join(translit.get(c, c) for c in nd.msg['payload'])
+    if event.args:
+        if event.args[0] in fonts.keys():
+            dest = fonts[event.args[0]]
+            s = ''.join(translit.get(c, c) for c in event.payload)
             msg = u''.join(dict(zip(eng, dest)).get(c, c) for c in s)
-            if nd.msg['args'][0] == '5':
+            if event.args[0] == '5':
                 msg = msg[::-1]
     if not dest:
         msg = """Просмотр списка шрифтов - .с шрифты
         \nКоманда для конвертации:\n.с шрифт [номер]\n[текст]"""
-    msg_op(2, nd[3], msg, nd[1], keep_forwarded_messages = 1)
+    event.msg_op(2, msg, keep_forward_messages=1)
     return "ok"

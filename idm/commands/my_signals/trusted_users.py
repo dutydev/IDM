@@ -1,18 +1,16 @@
-from ...objects import dp, MySignalEvent
-from ...utils import new_message, edit_message, ment_user
-from ...lpcommands.utils import find_mention_by_event
+from idm.objects import dp, MySignalEvent
+from idm.utils import ment_user
+from idm.utils import find_mention_by_event
 
 def tr_user_op(event, error, typ):
     tr_id = find_mention_by_event(event)
 
     if not tr_id:
-        edit_message(event.api, event.chat.peer_id, event.msg['id'],
-        message = event.responses['trusted_err_no_reply'])
+        event.msg_op(2, event.responses['trusted_err_no_reply'])
         return "ok"
 
     def tr_err():
-        edit_message(event.api, event.chat.peer_id, event.msg['id'], 
-        message = event.responses[f'trusted_err_{error}'])
+        event.msg_op(2, event.responses[f'trusted_err_{error}'])
         return "ok"
 
     tr_id = event.reply_message['from_id'] if event.reply_message else tr_id
@@ -30,8 +28,7 @@ def tr_user_op(event, error, typ):
         event.db.trusted_users.remove(tr_id)
         event.db.save()
 
-    edit_message(event.api, event.chat.peer_id, event.msg['id'], 
-        message= event.responses[f'trusted_success_{typ}'].format(
+    event.msg_op(2, event.responses[f'trusted_success_{typ}'].format(
         ссылка = ment_user(tr_user)))
     return "ok"
 
@@ -55,6 +52,6 @@ def trusted_users(event: MySignalEvent) -> str:
         itr += 1
         message += f"\n{itr}. [id{user['id']}|{user['first_name']} {user['last_name']}]"
     
-    edit_message(event.api, event.chat.peer_id, event.msg['id'], message=message)
+    event.msg_op(2, message)
 
     return "ok"

@@ -1,11 +1,11 @@
 from ...objects import dp, MySignalEvent
-from ...utils import edit_message
 from time import sleep
 
 farm_data = {
     "owner_id": -174105461,
     "post_id": 35135
 }
+
 
 @dp.my_signal_event_register('ферма')
 def farming(event: MySignalEvent) -> str:

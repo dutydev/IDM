@@ -3,8 +3,7 @@
 from flask import (Flask, redirect, request, render_template,
     send_from_directory, abort, make_response)
 from .objects import Event, dp, DB, ExcDB, ExceptToJson, DB_general
-from .lpcommands.utils import gen_secret, set_online_privacy
-from .sync import lpsync, secret_fail_lp
+from idm.utils import gen_secret
 from microvk import VkApi, VkApiResponseException
 from hashlib import md5
 from wtflog import warden
@@ -216,12 +215,6 @@ def api(method: str):
 
 
 
-@app.route('/admin/edit_user', methods = ["POST"])
-def edit_user():
-    return abort(403)
-
-
-
 def db_check_user(request):
     uid = auth['user']
     if uid == 0: return redirect('/login'), 'fail'
@@ -287,10 +280,6 @@ def callback():
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('errors/404.html'), 404
-
-@app.errorhandler(403)
-def forbidden(e):
-    return render_template('errors/403.html'), 403
 
 @app.errorhandler(500)
 def int_error(e):
