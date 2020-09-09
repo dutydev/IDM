@@ -100,7 +100,7 @@ def voice_delete(event: MySignalEvent) -> str:
 def voice_send(event: MySignalEvent) -> str:
     name = ' '.join(event.args).lower()
     voice = None
-    for v in event.db.anim:
+    for v in event.db.voices:
         if v['name'] == name:
             voice = v
             break
