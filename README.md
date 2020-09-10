@@ -7,9 +7,9 @@
 4. [Благодарности](https://github.com/Elchinchel/IDM-SC-mod#Благодарности)
 
 ## Как установить
-Для установки мы будем использовать сайт [pythonanywhere.com](https://www.pythonanywhere.com/)
+Для установки мы будем использовать сайт [pythonanywhere.com](https://www.eu.pythonanywhere.com/)
 
-Переходим по [ссылке](https://www.pythonanywhere.com/registration/register/beginner/), заполняем форму и нажимаем *Register*
+Переходим по [ссылке](https://www.eu.pythonanywhere.com/registration/register/beginner/), заполняем форму и нажимаем *Register*
 
 *(Под словами "вкладка X" далее по тексту, имеются в виду ссылки на этой панели)*
 [![](https://sun9-35.userapi.com/GvwS8jmduczHApabBhlJyeJcAzhMLkFEE8Bqmw/_UZT_5jUQtk.jpg)](https://sun9-35.userapi.com/GvwS8jmduczHApabBhlJyeJcAzhMLkFEE8Bqmw/_UZT_5jUQtk.jpg)
@@ -34,9 +34,9 @@ git clone https://github.com/elchinchel/ICAD
 [![](https://sun1-25.userapi.com/jHRFDx7NyayBffN6AKCK4_Daxu7tBDoCCFulyw/nTtDNh3aeD0.jpg)](https://sun1-25.userapi.com/jHRFDx7NyayBffN6AKCK4_Daxu7tBDoCCFulyw/nTtDNh3aeD0.jpg)
 
 
-Далее переходим во вкладку *Web* и нажимаем на кнопку *Reload* `имя аккаунта`.pythonanywhere.com
+Далее переходим во вкладку *Web* и нажимаем на кнопку *Reload* `имя аккаунта`.eu.pythonanywhere.com
 
-Переходим по ссылке `имя аккаунта`.pythonanywhere.com (ссылка над кнопкой перезагрузки)
+Переходим по ссылке `имя аккаунта`.eu.pythonanywhere.com (ссылка над кнопкой перезагрузки)
 
 [![](https://sun9-58.userapi.com/BQNI2zd65Erkq0AU9DlMfohvqJ8id8rFZ0yx3A/UVdo0UBPYSo.jpg)](https://sun9-58.userapi.com/BQNI2zd65Erkq0AU9DlMfohvqJ8id8rFZ0yx3A/UVdo0UBPYSo.jpg)
 
@@ -61,7 +61,7 @@ git clone https://github.com/elchinchel/ICAD
 ### Как создать приложение ВК
 Переходим по ссылке [https://vk.com/editapp?act=create](https://vk.com/editapp?act=create "https://vk.com/editapp?act=create"), в поле платформа выбираем *сайт*
 
-Адрес сайта и базовый домен `http://{имя вашего аккаунта}.pythonanywhere.com`
+Адрес сайта и базовый домен `http://{имя вашего аккаунта}.eu.pythonanywhere.com`
 
 [![](https://sun1-83.userapi.com/g4A8pmmIpssJtHlXUqb1K6OcPOVsmePa2Wb6WA/oaGRBEOYixc.jpg)](https://sun1-83.userapi.com/g4A8pmmIpssJtHlXUqb1K6OcPOVsmePa2Wb6WA/oaGRBEOYixc.jpg)`
 
