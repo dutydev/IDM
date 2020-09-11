@@ -1,5 +1,4 @@
 import json
-import re
 from datetime import datetime
 from typing import List
 
@@ -10,7 +9,7 @@ from wtflog import warden
 
 from idm.api_utils import get_msg
 from idm.utils import Message
-from . import DB
+from . import DB, ExcDB, db_gen
 
 logger = warden.get_boy('События callback')
 
@@ -21,7 +20,7 @@ class ExceptToJson(Exception):
     def __init__(self, message='', code: int = 0, iris: bool = False):
         if iris:
             self.response = json.dumps({'response': 'error',
-            'error_code': code, 'error_message': message}, ensure_ascii = False)
+            'error_code': code, 'error_message': message}, ensure_ascii=False)
         else:
             self.response = 'Error_o4ka:\n' + str(message)
 
@@ -33,9 +32,9 @@ class Chat:
     name: str
 
     def __init__(self, data: dict, iris_id: str):
-        self.peer_id = data.get('peer_id', 0)
+        self.peer_id = data['peer_id']
         self.id = self.peer_id - 2000000000
-        self.name = data.get('name', '')
+        self.name = data.get('name', 'Чат не связан')
         self.iris_id = iris_id
         self.installed = data.get('installed', False)
 
@@ -53,7 +52,6 @@ class Event:
     obj: dict
     secret: str
     chat: Chat
-    attachments: List[str]
     reply_message: dict
     responses: dict
 
@@ -121,13 +119,12 @@ class Event:
 
             try:
                 self.db = DB(_data.get('user_id'))
-            except:
+            except ExcDB:
                 raise ExceptToJson('Неверный ID дежурного')
 
             self.time = datetime.now().timestamp()
             self.api = VkApi(self.db.access_token, raise_excepts=True)
             self.method = _data.get('method', 'ping')
-            self.attachments = []
             self.responses = self.db.responses
 
             if self.method in {'sendSignal', 'sendMySignal', 'subscribeSignals', 'toGroup'}:
@@ -136,8 +133,8 @@ class Event:
                 pass
             else:
                 self.chat = Chat(self.db.chats[self.obj['chat']], self.obj['chat'])
-
-        logger.info(self.__str__())
+        if self.method not in {'sendSignal', 'sendMySignal'}:
+            logger.info(self.__str__())
 
     def parse(self):
         msg = Message(self.msg)
@@ -149,36 +146,18 @@ class Event:
     def __str__(self) -> str:
         return f"""Новое событие от Iris callback API
             Метод: {self.method}
-            Пользователь: {self.db.duty_id}
-            Данные: {json.dumps(self.obj, ensure_ascii=False, indent=4)}
-            Сообщение: {json.dumps(self.msg, ensure_ascii=False, indent=4)}
+            Данные: {self.obj}
+            Сообщение: {self.msg}
             """.replace("    ", "")
 
 
 class SignalEvent(Event):
-    msg: dict
-    chat: Chat
-
-    time: float
-    vk_response_time: float
     command: str
     args: list
     payload: str
-
-    reply_message: dict
-
-    def __str__(self) -> str:
-        return f"""Новое событие от Iris callback API
-            Метод: {self.method}
-            Команда: {self.command}
-            Аргументы: {self.args}
-            Пользователь: {self.db.duty_id}
-            Данные: {json.dumps(self.obj, ensure_ascii=False, indent=4)}
-            Сообщение: {json.dumps(self.msg, ensure_ascii=False, indent=4)}
-            """.replace("    ", "")
+    attachments: List[str]
 
     def __init__(self, event: Event):
-        self.event = event
         self.time = event.time
         self.api = event.api
         self.db = event.db
@@ -196,20 +175,12 @@ class SignalEvent(Event):
 
 
 class MySignalEvent(Event):
-
-    msg: dict
-    chat: Chat
-
-    time: float
-    vk_response_time: float
     command: str
     args: list
     payload: str
-
-    reply_message: dict
+    attachments: List[str]
 
     def __init__(self, event: Event):
-        self.event = event
         self.api = event.api
         self.time = event.time
         self.db = event.db
@@ -222,7 +193,33 @@ class MySignalEvent(Event):
 
         logger.debug(self.__str__())
 
-    def msg_op(self, mode, text = '', **kwargs):
+    def msg_op(self, mode, text='', **kwargs):
         '1 - новое сообщение, 2 - редактирование, 3 - удаление для всех'
         msg_id = self.msg['id'] if mode in {2, 3, 4} else 0
         self.api.msg_op(mode, self.chat.peer_id, text, msg_id, **kwargs)
+
+
+class LongpollEvent(MySignalEvent):
+    data: dict
+
+    def __str__(self) -> str:
+        return f"""Новое событие от Longpoll модуля
+            Команда: {self.command}
+            Аргументы: {self.args}
+            Данные: {self.data}
+            Сообщение: {self.msg}
+            """.replace("    ", "")
+
+    def __init__(self, data: dict):
+        self.time = datetime.now().timestamp()
+        self.data = data
+        self.msg = data['message']
+        self.parse()
+        if data['chat'] is None:
+            self.chat = Chat({'peer_id': self.msg['peer_id']}, 'N/A')
+        else:
+            self.chat = Chat(self.db.chats[data['chat']], data['chat'])
+        self.db = DB(db_gen.owner_id)
+        self.api = VkApi(self.db.access_token, raise_excepts=True)
+
+        logger.debug(self.__str__())
