@@ -143,6 +143,11 @@ class Event:
         self.payload = msg.payload
         self.args = msg.args
 
+    def msg_op(self, mode, text='', **kwargs):
+        '1 - новое сообщение, 2 - редактирование, 3 - удаление для всех'
+        msg_id = self.msg['id'] if mode in {2, 3, 4} else 0
+        self.api.msg_op(mode, self.chat.peer_id, text, msg_id, **kwargs)
+
     def __str__(self) -> str:
         return f"""Новое событие от Iris callback API
             Метод: {self.method}
@@ -193,7 +198,7 @@ class MySignalEvent(Event):
 
         logger.debug(self.__str__())
 
-    def msg_op(self, mode, text='', **kwargs):
+    def msg_op(self, mode, text='', **kwargs):  # TODO: повтор
         '1 - новое сообщение, 2 - редактирование, 3 - удаление для всех'
         msg_id = self.msg['id'] if mode in {2, 3, 4} else 0
         self.api.msg_op(mode, self.chat.peer_id, text, msg_id, **kwargs)
