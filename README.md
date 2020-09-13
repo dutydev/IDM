@@ -68,29 +68,15 @@ git clone https://github.com/elchinchel/ICAD
 Кликаем на *подключить сайт*.
 
 ## Как обновить
-Вводим в консоль команды, 
+*".c обновить"*
+
+Если такого сигнала нет, то вводим следующие команды и 
 **перезагружаем сайт на вкладке *Web***\
-**Команды только для версий от 1.1.1 beta rev.1 (проверить можно командой .с инфо)**
-``` bash
-cd ICAD
-git fetch --all
-git reset --hard origin/master-beta
-```
-**Команды для старых версий**
 ``` bash
 cp -rf ICAD/database database
 rm -rf ICAD
 git clone https://github.com/elchinchel/ICAD
 cp -rf database ICAD
-rm -rf database
-```
-
-(команды, если устанавливали IDM-SC-mod)
-``` bash
-cp -rf IDM/database database
-rm -rf IDM
-git clone https://github.com/elchinchel/IDM
-cp -rf database IDM
 rm -rf database
 ```
 
