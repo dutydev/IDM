@@ -12,8 +12,8 @@ def msg_delete(event, msg_id, msg_ids=[]):
 
     def del_edit(key, err=''):
         if not event.obj['silent']:
-            event.api.msg_op(2, event.chat.peer_id, msg_id,
-                             event.responses[key].format(ошибка=err))
+            event.api.msg_op(2, event.chat.peer_id,
+                             event.responses[key].format(ошибка=err), msg_id)
             time.sleep(3)
             event.msg_op(3)
 
