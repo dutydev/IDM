@@ -15,7 +15,7 @@ def msg_delete(event, msg_id, msg_ids=[]):
             event.api.msg_op(2, event.chat.peer_id,
                              event.responses[key].format(ошибка=err), msg_id)
             time.sleep(3)
-            event.msg_op(3, msg_id=msg_id)
+            event.api.msg_op(3, msg_id=msg_id)
 
     if msg_ids:
         code = """return API.messages.delete({delete_for_all: 1,
