@@ -1,4 +1,4 @@
-from ..objects import dp
+from idm.objects import dp
 
 
 @dp.event_register('ping')

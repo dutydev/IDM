@@ -1,7 +1,7 @@
 # TODO: переписать, добавить параметры
 import typing
 from idm.api_utils import get_msg
-from ..objects import dp, Event
+from idm.objects import dp, Event
 from microvk import VkApiResponseException
 import re
 import requests

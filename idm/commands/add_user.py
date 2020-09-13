@@ -1,5 +1,5 @@
-from ..objects import dp, Event
-from ..utils import ment_user
+from idm.objects import dp, Event
+from idm.utils import ment_user
 from microvk import VkApiResponseException
 import json
 

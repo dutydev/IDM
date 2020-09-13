@@ -1,4 +1,4 @@
-from ..objects import dp, Event
+from idm.objects import dp, Event
 from microvk import VkApi, VkApiResponseException
 
 

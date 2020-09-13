@@ -1,4 +1,4 @@
-from ..objects import dp, Event, MySignalEvent, DB, Chat
+from idm.objects import dp, Event, MySignalEvent, DB, Chat
 from microvk import VkApi
 
 @dp.event_register('bindChat')

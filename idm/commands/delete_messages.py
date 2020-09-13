@@ -1,17 +1,19 @@
-from ..objects import dp, Event
-from ..utils import ment_user
+from idm.objects import dp, Event
+from idm.utils import ment_user
 from idm.api_utils import get_msgs
 from datetime import datetime
 import time
 
-def msg_delete(event, msg_id, msg_ids = []):
+
+def msg_delete(event, msg_id, msg_ids=[]):
     if getattr(event, 'msg'):
         if event.msg['from_id'] == event.db.duty_id and not msg_ids:
             event.obj['local_ids'].append(event.msg['conversation_message_id'])
 
-    def del_edit(key, err = ''):
+    def del_edit(key, err=''):
         if not event.obj['silent']:
-            event.msg_op(2, event.responses[key].format(ошибка = err))
+            event.api.msg_op(2, event.chat.peer_id, msg_id,
+                             event.responses[key].format(ошибка=err))
             time.sleep(3)
             event.msg_op(3)
 
@@ -22,11 +24,11 @@ def msg_delete(event, msg_id, msg_ids = []):
         code = """return API.messages.delete({delete_for_all: 1, message_ids:
         API.messages.getByConversationMessageId({peer_id:"%s",
         conversation_message_ids:%s}).items@.id});""" % (
-        event.chat.peer_id, event.obj['local_ids'])
+            event.chat.peer_id, event.obj['local_ids'])
 
     while True:
         ret = event.api.exe(code)
-        if not "error" in ret:
+        if "error" not in ret:
             del_edit('del_success')
             break
         elif ret['error']['error_code'] == 6:
@@ -73,7 +75,7 @@ def delete_messages_from_user(event: Event) -> str:
         return "ok"
 
     return msg_delete(event, del_info(event), msg_ids)
-    
+
 
 @dp.event_register('messages.deleteByType')
 def delete_by_type(event: Event) -> str:
@@ -103,6 +105,7 @@ def delete_by_type(event: Event) -> str:
             event.obj['admin_ids'] = [int(i) for i in event.obj['admin_ids']]
 
     users = {}
+
     def append(msg):
         msg_ids.append(msg['id'])
         users.update({msg['from_id']: users.get(msg['from_id'], 0) + 1})
@@ -140,7 +143,7 @@ def delete_by_type(event: Event) -> str:
 
     event.obj['silent'] = True
     event.api.raise_excepts = False
-    
+
     msg_delete(event, del_info(event), msg_ids)
 
     if null_admins:
@@ -150,10 +153,10 @@ def delete_by_type(event: Event) -> str:
 
     message = 'Удалены сообщения следующих пользователей:\n'
 
-    for user in event.api('users.get', user_ids = ','.join([str(i) for i in users.keys()])):
+    for user in event.api('users.get', user_ids=','.join([str(i) for i in users.keys()])):
         message += f'{ment_user(user)} ({users.get(user["id"])})\n'
 
-    event.api.msg_op(1, event.chat.peer_id, message, disable_mentions = 1)
+    event.api.msg_op(1, event.chat.peer_id, message, disable_mentions=1)
     return "ok"
 
 

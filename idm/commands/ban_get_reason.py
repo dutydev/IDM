@@ -1,4 +1,4 @@
-from ..objects import dp, Event
+from idm.objects import dp, Event
 from idm.api_utils import get_msg_id
 
 @dp.event_register('banGetReason')

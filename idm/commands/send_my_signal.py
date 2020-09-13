@@ -1,4 +1,5 @@
-from ..objects import dp, Event, MySignalEvent
+from idm.objects import dp, Event, MySignalEvent
+
 
 @dp.event_register('sendMySignal')
 def send_my_signal(event: Event):

@@ -1,7 +1,9 @@
-from ..objects import dp, Event
+from idm.objects import dp, Event
 from microvk import VkApiResponseException
 from time import sleep
 
+
+# TODO: никрасива
 @dp.event_register('groupbots.invited')
 def groupbots(event: Event) -> str:
     group_id = 0 - int(event.obj['group_id'])
