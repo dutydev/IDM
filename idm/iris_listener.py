@@ -25,13 +25,6 @@ def callback():
         return r"\\\\\ашипка хэз бин произошла/////" + '\n' + d
 
 
-@app.errorhandler(Exception)
-def on_error(e):
-    logger.error(f'Ошибка при обработке запроса:\n{e}\n' +
-                 traceback.format_exc())
-    return f'Неизвестная ошибка:\n{e}'
-
-
 @app.errorhandler(ExceptToJson)
 def json_error(e):
     return e.response

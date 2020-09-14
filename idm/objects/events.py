@@ -64,7 +64,6 @@ class Event:
         else:
             self.msg = msg
         self.parse()
-        self.reply_message = self.msg.get("reply_message", None)
 
     def set_chat(self):
         if 'chat' not in self.obj.keys():
@@ -138,6 +137,7 @@ class Event:
 
     def parse(self):
         msg = Message(self.msg)
+        self.reply_message = msg.get("reply_message", None)
         self.attachments = msg.attachments
         self.command = msg.command
         self.payload = msg.payload
@@ -170,7 +170,7 @@ class SignalEvent(Event):
 
         logger.debug(self.__str__())
 
-    def send(self, text = '', **kwargs):
+    def send(self, text='', **kwargs):
         self.api.msg_op(1, self.chat.peer_id, text, **kwargs)
 
 
@@ -217,11 +217,11 @@ class LongpollEvent(MySignalEvent):
         self.msg = data['message']
         self.parse()
         self.command = data['command']
+        self.db = DB(db_gen.owner_id)
         if data['chat'] is None:
             self.chat = Chat({'peer_id': self.msg['peer_id']}, 'N/A')
         else:
             self.chat = Chat(self.db.chats[data['chat']], data['chat'])
-        self.db = DB(db_gen.owner_id)
         self.api = VkApi(self.db.access_token, raise_excepts=True)
         self.responses = self.db.responses
 
