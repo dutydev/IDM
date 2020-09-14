@@ -137,7 +137,7 @@ class Event:
 
     def parse(self):
         msg = Message(self.msg)
-        self.reply_message = msg.get("reply_message", None)
+        self.reply_message = self.msg.get("reply_message", None)
         self.attachments = msg.attachments
         self.command = msg.command
         self.payload = msg.payload
