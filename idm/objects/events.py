@@ -143,11 +143,6 @@ class Event:
         self.payload = msg.payload
         self.args = msg.args
 
-    def msg_op(self, mode, text='', **kwargs):
-        '1 - новое сообщение, 2 - редактирование, 3 - удаление для всех'
-        msg_id = self.msg['id'] if mode in {2, 3, 4} else 0
-        self.api.msg_op(mode, self.chat.peer_id, text, msg_id, **kwargs)
-
     def __str__(self) -> str:
         return f"""Новое событие от Iris callback API
             Метод: {self.method}
@@ -198,13 +193,14 @@ class MySignalEvent(Event):
 
         logger.debug(self.__str__())
 
-    def msg_op(self, mode, text='', **kwargs):  # TODO: повтор
+    def msg_op(self, mode, text='', **kwargs):
         '1 - новое сообщение, 2 - редактирование, 3 - удаление для всех'
         msg_id = self.msg['id'] if mode in {2, 3, 4} else 0
         self.api.msg_op(mode, self.chat.peer_id, text, msg_id, **kwargs)
 
 
 class LongpollEvent(MySignalEvent):
+    method = 'Longpoll'
     data: dict
 
     def __str__(self) -> str:
@@ -220,11 +216,13 @@ class LongpollEvent(MySignalEvent):
         self.data = data
         self.msg = data['message']
         self.parse()
+        self.command = data['command']
         if data['chat'] is None:
             self.chat = Chat({'peer_id': self.msg['peer_id']}, 'N/A')
         else:
             self.chat = Chat(self.db.chats[data['chat']], data['chat'])
         self.db = DB(db_gen.owner_id)
         self.api = VkApi(self.db.access_token, raise_excepts=True)
+        self.responses = self.db.responses
 
         logger.debug(self.__str__())

@@ -11,7 +11,7 @@ def att_parse(attachments):
             att_t = i['type']
             if att_t in {'link', 'article'}: continue
             atts.append(att_t + str(i[att_t]['owner_id']) +
-            '_' + str(i[att_t]['id']))
+                        '_' + str(i[att_t]['id']))
             if i[att_t].get('access_key'):
                 atts[-1] += '_' + i[att_t]['access_key']
     return atts
@@ -43,7 +43,8 @@ class Message:
         self.attachments = att_parse(msg['attachments'])
 
 
-def gen_secret(chars = 'abcdefghijklmnopqrstuvwxyz0123456789', length: int = None):
+def gen_secret(chars='abcdefghijklmnopqrstuvwxyz0123456789',
+               length: int = None):
     secret = ''
     length = length or random.randint(64, 80)
     while len(secret) < length:

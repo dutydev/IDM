@@ -1,6 +1,7 @@
 from . import (Event as _Event,
                SignalEvent as _SignalEvent,
-               MySignalEvent as _MySignalEvent)
+               MySignalEvent as _MySignalEvent,
+               LongpollEvent as _LongpollEvent)
 from .handler import handler as _handler
 
 from wtflog import warden as _warden
@@ -12,11 +13,12 @@ _events = {}
 _signal_events = {}
 _my_signal_events = {}
 _skip_message_receiving = set()
+_longpoll_events = {}
 
 
 def event_register(method: str):
     def registrator(func):
-        _logger.debug(f'Зарегистрирован новый ивент для метода {method}')
+        _logger.debug(f'Зарегистрирован обработчик для метода {method}')
         _events.update({method: func})
         return func
     return registrator
@@ -24,7 +26,8 @@ def event_register(method: str):
 
 def signal_event_register(*commands: tuple):
     def registrator(func):
-        _logger.debug(f'Зарегистрирован новый ивент для сигналов к дежурному. Команды {list(commands)}')
+        _logger.debug(f'Зарегистрирована новая команда для сигналов к ' +
+                      f'дежурному. Команды {list(commands)}')
         for command in commands:
             _signal_events.update({command: func})
         return func
@@ -32,12 +35,23 @@ def signal_event_register(*commands: tuple):
 
 
 def my_signal_event_register(*commands: tuple, skip_receiving: bool = False):
-    if skip_receiving:  # TODO: перебрать события и добавить этот флаг где возможно
-        _skip_message_receiving.add(commands)
     def registrator(func):
-        _logger.debug(f'Зарегистрирован новый ивент для сигналов к приемнику. Команды {list(commands)}')
+        _logger.debug(f'Зарегистрирована новая команда для сигналов к ' +
+                      f'приемнику. Команды {list(commands)}')
         for command in commands:
             _my_signal_events.update({command: func})
+        return func
+    if skip_receiving:  # TODO: перебрать события и добавить этот флаг
+        _skip_message_receiving.add(commands)
+    return registrator
+
+
+def longpoll_event_register(*commands: tuple):
+    def registrator(func):
+        _logger.debug(f'Зарегистрирована новая команда для сигналов к ' +
+                      f'LP приемнику. Команды {list(commands)}')
+        for command in commands:
+            _longpoll_events.update({command: func})
         return func
     return registrator
 
@@ -50,7 +64,7 @@ def event_run(event: _Event):
 
 def signal_event_run(event: _SignalEvent):
     event.set_msg()
-    _logger.info(f'Обрабатываю ивент {event.method}. Команда: {event.command}')
+    _logger.info(f'Обрабатываю событие {event.method}')
     if event.command in _signal_events.keys():
         return _handler(event, _signal_events[event.command])
     return {'response': 'error', 'error_code': 2}
@@ -60,14 +74,23 @@ def my_signal_event_run(event: _MySignalEvent):
     event.command = event.msg['text'].split(' ')[1]
     if event.command not in _skip_message_receiving:
         event.set_msg()
-    _logger.info(f'Обрабатываю ивент {event.method}. Команда: {event.command}')
+    _logger.info(f'Обрабатываю событие {event.method}.' +
+                 f'Команда: {event.command}')
     if event.command in _my_signal_events.keys():
         return _handler(event, _my_signal_events[event.command])
     return {'response': 'error', 'error_code': 2}
 
 
+def longpoll_event_run(event: _LongpollEvent):
+    _logger.info(f'Обрабатываю событие {event.method}.' +
+                 f'Команда: {event.command}')
+    if event.command in _longpoll_events.keys():
+        return _handler(event, _longpoll_events[event.command])
+
+
 def wrap_handler(wrapper):
-    '''Заменяет передаваемый в декорируемую функцию аргумент на результат `wrapper(event)`'''
+    '''Заменяет передаваемый в декорируемую функцию аргумент на результат
+    `wrapper(event)`'''
     def decorate(wrapped):
         def decorator(event: _Event):
             wrap = wrapper(event)

@@ -21,6 +21,7 @@ def read(name: str) -> dict:
     with open(os.path.join(path, f'{name}.json'), "r", encoding="utf-8") as file:
         return json.loads(file.read())
 
+
 gen_raw = {
     "owner_id": 0,
     "vk_app_id": 0,
@@ -30,19 +31,21 @@ gen_raw = {
     "mode": ""
 }
 
+
 def create_general():
     try:
         with open(os.path.join(path, 'general.json'), "w", encoding="utf-8") as file:
-                file.write(json.dumps(gen_raw, ensure_ascii=False, indent=4))
+            file.write(json.dumps(gen_raw, ensure_ascii=False, indent=4))
     except FileNotFoundError:
         os.mkdir(path)
         create_general()
+
 
 try:
     read('general')
 except FileNotFoundError:
     create_general()
-    
+
 
 class ExcDB(Exception):
     code: int
@@ -54,13 +57,21 @@ class ExcDB(Exception):
             self.text = "В админ панель можно зайти только с аккаунта дежурного 💅🏻"
         elif self.code == 1:
             self.text = 'Ошибка БД: Указанный ID уже добавлен в базу'
-        else: self.text = code
+        else:
+            self.text = code
 
 
 class DB_defaults:
 
     settings: dict = {
         "silent_deleting": False
+    }
+
+    lp_settings: dict = {
+        "ignored_users": [],
+        "prefixes": [".л", "!л"],
+        "binds": {},
+        "key": ""
     }
 
     responses: dict = {
@@ -95,6 +106,7 @@ class DB_defaults:
         "repeat_if_forbidden": "Я это писать не буду.",
         "ping_duty": "{ответ}<br>Ответ за {время}сек.",
         "ping_myself": "{ответ} CB<br>Получено через {время}сек.<br>ВК ответил за {пингвк}сек.<br>Обработано за {обработано}сек.",
+        "ping_lp": "{ответ} LP<br>Получено через {время}сек.<br>Обработано за {обработано}сек.",
         "info_duty": "Информация о дежурном:<br>IrCA Duty v{версия}<br>Владелец: {владелец}<br>Чатов: {чаты}<br><br>Информация о чате:<br>Iris ID: {ид}<br>Имя: {имя}",
         "info_myself": "Информация о дежурном:<br>IrCA Duty v{версия}<br>Владелец: {владелец}<br>Чатов: {чаты}<br><br>Информация о чате:<br>Iris ID: {ид}<br>Имя: {имя}",
         "not_in_trusted": "Я тебе не доверяю 😑",
@@ -115,12 +127,13 @@ class DB_defaults:
             "me_token": instance.me_token,
             "secret": instance.secret,
             "responses": instance.responses,
+            "lp_settings": instance.lp_settings,
             "settings": instance.settings,
             "trusted_users": instance.trusted_users,
             "chats": instance.chats,
             "templates": instance.templates,
             "voices": instance.voices,
-            "anims":instance.anims
+            "anims": instance.anims
         }
 
 
@@ -161,7 +174,6 @@ class DB_general:
         self.update_general
         return DB(user_id)
 
-
     def save(self) -> str:
         'Сохранение основной БД'
         logger.debug("Сохраняю основную базу данных")
@@ -193,7 +205,7 @@ class DB:
     responses: dict = DB_defaults.responses
 
     settings: dict = DB_defaults.settings
-
+    lp_settings: dict = DB_defaults.lp_settings
 
     def __init__(self, user_id: int = None):
         user_id = user_id or db_gen.owner_id
@@ -208,7 +220,6 @@ class DB:
         self.vk_app_secret = db_gen.vk_app_secret
         self.load_user()
 
-
     def load_user(self):
         try:
             user_db = read(str(self.duty_id))
@@ -216,8 +227,7 @@ class DB:
             raise ExcDB(0)
         self.__dict__.update(user_db)
 
-
-    def save(self) -> "ok":
+    def save(self) -> str:
         'Сохраняет БД пользователя, которая открыта в данном экземпляре DB'
         logger.debug("Сохраняю базу данных")
         with open(os.path.join(path, f'{str(self.duty_id)}.json'), "w", encoding="utf-8") as file:
@@ -255,4 +265,8 @@ if db_gen.owner_id != 0:
             _update(data)
         except Exception:
             pass
+    if 'lp_settings' not in data:
+        data['lp_settings'] = {
+
+        }
     del(data)

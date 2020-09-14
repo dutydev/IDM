@@ -31,7 +31,7 @@ class VkApi:
 
     def __call__(self, method, **kwargs):
         logger.debug(f'URL = "{self.url}{method}{self.query}" Data = {kwargs}')
-        r = requests.post(f'{self.url}{method}{self.query}', data = kwargs)
+        r = requests.post(f'{self.url}{method}{self.query}', data=kwargs)  # TODO: прикрутить заголовки
         if r.status_code == 200:
             r = r.json()
             if 'response' in r.keys():
