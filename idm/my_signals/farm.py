@@ -7,6 +7,7 @@ farm_data = {
 }
 
 
+@dp.longpoll_event_register('ферма')
 @dp.my_signal_event_register('ферма')
 def farming(event: MySignalEvent) -> str:
     comment_id = event.api('wall.createComment', message='ферма', **farm_data)['comment_id']

@@ -32,17 +32,21 @@ def tr_user_op(event, error, typ):
         ссылка = ment_user(tr_user)))
     return "ok"
 
+
+@dp.longpoll_event_register('+дов', "доверять")
 @dp.my_signal_event_register('+дов', "доверять")
 def add_trusted_user(event: MySignalEvent) -> str:
     return tr_user_op(event, 'in_tr', 'add')
 
 
-@dp.my_signal_event_register('-дов', "перестать")
+@dp.longpoll_event_register('-дов', 'перестать')
+@dp.my_signal_event_register('-дов', 'перестать')
 def remove_trusted_user(event: MySignalEvent) -> str:
     return tr_user_op(event, 'not_in_tr', 'rem')
 
 
-@dp.my_signal_event_register('доверенные', "довы")
+@dp.longpoll_event_register('доверенные', 'довы')
+@dp.my_signal_event_register('доверенные', 'довы')
 def trusted_users(event: MySignalEvent) -> str:
     users = event.api('users.get', user_ids=",".join([str(i) for i in event.db.trusted_users]))
 

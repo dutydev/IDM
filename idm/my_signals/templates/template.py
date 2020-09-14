@@ -1,5 +1,4 @@
 import re
-import time
 from typing import Tuple, Union
 
 from idm.utils import att_parse
@@ -14,6 +13,7 @@ def delete_template(name: str, templates: list) -> Tuple[list, bool]:
     return templates, False
 
 
+@dp.longpoll_event_register('+шаб')
 @dp.my_signal_event_register('+шаб')
 def template_create(event: MySignalEvent) -> str:
     name = re.findall(r"([^|]+)\|?([^|]*)", ' '.join(event.args))
@@ -55,6 +55,7 @@ def template_create(event: MySignalEvent) -> str:
     return "ok"
 
 
+@dp.longpoll_event_register('шабы')
 @dp.my_signal_event_register('шабы')
 def template_list(event: MySignalEvent) -> str:
     category = ' '.join(event.args)
@@ -85,6 +86,7 @@ def get_name(event: MySignalEvent) -> Union[str]:
     return event, ' '.join(event.args).lower()
 
 
+@dp.longpoll_event_register('-шаб')
 @dp.my_signal_event_register('-шаб')
 @dp.wrap_handler(get_name)  # TODO: придумать менее идиотское применение этой обертке
 def template_delete(event: MySignalEvent, name: str) -> str:
@@ -98,6 +100,7 @@ def template_delete(event: MySignalEvent, name: str) -> str:
     return "ok"
 
 
+@dp.longpoll_event_register('шаб')
 @dp.my_signal_event_register('шаб')
 @dp.wrap_handler(get_name)
 def template_show(event: MySignalEvent, name: str) -> str:

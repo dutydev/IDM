@@ -14,3 +14,4 @@ from .longpoll_listener import __name__
 
 from .my_signals import __name__
 from .callback_signals import __name__
+from .longpoll_signals import __name__

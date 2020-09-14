@@ -1,15 +1,13 @@
 import io
 import re
-import time
 import requests
 from html import escape
-from typing import Any, List, Tuple, Union
 
 from idm.objects import MySignalEvent, dp
 from .template import delete_template
 
 
-
+@dp.longpoll_event_register('+гс')
 @dp.my_signal_event_register('+гс')
 def voice_create(event: MySignalEvent) -> str:
     name = re.findall(r"([^|]+)\|?([^|]*)", ' '.join(event.args))
@@ -57,6 +55,7 @@ def voice_create(event: MySignalEvent) -> str:
     return "ok"
 
 
+@dp.longpoll_event_register('гсы')
 @dp.my_signal_event_register('гсы')
 def template_list(event: MySignalEvent) -> str:
     category = ' '.join(event.args)
@@ -83,6 +82,7 @@ def template_list(event: MySignalEvent) -> str:
     return "ok"
 
 
+@dp.longpoll_event_register('-гс')
 @dp.my_signal_event_register('-гс')
 def voice_delete(event: MySignalEvent) -> str:
     name = ' '.join(event.args).lower()
@@ -96,6 +96,7 @@ def voice_delete(event: MySignalEvent) -> str:
     return "ok"
 
 
+@dp.longpoll_event_register('гс')
 @dp.my_signal_event_register('гс')
 def voice_send(event: MySignalEvent) -> str:
     name = ' '.join(event.args).lower()

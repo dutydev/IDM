@@ -1,12 +1,9 @@
-import re
-import time
-from typing import Any, List, Tuple, Union
-
 from animstarter import start_player
 from idm.objects import MySignalEvent, dp
 from .template import delete_template
 
 
+@dp.longpoll_event_register('+анимка')
 @dp.my_signal_event_register('+анимка')
 def anim_create(event: MySignalEvent) -> str:
     name = ' '.join(event.args).lower()
@@ -32,6 +29,7 @@ def anim_create(event: MySignalEvent) -> str:
     return "ok"
 
 
+@dp.longpoll_event_register('анимки')
 @dp.my_signal_event_register('анимки')
 def anim_list(event: MySignalEvent) -> str:
     if event.db.anims:
@@ -44,6 +42,7 @@ def anim_list(event: MySignalEvent) -> str:
     return "ok"
 
 
+@dp.longpoll_event_register('-анимка')
 @dp.my_signal_event_register('-анимка')
 def anim_delete(event: MySignalEvent) -> str:
     name = ' '.join(event.args).lower()
@@ -53,10 +52,11 @@ def anim_delete(event: MySignalEvent) -> str:
         event.db.save()
     else:
         msg = f'⚠️ Анимка "{name}" не найдена'
-    event.msg_op(2, msg, delete = 2)
+    event.msg_op(2, msg, delete=2)
     return "ok"
 
 
+@dp.longpoll_event_register('анимка')
 @dp.my_signal_event_register('анимка')
 def anim_play(event: MySignalEvent) -> str:
     name = ' '.join(event.args).lower()

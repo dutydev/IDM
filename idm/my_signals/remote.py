@@ -23,6 +23,7 @@ def set_session(ses: str) -> str:
     return ses
 
 
+@dp.longpoll_event_register('унапиши', 'у')
 @dp.my_signal_event_register('унапиши', 'у')
 def remote_control(event: MySignalEvent) -> Union[str, dict]:
     uid = find_mention_by_event(event)

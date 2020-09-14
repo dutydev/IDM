@@ -5,6 +5,7 @@ from microvk import VkApiResponseException
 from idm.objects import MySignalEvent, dp
 
 
+@dp.longpoll_event_register('в', 'влс')
 @dp.my_signal_event_register('в', 'влс')
 def send_private(event: MySignalEvent) -> str:
     def abort(text):

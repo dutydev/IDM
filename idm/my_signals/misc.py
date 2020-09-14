@@ -1,3 +1,4 @@
+# TODO: о господи что за дерьмо
 from idm.objects import dp, MySignalEvent, DB
 from idm.api_utils import get_last_th_msgs
 from datetime import datetime, date, timezone, timedelta

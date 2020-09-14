@@ -17,6 +17,7 @@ animation_names.extend(animations.keys())
 animation_names.extend(rotating_animations.keys())
 
 
+@dp.longpoll_event_register(*animation_names)
 @dp.my_signal_event_register(*animation_names)
 def animation_play(event: MySignalEvent):
     text = ' '.join(event.msg['text'].split(' ')[1:])

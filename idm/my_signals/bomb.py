@@ -3,6 +3,7 @@ from html import escape
 import re
 
 
+@dp.longpoll_event_register('б')
 @dp.my_signal_event_register('б')
 def bomb(event: MySignalEvent):
     event.msg_op(3)
@@ -20,11 +21,12 @@ def bomb(event: MySignalEvent):
     for i in hours:
         time += int(re.search(r'\d+', i)[0])*3600
     for i in mins:
-        time += int(re.search(r'\d+',i)[0])*60
+        time += int(re.search(r'\d+', i)[0])*60
     for i in secs:
-        time += int(re.search(r'\d+',i)[0])
-    
-    if time == 0: time = 60
+        time += int(re.search(r'\d+', i)[0])
+
+    if time == 0:
+        time = 60
     elif time > 86400:
         event.msg_op(2, '❗ Осади, максимальная длина - сутки')
         return "ok"

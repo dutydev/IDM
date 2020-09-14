@@ -3,6 +3,7 @@ from idm.utils import find_mention_by_event
 from microvk import VkApiResponseException
 
 
+@dp.longpoll_event_register('+др', '+друг', '-др', '-друг')
 @dp.my_signal_event_register('+др', '+друг', '-др', '-друг')
 def change_friend_status(event: MySignalEvent) -> str:
     user_id = find_mention_by_event(event)
@@ -36,8 +37,9 @@ def change_friend_status(event: MySignalEvent) -> str:
         msg = "❗ Необходимо пересланное сообщение или упоминание"
     event.msg_op(2, msg)
     return "ok"
-    
 
+
+@dp.longpoll_event_register('+чс', '-чс')
 @dp.my_signal_event_register('+чс', '-чс')
 def ban_user(event: MySignalEvent) -> str:
     user_id = find_mention_by_event(event)
