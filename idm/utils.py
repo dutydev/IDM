@@ -87,3 +87,22 @@ def find_mention_by_event(event: "MySignalEvent") -> Union[int, None]:
 
 def ment_user(user: dict) -> str:
     return f"[id{user['id']}|{user['first_name']} {user['last_name']}]"
+
+
+def get_plural(number: Union[int, float], one: str, few: str,
+               many: str, other: str = '') -> str:
+    """`one`  = 1, 21, 31, 41, 51, 61...\n
+    `few`  = 2-4, 22-24, 32-34...\n
+    `many` = 0, 5-20, 25-30, 35-40...\n
+    `other` = 1.31, 2.31, 5.31..."""
+    if type(number) == float:
+        if not number.is_integer():
+            return other
+        else:
+            number = int(number)
+    if number % 10 in {2, 3, 4}:
+        return few
+    number = str(number)
+    if number[-1] == '1':
+        return one
+    return many

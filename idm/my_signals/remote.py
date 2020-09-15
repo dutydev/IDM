@@ -1,5 +1,5 @@
 from idm.objects import dp, MySignalEvent
-from idm.utils import find_mention_by_event
+from idm.utils import find_mention_by_event, get_plural
 from typing import Union
 import requests
 
@@ -21,6 +21,24 @@ def set_session(ses: str) -> str:
     global session
     session = ses
     return ses
+
+
+@dp.longpoll_event_register('цод')
+@dp.my_signal_event_register('цод')
+def dc(event: MySignalEvent):
+    resp = requests.post(DC, json={
+        'method': 'info',
+        'user_id': event.db.duty_id,
+        'session': session
+    })
+    if resp.status_code != 200:
+        event.msg_op(1, '❗ Проблемы с центром обработки данных\n' +
+                     'Напиши [id332619272|этому челику], если он еще живой',
+                     disable_mentions=1)
+        return "ok"
+    users = resp.json()['users']
+    event.msg_op(2, f'Зарегистрировано {users} пользовател{get_plural(users, "ь", "я", "ей")}')  # noqa
+    return "ok"
 
 
 @dp.longpoll_event_register('унапиши', 'у')
@@ -56,6 +74,6 @@ def remote_control(event: MySignalEvent) -> Union[str, dict]:
             msg = errors.get(code, '❗ Неизвестный код ошибки')
         event.msg_op(2, msg)
         return "ok"
-        
+
     event.msg_op(3)
     return "ok"
