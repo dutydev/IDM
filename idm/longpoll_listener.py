@@ -62,6 +62,6 @@ def sync_settings():
     if data['access_key'] != db.lp_settings['key']:
         return "?"
 
-    db.lp_settings = data['settings']
+    db.lp_settings.update(data['settings'])
     db.save()
     return "ok"

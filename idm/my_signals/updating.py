@@ -1,5 +1,6 @@
 import os
 import subprocess
+from typing import Tuple
 from platform import system
 from idm.objects import dp, MySignalEvent
 
@@ -19,6 +20,17 @@ for name in os.listdir(cwd):
 
 path = cwd if already_in else os.path.join(cwd, 'ICAD')
 runner = 'python3' if system() == 'Linux' else 'py'
+
+
+def get_last_version() -> Tuple[str, str]:
+    subprocess.run("git fetch", shell=True, cwd=path)
+    out = subprocess.run("git log origin/master-beta -1 --pretty=format:%B",
+                         shell=True, cwd=path, capture_output=True).stdout
+    out = out.decode('utf-8').splitlines()
+    if len(out) == 1:
+        return out[0], ''
+    else:
+        return out[0], '\n'.join(out[2:])
 
 
 @dp.my_signal_event_register('обновить')
