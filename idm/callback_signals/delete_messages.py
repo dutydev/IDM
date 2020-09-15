@@ -12,10 +12,10 @@ def msg_delete(event, msg_id, msg_ids=[]):
 
     def del_edit(key, err=''):
         if not event.obj['silent']:
-            event.api.msg_op(2, event.chat.peer_id, msg_id,
-                             event.responses[key].format(ошибка=err))
+            event.api.msg_op(2, event.chat.peer_id,
+                             event.responses[key].format(ошибка=err), msg_id)
             time.sleep(3)
-            event.msg_op(3)
+            event.api.msg_op(3, msg_id=msg_id)
 
     if msg_ids:
         code = """return API.messages.delete({delete_for_all: 1,
@@ -158,5 +158,3 @@ def delete_by_type(event: Event) -> str:
 
     event.api.msg_op(1, event.chat.peer_id, message, disable_mentions=1)
     return "ok"
-
-
