@@ -37,7 +37,7 @@ def anim_list(event: MySignalEvent) -> str:
         for i, t in enumerate(event.db.anims, 1):
             message += f"\n{i}. {t['name']}"
     else:
-        message = '⚠️ Шаблоны по указанному запросу не найдены'
+        message = '👀 Нет ни одной анимки... Создать можно на сайте или командой +анимка'
     event.msg_op(2, message)
     return "ok"
 

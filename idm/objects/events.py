@@ -216,7 +216,7 @@ class LongpollEvent(MySignalEvent):
         self.data = data
         self.msg = data['message']
         self.parse()
-        self.command = data['command']
+        self.command = data.get('command', self.command)
         self.db = DB(db_gen.owner_id)
         if data['chat'] is None:
             self.chat = Chat({'peer_id': self.msg['peer_id']}, 'N/A')

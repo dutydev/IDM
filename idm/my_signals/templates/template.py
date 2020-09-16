@@ -76,8 +76,11 @@ def template_list(event: MySignalEvent) -> str:
         for t in templates:
             if t['cat'] == category:
                 message += f"\n-- {t['name']}"
-    if not '\n' in message:
-        message = '⚠️ Шаблоны по указанному запросу не найдены'
+    if '\n' not in message:
+        if templates == []:
+            message = '👀 Нет ни одного шаблона... Для создания используй команду "+шаб"'  # noqa
+        else:
+            message = '⚠️ Шаблоны по указанному запросу не найдены'
     event.msg_op(2, message)
     return "ok"
 

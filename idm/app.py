@@ -187,7 +187,7 @@ def api(method: str):
                 break
             i += 1
         temp = {'name': request.form['new_name'],
-            'frames': frames, 'speed': float(request.form['speed'])}
+                'frames': frames, 'speed': float(request.form['speed'])}
         for i in range(len(db.anims)):
             if db.anims[i]['name'] == name:
                 db.anims[i].update(temp)
@@ -196,8 +196,8 @@ def api(method: str):
         return redirect('/admin#DynTemplates')
 
     if method == 'add_dyntemplate':
-        db.animsanims.append({'name': 'анимка',
-            'frames': ['Отсутствует'], 'speed': 1.0})
+        db.anims.append({'name': 'анимка',
+                         'frames': ['Отсутствует'], 'speed': 1.0})
         db.save()
         return redirect('/admin#DynTemplates')
 

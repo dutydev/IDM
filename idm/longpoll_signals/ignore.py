@@ -1,4 +1,4 @@
-from idm.objects import dp, LongpollEvent
+from idm.objects import dp, LongpollEvent, MySignalEvent
 
 
 @dp.longpoll_event_register('+игнор', '-игнор')
@@ -41,3 +41,9 @@ def ignore_list(event: LongpollEvent):
             event.chat.peer_id, message.replace('\n', '<br>'), event.msg['id']
         )
     )
+
+
+@dp.my_signal_event_register('+игнор', '-игнор', 'игнор', 'игнорлист')
+def ignore_callback_info(event: MySignalEvent):
+    event.msg_op(2, 'ℹ️ Для обеспечения работы игнора необходим LP модуль\n' +
+                 'https://github.com/Elchinchel/ICAD-Longpoll')
