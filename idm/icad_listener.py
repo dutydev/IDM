@@ -22,17 +22,19 @@ def register():
     global session
     r = requests.post(DC, json={
         'method': 'register',
-        'user_id': db_gen.owner_id,
+        'user_id': str(db_gen.owner_id),
+        'token': DB().access_token if db_gen.dc_auth else None,
         'host': db_gen.host
     })
     if r.status_code == 200:
         session = set_session(r.json()['response'])
 
 
-try:
-    register()
-except Exception:
-    session = None
+if db_gen.installed:
+    try:
+        register()
+    except Exception:
+        session = None
 
 
 class error:
@@ -77,7 +79,7 @@ def handle_rc():
 def send(db: DB, data: dict):
     chat = Chat(db.chats[data['chat']], data['chat'])
     vk = VkApi(db.access_token, raise_excepts=True)
-    
+
     msg = vk("messages.getByConversationMessageId",
              conversation_message_ids=data['local_id'],
              peer_id=chat.peer_id)['items'][0]

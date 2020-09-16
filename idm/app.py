@@ -1,8 +1,9 @@
 # я тоже ничего разобрать в этой каше не могу, ты не одинок
-import json
 import re
 import time
+import json
 import traceback
+from os import environ
 from hashlib import md5
 from typing import List, Union
 
@@ -13,7 +14,7 @@ from idm.utils import gen_secret
 from microvk import VkApi, VkApiResponseException
 from wtflog import warden
 
-from idm.objects import DB, DB_general, ExcDB
+from idm.objects import DB, DB_general, ExcDB, db_gen
 
 app = Flask(__name__)
 
@@ -25,12 +26,14 @@ auth: str = {
     }
 
 
-def get_mask(token:str) -> str:
-        if len(token) != 85: return 'Не установлен'
-        return token[:4] + "*" * 77 + token[81:]
+def get_mask(token: str) -> str:
+    if len(token) != 85: return 'Не установлен'
+    return token[:4] + "*" * 77 + token[81:]
 
 
 def login_check(request, db: DB, db_gen: DB_general) -> Union[Request, None]:
+    if environ.get('FLASK_ENV') == 'development':
+        return
     # uid = db.duty_id
     # token = request.cookies.get('token')
     if not db_gen.installed:
@@ -97,12 +100,6 @@ def install():
 
 @app.route('/api/<string:method>', methods=["POST"])
 def api(method: str):
-
-    if method == 'sync':
-        return lpsync(request)
-
-    db_gen = DB_general()
-
     if method == "setup_cb":#--------------------------------------------------------------
         if db_gen.installed: return redirect('/')
         
@@ -124,15 +121,8 @@ def api(method: str):
         db_gen.host = "http://" + request.host
         db_gen.installed = True
         db.trusted_users.append(db.duty_id)
-        if request.form.get('lp'):
-            db_gen.mode = 'LP'
-        else:
-            db_gen.mode = 'CB'
         db.save()
         db_gen.save()
-        if db_gen.mode == 'LP':
-            return int_error(f'''(нет, не ошибка)<br>Установка прошла успешно
-            <br>Этот сайт больше недоступен'''.replace('    ', ''))
         return redirect('/login?next=/admin')
 
 
@@ -154,13 +144,11 @@ def api(method: str):
 
 
     if method == 'connect_to_iris':
-        uid = request.form.get('id')
-        if uid: db = DB(int(uid))
         try:
-            VkApi(db.access_token, raise_excepts = True)('messages.send', random_id = 0,
+            VkApi(db.access_token, raise_excepts=True)('messages.send', random_id = 0,
                 message = f'+api {db.secret} {db.gen.host}/callback', peer_id = -174105461)
-        except:
-            return int_error('Что-то пошло не так :/')
+        except VkApiResponseException as e:
+            return int_error(f'Ошибка VK #{e.error_code}: {e.error_msg}')
         return redirect('/')
 
     if method == "edit_responses":#--------------------------------------------------------------
@@ -209,10 +197,18 @@ def api(method: str):
                 db.save()
                 return redirect('/admin#DynTemplates')
 
+    if method == 'dc_auth':
+        if request.form.get('permit') == 'on':
+            db_gen.dc_auth = True
+        else:
+            db_gen.dc_auth = False
+        db_gen.save()
+        return redirect('/admin')
+
     return int_error('Тебя здесь быть не должно')
 
 
-def db_check_user(request):
+def db_check_user(request):  # TODO: убрать
     uid = auth['user']
     if uid == 0:
         return redirect('/login'), 'fail'
@@ -228,13 +224,18 @@ def db_check_user(request):
 @app.route('/admin')
 def admin():
     db_gen = DB_general()
-    db, response = db_check_user(request)
-    if response != 'ok': return db
+    if environ.get('FLASK_ENV') == 'development':
+        db = DB()
+    else:
+        db, response = db_check_user(request)
+        if response != 'ok':
+            return db
 
     warning = 0
 
     login = login_check(request, db, db_gen)
-    if login: return login
+    if login:
+        return login
 
     users = VkApi(db.access_token)('users.get', fields='photo_50',
                                    user_ids=db.duty_id)
@@ -247,8 +248,8 @@ def admin():
     db.access_token = get_mask(db.access_token)
     db.me_token = get_mask(db.me_token)
 
-    return render_template('pages/admin.html', db=db, users=users,
-                           warn=warning, username=username)
+    return render_template('pages/admin.html', db=db, db_gen=db_gen,
+                           users=users, warn=warning, username=username)
 
 
 @app.route('/login')

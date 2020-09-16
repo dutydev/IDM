@@ -42,6 +42,27 @@
                                     </div>
                                 </form>
                             </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form id="switch_form" action="/api/dc_auth" method="post">
+                                        <div class="form-row pl-3 pt-3">
+                                            <script>
+                                                var switch_input = document.getElementById('switch_input');
+                                                var switch_form = document.getElementById('switch_form');
+                                            </script>
+                                            <label class="switch">
+                                                <input id="switch_input" name="permit" type="checkbox"
+                                                    onchange="switch_form.submit()" {%if db_gen.dc_auth%}checked{%endif%}>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <p class="ml-2 mb-1" style="padding-top: 2px;">Разрешить авторизацию в ЦОД по токену</p>
+                                        </div>
+                                        <div class="form-row pl-3">
+                                            <small>(токены не хранятся и используются только для подтверждения ID дежурного)</small>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -274,51 +295,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <button type="button" class="btn-sm btn-secondary text-center" data-toggle="collapse" data-target="#trusting">Доверенность</button>
-                                    <div id="trusting" class="collapse">
-                                        <div class="form-group"><label for="not_in_trusted">(не отправляется почти никогда, забей на это поле)</label>
-                                            <small id="not_in_trusted-help" class="form-text text-muted">потом добавлю сигналы для дежа, мож тогда понадобится</small>
-                                            <input type="text" class="form-control" name="not_in_trusted" id="not_in_trusted" />
-                                            <small id="not_in_trusted" class="form-text text-muted">Текущее значение:</small>
-                                            <p>{{db.responses['not_in_trusted']}}</p>
-                                        </div>
-                                        <div class="form-group"><label for="trusted_err_no_reply"></label>
-                                            <small id="trusted_err_no_reply-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
-                                            <input type="text" class="form-control" name="trusted_err_no_reply" id="trusted_err_no_reply" />
-                                            <small id="trusted_err_no_reply" class="form-text text-muted">Текущее значение:</small>
-                                            <p>{{db.responses['trusted_err_no_reply']}}</p>
-                                        </div>
-                                        <div class="form-group"><label for="trusted_err_in_tr"></label>
-                                            <small id="trusted_err_in_tr-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
-                                            <input type="text" class="form-control" name="trusted_err_in_tr" id="trusted_err_in_tr" />
-                                            <small id="trusted_err_in_tr" class="form-text text-muted">Текущее значение:</small>
-                                            <p>{{db.responses['trusted_err_in_tr']}}</p>
-                                        </div>
-                                        <div class="form-group"><label for="trusted_err_not_in_tr"></label>
-                                            <small id="trusted_err_not_in_tr-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
-                                            <input type="text" class="form-control" name="trusted_err_not_in_tr" id="trusted_err_not_in_tr" />
-                                            <small id="trusted_err_not_in_tr" class="form-text text-muted">Текущее значение:</small>
-                                            <p>{{db.responses['trusted_err_not_in_tr']}}</p>
-                                        </div>
-                                        <div class="form-group"><label for="trusted_success_add"></label>
-                                            <small id="trusted_success_add-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
-                                            <input type="text" class="form-control" name="trusted_success_add" id="trusted_success_add" />
-                                            <small id="trusted_success_add" class="form-text text-muted">Текущее значение:</small>
-                                            <p>{{db.responses['trusted_success_add']}}</p>
-                                        </div>
-                                        <div class="form-group"><label for="trusted_success_rem"></label>
-                                            <small id="trusted_success_rem-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
-                                            <input type="text" class="form-control" name="trusted_success_rem" id="trusted_success_rem" />
-                                            <small id="trusted_success_rem" class="form-text text-muted">Текущее значение:</small>
-                                            <p>{{db.responses['trusted_success_rem']}}</p>
-                                        </div>
-                                        <div class="form-group"><label for="trusted_list"></label>
-                                            <small id="trusted_list-help" class="form-text text-muted">Отправляется (переменные: {имя} - название чата)</small>
-                                            <input type="text" class="form-control" name="trusted_list" id="trusted_list" />
-                                            <small id="trusted_list" class="form-text text-muted">Текущее значение:</small>
-                                            <p>{{db.responses['trusted_list']}}</p>
-                                        </div>
-                                    </div> -->
                                     <div class="form-group"><button class="btn btn-primary" type="submit">Сохранить</button></div>
                                 </form>
                             </div>

@@ -28,7 +28,7 @@ gen_raw = {
     "vk_app_secret": "",
     "host": "",
     "installed": False,
-    "mode": ""
+    "dc_auth": False
 }
 
 
@@ -137,7 +137,6 @@ class DB_defaults:
         }
 
 
-
 class DB_general:
     'БД с основной информацией'
     path: str = path
@@ -146,18 +145,15 @@ class DB_general:
     host: str = ""
     installed: bool = False
     vk_app_id: int = 0
+    dc_auth: bool = False
     vk_app_secret: str = ""
     group_id = -195759899
 
     def __init__(self):
         logger.debug('Инициализация основной БД')
         self.general = read('general')
-        self.owner_id = self.general['owner_id']
-        self.host = self.general['host']
-        self.installed = self.general['installed']
-        self.mode = self.general['mode']
-        self.vk_app_id = self.general['vk_app_id']
-        self.vk_app_secret = self.general['vk_app_secret']
+        self.general['dc_auth'] = self.general.get('dc_auth', False)
+        self.__dict__.update(self.general)
 
     @property
     def update_general(self):
@@ -165,11 +161,13 @@ class DB_general:
         global db_gen
         db_gen = DB_general()
 
-    def set_user(self, user_id: int):
-        if user_id == self.owner_id: raise ExcDB(1)
+    def set_user(self, user_id: int):  # TODO: гавной воняет
+        if user_id == self.owner_id:
+            raise ExcDB(1)
         self.owner_id = user_id
         with open(os.path.join(path, f'{user_id}.json'), "w", encoding="utf-8") as file:
-            file.write(json.dumps(DB_defaults.load_user(), ensure_ascii=False, indent=4))
+            file.write(json.dumps(DB_defaults.load_user(),
+                                  ensure_ascii=False, indent=4))
         self.save()
         self.update_general
         return DB(user_id)
@@ -177,12 +175,8 @@ class DB_general:
     def save(self) -> str:
         'Сохранение основной БД'
         logger.debug("Сохраняю основную базу данных")
-        self.general['host'] = self.host
-        self.general['installed'] = self.installed
-        self.general['mode'] = self.mode
-        self.general['vk_app_id'] = self.vk_app_id
-        self.general['vk_app_secret'] = self.vk_app_secret
-        self.general['owner_id'] = self.owner_id
+        for key in self.general:
+            self.general[key] = getattr(self, key)
         with open(os.path.join(path, 'general.json'), "w", encoding="utf-8") as file:
             file.write(json.dumps(self.general, ensure_ascii=False, indent=4))
         self.update_general
@@ -215,7 +209,6 @@ class DB:
         self.duty_id = int(db_gen.owner_id)
         self.host = db_gen.host
         self.installed = db_gen.installed
-        self.mode = db_gen.mode
         self.vk_app_id = db_gen.vk_app_id
         self.vk_app_secret = db_gen.vk_app_secret
         self.load_user()

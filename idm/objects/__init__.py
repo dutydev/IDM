@@ -1,4 +1,4 @@
-__version__ = '1.3.0 beta rev.4'
+__version__ = '1.3.1 beta'
 
 from .database import DB, DB_general, ExcDB, db_gen
 

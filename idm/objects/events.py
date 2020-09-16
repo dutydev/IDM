@@ -170,8 +170,8 @@ class SignalEvent(Event):
 
         logger.debug(self.__str__())
 
-    def send(self, text='', **kwargs):
-        self.api.msg_op(1, self.chat.peer_id, text, **kwargs)
+    def send(self, text='', **kwargs) -> int:
+        return self.api.msg_op(1, self.chat.peer_id, text, **kwargs)
 
 
 class MySignalEvent(Event):

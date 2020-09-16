@@ -4,12 +4,14 @@ from typing import Tuple
 from platform import system
 from idm.objects import dp, MySignalEvent
 
-try:
-    import uwsgi
-    PA = True
-except ImportError:
-    PA = False
-    print('Обновление и анимации могут не работать')
+
+if os.environ.get('FLASK_ENV') != 'development':
+    try:
+        import uwsgi
+        PA = True
+    except ImportError:
+        PA = False
+        print('Обновление и анимации могут не работать')
 
 cwd = os.getcwd()
 
