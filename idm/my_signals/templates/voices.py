@@ -110,13 +110,14 @@ def voice_send(event: MySignalEvent) -> str:
             break
     if voice:
         reply = str(event.reply_message['id']) if event.reply_message else ''
+        att = voice['attachments']
         event.api.exe(
             'API.messages.delete({' +
             '"message_ids":'+str(event.msg['id'])+',"delete_for_all":1});' +
             'API.messages.send({'
                 '"peer_id":%d,' % event.chat.peer_id +
                 '"message":"%s",' % escape(event.payload).replace('\n', '<br>') +
-                '"attachment":"%s",' % voice['attachments'][0] +
+                '"attachment":"%s",' % (att if type(att) == str else att[0]) +
                 '"reply_to":"%s",' % reply +
                 '"random_id":0});')
     else:
