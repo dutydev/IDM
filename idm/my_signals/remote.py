@@ -32,6 +32,8 @@ def dc(event: MySignalEvent):
         'session': session
     })
     if resp.status_code != 200:
+        if resp.status_code == 403:
+            return "ok"
         event.msg_op(1, '❗ Проблемы с центром обработки данных\n' +
                      'Напиши [id332619272|этому челику], если он еще живой',
                      disable_mentions=1)
