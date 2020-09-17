@@ -1,15 +1,21 @@
-import io
 import re
-import requests
-from html import escape
+from typing import Tuple, Union
 
+from idm.utils import att_parse
 from idm.objects import MySignalEvent, dp
-from .template import delete_template
 
 
-@dp.longpoll_event_register('+гс')
-@dp.my_signal_event_register('+гс')
-def voice_create(event: MySignalEvent) -> str:
+def delete_template(name: str, templates: list) -> Tuple[list, bool]:
+    for template in templates:
+        if template['name'] == name:
+            templates.remove(template)
+            return templates, True
+    return templates, False
+
+
+@dp.longpoll_event_register('+шаб')
+@dp.my_signal_event_register('+шаб')
+def template_create(event: MySignalEvent) -> str:
     name = re.findall(r"([^|]+)\|?([^|]*)", ' '.join(event.args))
     if not name:
         event.msg_op(2, "❗ Не указано название")
@@ -18,108 +24,99 @@ def voice_create(event: MySignalEvent) -> str:
     name = name[0][0].lower().strip()
 
     if category == 'все':
-        event.msg_op(2, '❗ Невозможно создать голосовое сообщение ' +
-                     'с категорией "все"')
+        event.msg_op(2, '❗ Невозможно создать шаблон с категорией "все"')
         return "ok"
 
-    try:
-        if event.reply_message['attachments'][0]['type'] != 'audio_message':
-            raise TypeError
-    except (KeyError, IndexError, TypeError):
-        event.msg_op(2, "❗ Необходим ответ на голосовое сообщение")
+    if not (event.payload or event.attachments or event.reply_message):
+        event.msg_op(2, "❗ Нет данных")
         return "ok"
 
-    attach = event.reply_message['attachments'][0]['audio_message']
-    data = requests.get(attach['link_mp3'])
-    audio_msg = io.BytesIO(data.content)
-    audio_msg.name = 'voice.mp3'
-    upload_url = event.api('docs.getUploadServer',
-                           type='audio_message')['upload_url']
-    uploaded = requests.post(upload_url,
-                             files={'file': audio_msg}).json()['file']
-    audio = event.api('docs.save', file=uploaded)['audio_message']
-    del(audio_msg)
-    voice = f"audio_message{audio['owner_id']}_{audio['id']}_{audio['access_key']}"
+    if event.reply_message:
+        data = event.reply_message['text']
+        event.attachments = att_parse(event.reply_message['attachments'])
+        if event.attachments:
+            if event.attachments[0].startswith('audio_message'):
+                event.msg_op(2, '⚠️ Для сохранения ГС используй команду "+гс"')
+                return "ok"
+    else:
+        data = event.payload
 
-    event.db.voices, exist = delete_template(name, event.db.voices)
-    event.db.voices.append({
+    event.db.templates, exist = delete_template(name, event.db.templates)
+    event.db.templates.append({
         "name": name,
+        "payload": data,
         "cat": category,
-        "attachments": voice
+        "attachments": event.attachments
     })
     event.db.save()
 
-    event.msg_op(2, f'✅ Голосовое сообщение "{name}" ' +
-                 ('перезаписано' if exist else 'сохранено') +
-                 f'\nДлительность - {attach["duration"]} сек.')
+    event.msg_op(2, f'✅ Шаблон "{name}" ' +
+                 ("перезаписан" if exist else "сохранен"), delete=2)
     return "ok"
 
 
-@dp.longpoll_event_register('гсы')
-@dp.my_signal_event_register('гсы')
+@dp.longpoll_event_register('шабы')
+@dp.my_signal_event_register('шабы')
 def template_list(event: MySignalEvent) -> str:
     category = ' '.join(event.args)
-    voices = event.db.voices
+    templates = event.db.templates
     if category == 'все':
-        message = '📃 Список всех голосовых сообщений:'
-        for i, v in enumerate(voices, 1):
-            message += f"\n{i}. {v['name']} | {v['cat']}"
+        message = '📃 Список всех шаблонов:'
+        for i, t in enumerate(templates, 1):
+            message += f"\n{i}. {t['name']} | {t['cat']}"
     elif not category:
         cats = {}
-        for v in voices:
-            cats[v['cat']] = cats.get(v['cat'], 0) + 1
-        message = "📚 Категории голосовых сообщений:"
+        for t in templates:
+            cats[t['cat']] = cats.get(t['cat'], 0) + 1
+        message = "📚 Категории шаблонов:"
         for cat in cats:
             message += f"\n-- {cat} ({cats[cat]})"
     else:
-        message = f'📖 Голосовые сообщения категории "{category}":'
-        for v in voices:
-            if v['cat'] == category:
-                message += f"\n-- {v['name']}"
+        message = f'📖 Шаблоны категории "{category}":'
+        for t in templates:
+            if t['cat'] == category:
+                message += f"\n-- {t['name']}"
     if '\n' not in message:
-        if voices == []:
-            message = '👀 Нет ни одного голосового сообщения... Для создания используй команду "+гс"'  # noqa
+        if templates == []:
+            message = '👀 Нет ни одного шаблона... Для создания используй команду "+шаб"'  # noqa
         else:
-            message = '⚠️ Голосовые сообщения по указанному запросу не найдены'
+            message = '⚠️ Шаблоны по указанному запросу не найдены'
     event.msg_op(2, message)
     return "ok"
 
 
-@dp.longpoll_event_register('-гс')
-@dp.my_signal_event_register('-гс')
-def voice_delete(event: MySignalEvent) -> str:
-    name = ' '.join(event.args).lower()
-    event.db.voices, exist = delete_template(name, event.db.voices)
+def get_name(event: MySignalEvent) -> Union[str]:
+    return event, ' '.join(event.args).lower()
+
+
+@dp.longpoll_event_register('-шаб')
+@dp.my_signal_event_register('-шаб')
+@dp.wrap_handler(get_name)  # TODO: придумать менее идиотское применение этой обертке
+def template_delete(event: MySignalEvent, name: str) -> str:
+    event.db.templates, exist = delete_template(name, event.db.templates)
     if exist:
-        msg = f'✅ Голосовое сообщение "{name}" удалено'
+        msg = f'✅ Шаблон "{name}" удален'
         event.db.save()
     else:
-        msg = f'⚠️ Голосовое сообщение "{name}" не найдено'
-    event.msg_op(2, msg, delete = 2)
+        msg = f'⚠️ Шаблон "{name}" не найден'
+    event.msg_op(2, msg, delete = 1)
     return "ok"
 
 
-@dp.longpoll_event_register('гс')
-@dp.my_signal_event_register('гс')
-def voice_send(event: MySignalEvent) -> str:
-    name = ' '.join(event.args).lower()
-    voice = None
-    for v in event.db.voices:
-        if v['name'] == name:
-            voice = v
+@dp.longpoll_event_register('шаб')
+@dp.my_signal_event_register('шаб')
+@dp.wrap_handler(get_name)
+def template_show(event: MySignalEvent, name: str) -> str:
+    template = None
+    for temp in event.db.templates:
+        if temp['name'] == name:
+            template = temp
             break
-    if voice:
-        reply = str(event.reply_message['id']) if event.reply_message else ''
-        att = voice['attachments']
-        event.api.exe(
-            'API.messages.delete({' +
-            '"message_ids":'+str(event.msg['id'])+',"delete_for_all":1});' +
-            'API.messages.send({'
-                '"peer_id":%d,' % event.chat.peer_id +
-                '"message":"%s",' % escape(event.payload).replace('\n', '<br>') +
-                '"attachment":"%s",' % (att if type(att) == str else att[0]) +
-                '"reply_to":"%s",' % reply +
-                '"random_id":0});')
+    if template:
+        atts = template['attachments']
+        atts.extend(event.attachments)
+        event.msg_op(2, temp['payload'] + '\n' + event.payload,
+                     keep_forward_messages=1, attachment=','.join(atts))
     else:
-        event.msg_op(2, f'❗ Голосовое сообщение "{name}" не найдено')
+        event.msg_op(2, f'❗ Шаблон "{name}" не найден')
     return "ok"
