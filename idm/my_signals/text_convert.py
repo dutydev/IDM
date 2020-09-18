@@ -38,14 +38,15 @@ def conv_text(event: MySignalEvent) -> str:
     if event.reply_message:
         s = s + '\n' + event.reply_message['text']
     if event.msg['fwd_messages']:
-        for i in event.msg['fwd_messages']: s += '\n\n' + i['text']
+        for i in event.msg['fwd_messages']:
+            s += '\n\n' + i['text']
 
     if s == '':
         event.msg_op(2, 'Нет данных 🤦')
         return "ok"
 
     message = u''.join([trans_table.get(c, c) for c in s])
-    event.msg_op(2, f'🔁 Конвертировано:\n\n{message}', keep_forward_messages=1)
+    event.msg_op(2, message, keep_forward_messages=1)
     return "ok"
 
 
@@ -77,8 +78,9 @@ def fonts_convert(event: MySignalEvent) -> str:
     dest = False
     if event.args:
         if event.args[0] in fonts.keys():
+            message = f'{" ".join(event.args[1:])}\n{event.payload}'
             dest = fonts[event.args[0]]
-            s = ''.join(translit.get(c, c) for c in event.payload)
+            s = ''.join(translit.get(c, c) for c in message)
             msg = u''.join(dict(zip(eng, dest)).get(c, c) for c in s)
             if event.args[0] == '5':
                 msg = msg[::-1]
