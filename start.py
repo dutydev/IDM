@@ -12,6 +12,6 @@ if __name__ == "__main__":
             except ValueError:
                 raise Exception('Аргумент --port должен быть цифрой в диапазоне от 1 до 65536')  # noqa
         elif arg == '--host':
-            host = port = sys.argv[i+1]
+            host = sys.argv[i+1]
 
     app.run(host=host, port=port)
