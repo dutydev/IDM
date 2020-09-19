@@ -6,8 +6,14 @@ from microvk import VkApiResponseException
 import re
 import requests
 
+
 @dp.event_register('toGroup')
 def to_group(event: Event) -> str:
+    def send(text, **kwargs):
+        return event.api.msg_op(1, event.chat.peer_id, text, **kwargs)
+
+    event.set_msg()
+
     def parse_attachments(event: Event) -> typing.Tuple[str, typing.List[str]]:
         def get_payload(text: str) -> str:
             regexp = r"(^[\S]+)|([\S]+)|(\n[\s\S \n]+)"
@@ -37,7 +43,7 @@ def to_group(event: Event) -> str:
                 payload = event.reply_message['text']
             message = get_msg(event.api, event.chat.peer_id, event.reply_message['conversation_message_id'])
             for attachment in message.get('attachments', []):
-                
+
                 a_type = attachment['type']
 
                 if a_type in ['link']:continue
@@ -51,27 +57,27 @@ def to_group(event: Event) -> str:
                             f"{a_type}{attachment[a_type]['owner_id']}_{attachment[a_type]['id']}_{attachment[a_type]['access_key']}"
                         )
 
-        attachments.extend(event.attachments)   
+        attachments.extend(event.attachments)
         return payload, attachments
 
     text, attachments = parse_attachments(event)
 
     try:
-        data = event.api('wall.post', owner_id=(-1) * event.obj['group_id'], from_group=1, message=text, 
+        data = event.api('wall.post', owner_id=(-1) * event.obj['group_id'], from_group=1, message=text,
             attachments=",".join(attachments))
 
-        event.send(event.responses['to_group_success'],
+        send(event.responses['to_group_success'],
             attachment=f"wall-{event.obj['group_id']}_{data['post_id']}")
     except VkApiResponseException as e:
         if e.error_code == 214:
-            event.send(event.responses['to_group_err_forbidden'])
+            send(event.responses['to_group_err_forbidden'])
         elif e.error_code == 220:
-            event.send(event.responses['to_group_err_recs'])
+            send(event.responses['to_group_err_recs'])
         elif e.error_code == 222:
-            event.send(event.responses['to_group_err_link'])
+            send(event.responses['to_group_err_link'])
         else:
-            event.send(event.responses['to_group_err_vk'] + str({e.error_msg}))
+            send(event.responses['to_group_err_vk'] + str({e.error_msg}))
     except:
-        event.send(event.responses['to_group_err_unknown'])
+        send(event.responses['to_group_err_unknown'])
 
     return "ok"

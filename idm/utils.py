@@ -29,7 +29,10 @@ class Message:
     def __init__(self, msg: dict):
         matches = re.findall(r'(\S+)|\n(.*)', msg['text'])
         del matches[0]
-        self.command = matches.pop(0)[0].lower()
+        if matches != []:
+            self.command = matches.pop(0)[0].lower()
+        else:
+            self.command = ''
         self.reply = msg.get('reply_message', {})
         self.fwd = msg.get('fwd_messages', [])
         self.text = msg['text']
