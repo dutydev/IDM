@@ -58,7 +58,7 @@ def template_create(event: MySignalEvent) -> str:
 @dp.longpoll_event_register('шабы')
 @dp.my_signal_event_register('шабы')
 def template_list(event: MySignalEvent) -> str:
-    category = ' '.join(event.args)
+    category = ' '.join(event.args).lower()
     templates = event.db.templates
     if category == 'все':
         message = '📃 Список всех шаблонов:'
@@ -85,13 +85,14 @@ def template_list(event: MySignalEvent) -> str:
     return "ok"
 
 
+# TODO: придумать менее идиотское применение обертке
 def get_name(event: MySignalEvent) -> Union[str]:
     return event, ' '.join(event.args).lower()
 
 
 @dp.longpoll_event_register('-шаб')
 @dp.my_signal_event_register('-шаб')
-@dp.wrap_handler(get_name)  # TODO: придумать менее идиотское применение этой обертке
+@dp.wrap_handler(get_name)
 def template_delete(event: MySignalEvent, name: str) -> str:
     event.db.templates, exist = delete_template(name, event.db.templates)
     if exist:
@@ -99,7 +100,7 @@ def template_delete(event: MySignalEvent, name: str) -> str:
         event.db.save()
     else:
         msg = f'⚠️ Шаблон "{name}" не найден'
-    event.msg_op(2, msg, delete = 1)
+    event.msg_op(2, msg, delete=1)
     return "ok"
 
 

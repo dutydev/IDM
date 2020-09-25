@@ -6,7 +6,7 @@ from .template import delete_template
 @dp.longpoll_event_register('+анимка')
 @dp.my_signal_event_register('+анимка')
 def anim_create(event: MySignalEvent) -> str:
-    name = ' '.join(event.args).lower()
+    name = ' '.join(event.args)
     if not name:
         event.msg_op(2, "❗ Не указано название")
         return "ok"
@@ -37,7 +37,8 @@ def anim_list(event: MySignalEvent) -> str:
         for i, t in enumerate(event.db.anims, 1):
             message += f"\n{i}. {t['name']}"
     else:
-        message = '👀 Нет ни одной анимки... Создать можно на сайте или командой +анимка'
+        message = ('👀 Нет ни одной анимки... '
+                   'Создать можно на сайте или командой +анимка')
     event.msg_op(2, message)
     return "ok"
 
@@ -62,7 +63,7 @@ def anim_play(event: MySignalEvent) -> str:
     name = ' '.join(event.args).lower()
     anim = None
     for a in event.db.anims:
-        if a['name'] == name:
+        if a['name'].lower() == name:
             anim = a
             break
     if anim:
