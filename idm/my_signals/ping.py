@@ -12,12 +12,8 @@ pings = {
 }
 
 
-@dp.my_signal_event_register(*pings.keys(), 'пингб')
+@dp.my_signal_event_register(*pings.keys())
 def ping(event: MySignalEvent) -> str:
-    if event.command == 'пингб':
-        event.msg_op(2, message='PONG')
-        return "ok"
-
     c_time = datetime.now().timestamp()
     delta = round(c_time - event.msg['date'], 2)
 
@@ -27,6 +23,12 @@ def ping(event: MySignalEvent) -> str:
             обработано=round(datetime.now().timestamp() - event.time - event.vk_response_time, 2),  # noqa
             пингвк=round(event.vk_response_time, 2)
         ))
+    return "ok"
+
+
+@dp.my_signal_event_register('пингб', skip_receiving=True)
+def ping_bf(event: MySignalEvent) -> str:
+    event.msg_op(1, 'PONG')
     return "ok"
 
 

@@ -144,9 +144,11 @@ class Event:
         self.args = msg.args
 
     def __str__(self) -> str:
+        obj_ = self.obj
+        obj_['secret'] == '#############'
         return f"""Новое событие от Iris callback API
             Метод: {self.method}
-            Данные: {self.obj}
+            Данные: {obj_}
             Сообщение: {self.msg}
             """.replace("    ", "")
 
