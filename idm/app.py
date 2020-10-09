@@ -258,31 +258,36 @@ def login():
 
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found(_):
     return render_template('errors/404.html'), 404
+
+
+@app.errorhandler(405)
+def method_not_allowed(_):
+    return render_template('errors/404.html'), 405
 
 
 @app.errorhandler(500)
 def int_error(e):
-    return render_template('errors/500.html', error = e), 500
+    return render_template('errors/500.html', error=e), 500
 
 
 @app.errorhandler(ExcDB)
 def db_error(e: ExcDB):
-    logger.error(f'Ошибка при обработке запроса:\n{e}\n{traceback.format_exc()}')
+    logger.error(f'Ошибка при обработке запроса:\n{traceback.format_exc()}')
     if e.code == 0 and auth['user'] == 0:
         return redirect('/login')
     return int_error(e.text)
 
 
 @app.errorhandler(Exception)
-def on_error(e):
-    logger.error(f'Ошибка при обработке запроса:\n{e}\n' +
+def on_error(e: Exception):
+    logger.error(f'Ошибка при обработке запроса:\n' +
                  traceback.format_exc())
-    return f'Неизвестная ошибка:\n{e}'
+    return f'Неизвестная ошибка:\n{e.__class__.__name__}: {e}'
 
 
 @app.errorhandler(json.decoder.JSONDecodeError)
 def decode_error(e):
-    logger.error(f'Ошибка при декодировании данных:\n{e}\n{traceback.format_exc()}')
-    return f'Произошла ошибка при декодировании данных, проверьте файлы в ICAD/database<br>Место, где споткнулся декодер: {e}'
+    logger.error(f'Ошибка при декодировании данных:\n{e}\n{traceback.format_exc()}')  # noqa
+    return f'Произошла ошибка при декодировании данных, проверьте файлы в ICAD/database<br>Место, где споткнулся декодер: {e}'  # noqa

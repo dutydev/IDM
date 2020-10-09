@@ -88,13 +88,16 @@ class Event:
                 if conv['peer']['type'] == "chat":
                     message = self.api('messages.getByConversationMessageId',
                                        peer_id=conv['peer']['id'],
-                                       conversation_message_ids=self.msg[cmid_key])['items']
+                                       conversation_message_ids=self.msg[cmid_key])['items']  # noqa
                     if not message:
                         continue
-                    if (message[0]['from_id'] == self.msg['from_id'] and message[0]['date'] == self.msg['date']):
-                        chat_dict = { "peer_id": conv['peer']['id'],
-                                    "name": conv['chat_settings']['title'],
-                                    "installed": False }
+                    if (message[0]['from_id'] == self.msg['from_id'] and
+                            message[0]['date'] == self.msg['date']):
+                        chat_dict = {
+                            "peer_id": conv['peer']['id'],
+                            "name": conv['chat_settings']['title'],
+                            "installed": False
+                        }
                         self.db.chats.update({self.obj['chat']: chat_dict})
                         self.db.save()
                         self.chat = Chat(chat_dict, self.obj['chat'])
@@ -104,7 +107,7 @@ class Event:
         self.chat = None
 
     def __init__(self, request: Request):
-        if request != None and request.data == b'':
+        if request.data == b'':
             self.user_id = None
             self.msg = None
             self.obj = None
@@ -126,12 +129,16 @@ class Event:
             self.method = _data.get('method', 'ping')
             self.responses = self.db.responses
 
-            if self.method in {'sendSignal', 'sendMySignal', 'subscribeSignals', 'toGroup'}:
+            if self.method in {'sendSignal', 'sendMySignal',
+                               'subscribeSignals', 'toGroup'}:
                 self.set_chat()
             elif self.method in {'ping', 'groupbots.invited', 'bindChat'}:
                 pass
             else:
-                self.chat = Chat(self.db.chats[self.obj['chat']], self.obj['chat'])
+                chat = self.obj['chat']
+                if chat not in self.db.chats:
+                    raise ExceptToJson(f'Чат #{chat} не связан!')
+                self.chat = Chat(self.db.chats[chat], chat)
         if self.method not in {'sendSignal', 'sendMySignal'}:
             logger.info(self.__str__())
 
