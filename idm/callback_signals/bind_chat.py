@@ -1,27 +1,28 @@
-from idm.objects import dp, Event, MySignalEvent, DB, Chat
-from microvk import VkApi
+from idm.objects import dp, Event, Chat
 
 
 @dp.event_register('bindChat')
 def bind_chat(event: Event) -> str:
-    for chat in event.api("messages.getConversations", count=100)['items']:
-        diff = chat['last_message']['conversation_message_id'] - event.msg['conversation_message_id']
-        if diff < 0 or diff > 50:
-            continue
-        conv = chat['conversation']
-        if conv['peer']['type'] == "chat":
-            message = event.api('messages.getByConversationMessageId', peer_id=conv['peer']['id'],
-                conversation_message_ids=event.msg['conversation_message_id'])['items']
-            if not message:
-                continue
-            if message[0]['from_id'] == event.msg['from_id'] and message[0]['date'] == event.msg['date']:
-                chat_dict = {"peer_id": conv['peer']['id'],
-                             "name": conv['chat_settings']['title'],
-                             "installed": False}
-                event.db.chats.update({event.obj['chat']: chat_dict})
-                event.db.save()
-                event.chat = Chat(chat_dict, event.obj['chat'])
+    cmid_key = 'conversation_message_id'
+    search_res = event.api("messages.search",
+                           q=event.msg['text'], count=10, extended=1)
+    for msg in search_res['items']:
+        if msg[cmid_key] == event.msg[cmid_key]:
+            if msg['from_id'] == event.msg['from_id']:
+                message = msg
                 break
+    for conv in search_res['conversations']:
+        if conv['peer']['id'] == message['peer_id']:  # type: ignore
+            chat_name = conv['chat_settings']['title']
+            break
+    chat_raw = {
+        "peer_id": message['peer_id'],  # type: ignore
+        "name": chat_name,  # type: ignore
+        "installed": False
+    }
+    event.db.chats.update({event.obj['chat']: chat_raw})
+    event.db.save()
+    event.chat = Chat(chat_raw, event.obj['chat'])
     event.api.msg_op(1, event.chat.peer_id,
                      event.responses['chat_bind'].format(имя=event.chat.name))
     return "ok"

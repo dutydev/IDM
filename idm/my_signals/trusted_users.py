@@ -2,6 +2,7 @@ from idm.objects import dp, MySignalEvent
 from idm.utils import ment_user
 from idm.utils import find_mention_by_event
 
+
 def tr_user_op(event, error, typ):
     tr_id = find_mention_by_event(event)
 
@@ -18,9 +19,9 @@ def tr_user_op(event, error, typ):
         if tr_id in event.db.trusted_users: return tr_err()
     else:
         if tr_id not in event.db.trusted_users: return tr_err()
-            
+
     tr_user = event.api('users.get', user_ids=tr_id)[0]
-    
+
     if typ == 'add':
         event.db.trusted_users.append(tr_id)
         event.db.save()
@@ -29,7 +30,7 @@ def tr_user_op(event, error, typ):
         event.db.save()
 
     event.msg_op(2, event.responses[f'trusted_success_{typ}'].format(
-        ссылка = ment_user(tr_user)))
+                 ссылка=ment_user(tr_user)))
     return "ok"
 
 

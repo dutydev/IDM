@@ -19,8 +19,11 @@ class ExceptToJson(Exception):
 
     def __init__(self, message='', code: int = 0, iris: bool = False):
         if iris:
-            self.response = json.dumps({'response': 'error',
-            'error_code': code, 'error_message': message}, ensure_ascii=False)
+            self.response = json.dumps({
+                    'response': 'error',
+                    'error_code': code,
+                    'error_message': message
+                }, ensure_ascii=False)
         else:
             self.response = 'Error_o4ka:\n' + str(message)
 
@@ -68,6 +71,7 @@ class Event:
     def set_chat(self):
         if 'chat' not in self.obj.keys():
             return
+
         if self.obj['chat'] in self.db.chats.keys():
             self.chat = Chat(
                 self.db.chats[self.obj['chat']], self.obj['chat'])
@@ -78,32 +82,29 @@ class Event:
             if self.msg[cmid_key] is None:
                 raise ExceptToJson(code=10, iris=True)
             ct = datetime.now().timestamp()
-            chats = self.api("messages.getConversations", count=100)['items']
+            search_res = self.api("messages.search",
+                                  q=self.msg['text'], count=10, extended=1)
             self.vk_response_time = datetime.now().timestamp() - ct
-            for chat in chats:
-                diff = chat['last_message'][cmid_key] - self.msg[cmid_key]
-                if diff < 0 or diff > 50:
-                    continue
-                conv = chat['conversation']
-                if conv['peer']['type'] == "chat":
-                    message = self.api('messages.getByConversationMessageId',
-                                       peer_id=conv['peer']['id'],
-                                       conversation_message_ids=self.msg[cmid_key])['items']  # noqa
-                    if not message:
-                        continue
-                    if (message[0]['from_id'] == self.msg['from_id'] and
-                            message[0]['date'] == self.msg['date']):
-                        chat_dict = {
-                            "peer_id": conv['peer']['id'],
-                            "name": conv['chat_settings']['title'],
-                            "installed": False
-                        }
-                        self.db.chats.update({self.obj['chat']: chat_dict})
-                        self.db.save()
-                        self.chat = Chat(chat_dict, self.obj['chat'])
-                        self.set_msg(message[0])
+            for msg in search_res['items']:
+                if msg[cmid_key] == self.msg[cmid_key]:
+                    if msg['from_id'] == self.msg['from_id']:
+                        message = msg
                         break
+            for conv in search_res['conversations']:
+                if conv['peer']['id'] == message['peer_id']:  # type: ignore
+                    chat_name = conv['chat_settings']['title']
+                    break
+            chat_raw = {
+                "peer_id": message['peer_id'],  # type: ignore
+                "name": chat_name,  # type: ignore
+                "installed": False
+            }
+            self.db.chats.update({self.obj['chat']: chat_raw})
+            self.db.save()
+            self.chat = Chat(chat_raw, self.obj['chat'])
+            self.set_msg(message)  # type: ignore
             return
+
         self.chat = None
 
     def __init__(self, request: Request):
@@ -132,7 +133,8 @@ class Event:
             if self.method in {'sendSignal', 'sendMySignal',
                                'subscribeSignals', 'toGroup'}:
                 self.set_chat()
-            elif self.method in {'ping', 'groupbots.invited', 'bindChat'}:
+            elif self.method in {'ping', 'groupbots.invited',
+                                 'bindChat', 'meetChatDuty'}:
                 pass
             else:
                 chat = self.obj['chat']
