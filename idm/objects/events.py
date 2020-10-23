@@ -30,9 +30,10 @@ class ExceptToJson(Exception):
 
 class Chat:
     id: int
+    name: str
     peer_id: int
     iris_id: str
-    name: str
+    installed: bool
 
     def __init__(self, data: dict, iris_id: str):
         self.peer_id = data['peer_id']

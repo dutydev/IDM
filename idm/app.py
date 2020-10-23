@@ -16,6 +16,11 @@ from wtflog import warden
 
 from idm.objects import DB, DB_general, ExcDB, db_gen
 
+if environ.get('FLASK_ENV') == 'development':
+    DEBUG = True
+else:
+    DEBUG = False
+
 app = Flask(__name__)
 
 logger = warden.get_boy(__name__)
@@ -27,14 +32,15 @@ auth: str = {
 
 
 def get_mask(token: str) -> str:
-    if len(token) != 85: return 'Не установлен'
+    if len(token) != 85:
+        return 'Не установлен'
     return token[:4] + "*" * 77 + token[81:]
 
 
 def login_check(request, db: DB, db_gen: DB_general) -> Union[Request, None]:
-    if environ.get('FLASK_ENV') == 'development':
+    if DEBUG:
         return
-    # uid = db.duty_id
+    # uid = db.duty_id TODO: убрать авторизацию вк, не буду возвращать уже
     # token = request.cookies.get('token')
     if not db_gen.installed:
         return redirect('/install')
@@ -224,7 +230,7 @@ def db_check_user(request):  # TODO: убрать
 @app.route('/admin')
 def admin():
     db_gen = DB_general()
-    if environ.get('FLASK_ENV') == 'development':
+    if DEBUG:
         db = DB()
     else:
         db, response = db_check_user(request)

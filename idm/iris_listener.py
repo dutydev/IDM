@@ -1,9 +1,8 @@
 from idm.objects import Event, ExceptToJson, dp
 from microvk import VkApiResponseException
 from wtflog import warden
-from .app import app
+from .app import app, DEBUG
 from flask import request
-import traceback
 import json
 
 logger = warden.get_boy('IRIS Callback')
@@ -13,7 +12,7 @@ logger = warden.get_boy('IRIS Callback')
 def callback():
     event = Event(request)
 
-    if event.secret != event.db.secret:
+    if event.secret != event.db.secret and not DEBUG:
         return 'Неверная секретка', 500
 
     d = dp.event_run(event)

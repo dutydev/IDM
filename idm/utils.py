@@ -1,7 +1,10 @@
 from microvk import VkApi, VkApiResponseException
-from typing import Union, List
+from typing import Any, Iterable, Union, List, TypeVar
 import random
 import re
+
+
+MySignalEvent = TypeVar("MySignalEvent")
 
 
 def att_parse(attachments):
@@ -69,12 +72,19 @@ def find_user_by_link(text: str, vk: VkApi) -> Union[int, None]:
     user = re.findall(r"vk.com\/(id\d*|[^ \n]*\b)", text)
     if user:
         try:
-            return vk('users.get', user_ids = user)[0]['id']
+            return vk('users.get', user_ids=user)[0]['id']
         except (VkApiResponseException, IndexError):
             return None
 
 
-def find_mention_by_event(event: "MySignalEvent") -> Union[int, None]:
+def get_index(item: Iterable, index: int, default: Any = None):
+    try:
+        return item[index]
+    except IndexError:
+        return default
+
+
+def find_mention_by_event(event: MySignalEvent) -> Union[int, None]:
     'Возвращает ID пользователя, если он есть в сообщении, иначе None'
     user_id = None
     if event.args:
@@ -88,8 +98,16 @@ def find_mention_by_event(event: "MySignalEvent") -> Union[int, None]:
     return user_id
 
 
+def format_push(u: dict) -> str:
+    uid = u['id']
+    if u.get('first_name') is None:
+        return f"[club{abs(uid)}|{u['name']}]"
+    else:
+        return f"[id{uid}|{u['first_name']} {u['last_name']}]"
+
+
 def ment_user(user: dict) -> str:
-    return f"[id{user['id']}|{user['first_name']} {user['last_name']}]"
+    return format_push(user)
 
 
 def get_plural(number: Union[int, float], one: str, few: str,
