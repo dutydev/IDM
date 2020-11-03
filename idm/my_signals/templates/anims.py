@@ -47,6 +47,9 @@ def anim_list(event: MySignalEvent) -> str:
 @dp.my_signal_event_register('-анимка')
 def anim_delete(event: MySignalEvent) -> str:
     name = ' '.join(event.args).lower()
+    if not name:
+        event.msg_op(2, "❗ Не указано название")
+        return "ok"
     event.db.anims, exist = delete_template(name, event.db.anims)
     if exist:
         msg = f'✅ Анимка "{name}" удалена'
@@ -61,6 +64,9 @@ def anim_delete(event: MySignalEvent) -> str:
 @dp.my_signal_event_register('анимка')
 def anim_play(event: MySignalEvent) -> str:
     name = ' '.join(event.args).lower()
+    if not name:
+        event.msg_op(2, "❗ Не указано название")
+        return "ok"
     anim = None
     for a in event.db.anims:
         if a['name'].lower() == name:
