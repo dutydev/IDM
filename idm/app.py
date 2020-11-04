@@ -151,8 +151,12 @@ def api(method: str):
 
     if method == 'connect_to_iris':
         try:
-            VkApi(db.access_token, raise_excepts=True)('messages.send', random_id = 0,
-                message = f'+api {db.secret} {db.gen.host}/callback', peer_id = -174105461)
+            VkApi(db.access_token, raise_excepts=True)(
+                'messages.send',
+                peer_id=-174105461,
+                message=f'+api {db.secret} https://{request.host}/callback',
+                random_id=0
+            )
         except VkApiResponseException as e:
             return int_error(f'Ошибка VK #{e.error_code}: {e.error_msg}')
         return redirect('/')
