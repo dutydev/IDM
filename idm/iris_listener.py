@@ -17,7 +17,7 @@ def callback():
 
     d = dp.event_run(event)
     if d is None:
-        d = "ok"  # TODO: функциям больше не нужно возвращать "ok", можно убрать
+        d = "ok"
     if d == "ok":
         return json.dumps({"response": "ok"}, ensure_ascii=False)
     elif type(d) == dict:

@@ -1,5 +1,5 @@
 from idm.objects import dp, Event
-from idm.utils import ment_user
+from idm.utils import ment_user, cmid_key
 from idm.api_utils import get_msgs
 from datetime import datetime
 import time
@@ -8,7 +8,7 @@ import time
 def msg_delete(event, msg_id, msg_ids=[]):
     if getattr(event, 'msg'):
         if event.msg['from_id'] == event.db.duty_id and not msg_ids:
-            event.obj['local_ids'].append(event.msg['conversation_message_id'])
+            event.obj['local_ids'].append(event.msg[cmid_key])
 
     def del_edit(key, err=''):
         if not event.obj['silent']:

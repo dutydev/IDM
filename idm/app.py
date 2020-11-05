@@ -7,14 +7,14 @@ from os import environ
 from hashlib import md5
 from typing import List, Union
 
-from flask import (Flask, make_response, redirect, render_template, request,
-                   send_from_directory, Request)
+from flask import (Flask, make_response, redirect, render_template,
+                   request, send_from_directory, Response)
 
 from idm.utils import gen_secret
 from microvk import VkApi, VkApiResponseException
 from wtflog import warden
 
-from idm.objects import DB, DB_general, ExcDB, db_gen
+from idm.objects import DB, DB_general, db_gen
 
 if environ.get('FLASK_ENV') == 'development':
     DEBUG = True
@@ -31,30 +31,39 @@ auth: str = {
     }
 
 
+class WeHaveAProblem(Exception):
+    response: Response
+
+    def __init__(self, response: Response):
+        self.response = response
+
+
 def get_mask(token: str) -> str:
     if len(token) != 85:
         return 'Не установлен'
     return token[:4] + "*" * 77 + token[81:]
 
 
-def login_check(request, db: DB, db_gen: DB_general) -> Union[Request, None]:
+def login_check(request) -> None:
     if DEBUG:
         return
-    # uid = db.duty_id TODO: убрать авторизацию вк, не буду возвращать уже
-    # token = request.cookies.get('token')
     if not db_gen.installed:
-        return redirect('/install')
-    # if md5(f"{db_gen.vk_app_id}{uid}{db_gen.vk_app_secret}".encode()).hexdigest() != token:
+        raise WeHaveAProblem(redirect('/install'))
     if request.cookies.get('auth') != auth['token']:
-        return int_error('Ошибка авторизации, попробуй очистить cookies или перелогиниться')
+        raise WeHaveAProblem(int_error(
+            'Ошибка авторизации, попробуй очистить cookies или перелогиниться'
+        ))
 
 
 def format_tokens(tokens: list) -> List[Union[str, None]]:
     for i in range(len(tokens)):
         token = re.search(r'access_token=[a-z0-9]{85}', tokens[i])
-        if token: token = token[0][13:]
-        elif len(tokens[i]) == 85: token = tokens[i]
-        else: token = None
+        if token:
+            token = token[0][13:]
+        elif len(tokens[i]) == 85:
+            token = tokens[i]
+        else:
+            token = None
         tokens[i] = token
     return tokens
 
@@ -63,17 +72,20 @@ def check_tokens(tokens: list):
     user_ids = []
     for i in range(len(tokens)):
         try:
-            user_ids.append(VkApi(tokens[i], raise_excepts=True)('users.get')[0]['id'])
+            user_ids.append(
+                VkApi(tokens[i], raise_excepts=True)('users.get')[0]['id']
+            )
             time.sleep(0.4)
         except VkApiResponseException:
-            return int_error("Неверный токен, попробуйте снова")
+            raise WeHaveAProblem(int_error("Неверный токен, попробуй снова"))
     return user_ids
 
 
 @app.route('/')
 def index():
     db = DB_general()
-    if db.installed: return redirect('/admin')
+    if db.installed:
+        return redirect('/admin')
     return redirect('/install')
 
 
@@ -81,11 +93,15 @@ def index():
 def do_auth():
     global auth
     user_id = check_tokens(format_tokens([request.form.get('access_token')]))
-    if type(user_id) != list: return user_id
-    auth['user'] = user_id[0]
-    DB(user_id[0])  # ловим исключение, если юзер не в БД
+    if type(user_id) != list:
+        return user_id
+    if user_id[0] != db_gen.owner_id:
+        return int_error(
+            'Вставлен токен от другого аккаунта. Проверь авторизацию ВК'
+        )
     response = make_response()
     new_auth = md5(gen_secret().encode()).hexdigest()
+    auth['user'] = user_id[0]
     auth['token'] = new_auth
     response.set_cookie("auth", value=new_auth)
     response.headers['location'] = "/"
@@ -99,55 +115,59 @@ def favicon():
 
 @app.route('/install')
 def install():
-    db = DB_general()
-    if db.installed: return redirect('/')
+    if db_gen.installed:
+        return redirect('/')
     return render_template('pages/install.html')
+
+
+@app.route('/api/setup_cb', methods=["POST"])
+def setup():
+    if db_gen.installed:
+        return redirect('/')
+
+    tokens = format_tokens([
+        request.form.get('access_token'),
+        request.form.get('me_token')
+    ])
+
+    user_id = check_tokens(tokens)[0]
+    if type(user_id) != int:
+        return user_id
+
+    db_gen.set_user(user_id)
+    db = DB()
+
+    db.access_token = tokens[0]
+    db.me_token = tokens[1]
+
+    db.secret = gen_secret()
+    db_gen.host = "https://" + request.host
+    db_gen.installed = True
+    db.trusted_users.append(db.duty_id)
+    db.save()
+    db_gen.save()
+    VkApi(db.access_token).msg_op(
+        1, -174105461, f'+api {db.secret} https://{request.host}/callback'
+    )
+    return int_error('/login?next=/admin')
 
 
 @app.route('/api/<string:method>', methods=["POST"])
 def api(method: str):
-    if method == "setup_cb":#--------------------------------------------------------------
-        if db_gen.installed: return redirect('/')
-        
-        tokens = format_tokens([request.form.get('access_token'), request.form.get('me_token')])
-        
-        user_id = check_tokens(tokens)[0]
-        if type(user_id) != int: return user_id
+    login_check(request)
 
-        db_gen.set_user(user_id)
-        db = DB(user_id)
+    db = DB()
 
-
-        db.access_token = tokens[0]
-        db.me_token = tokens[1]
-        
-        db.secret = gen_secret()
-        # db_gen.vk_app_id = int(request.form.get('vk_app_id'))
-        # db_gen.vk_app_secret = request.form.get('vk_app_secret')
-        db_gen.host = "http://" + request.host
-        db_gen.installed = True
-        db.trusted_users.append(db.duty_id)
-        db.save()
-        db_gen.save()
-        return redirect('/login?next=/admin')
-
-
-    db = DB(auth['user'])
-
-    login = login_check(request, db, db_gen)
-    if login: return login
-
-
-    if method == "edit_current_user":#--------------------------------------------------------------
+    if method == "edit_current_user":
         tokens = format_tokens([
             request.form.get('access_token', ''),
             request.form.get('me_token', '')
         ])
-        if tokens[0]: db.access_token = tokens[0]
-        if tokens[1]: db.me_token = tokens[1]
+        if tokens[0]:
+            db.access_token = tokens[0]
+        if tokens[1]:
+            db.me_token = tokens[1]
         db.save()
-        return redirect('/admin')
-
 
     if method == 'connect_to_iris':
         try:
@@ -159,12 +179,12 @@ def api(method: str):
             )
         except VkApiResponseException as e:
             return int_error(f'Ошибка VK #{e.error_code}: {e.error_msg}')
-        return redirect('/')
 
-    if method == "edit_responses":#--------------------------------------------------------------
+    if method == "edit_responses":
         for key in db.responses.keys():
             response = request.form.get(key)
-            if response: db.responses[key] = response
+            if response:
+                db.responses[key] = response
         db.save()
         return redirect('/admin#Responses')
 
@@ -213,42 +233,24 @@ def api(method: str):
         else:
             db_gen.dc_auth = False
         db_gen.save()
-        return redirect('/admin')
 
-    return int_error('Тебя здесь быть не должно')
-
-
-def db_check_user(request):  # TODO: убрать
-    uid = auth['user']
-    if uid == 0:
-        return redirect('/login'), 'fail'
-    try:
-        return DB(int(uid)), 'ok'
-    except ExcDB as e:
-        if e.code == 0:
-            return int_error('В админ панель можно зайти только с аккаунта дежурного 💅🏻'), 'fail'
-        else:
-            return int_error(e), 'fail'
+    return redirect('/')
 
 
 @app.route('/admin')
 def admin():
     db_gen = DB_general()
-    if DEBUG:
-        db = DB()
-    else:
-        db, response = db_check_user(request)
-        if response != 'ok':
-            return db
 
-    warning = 0
+    login_check(request)
 
-    login = login_check(request, db, db_gen)
-    if login:
-        return login
+    if not db_gen.installed:
+        return redirect('/install')
 
-    users = VkApi(db.access_token)('users.get', fields='photo_50',
-                                   user_ids=db.duty_id)
+    db = DB()
+
+    warning = None
+
+    users = VkApi(db.access_token)('users.get', user_ids=db.duty_id)
     if type(users) == dict:
         username = 'unknown'
         warning = {'type': 'danger', 'text': 'Ошибка доступа, смени токены'}
@@ -264,6 +266,8 @@ def admin():
 
 @app.route('/login')
 def login():
+    if not db_gen.installed:
+        return redirect('/')
     return render_template('pages/login.html')
 
 
@@ -282,12 +286,9 @@ def int_error(e):
     return render_template('errors/500.html', error=e), 500
 
 
-@app.errorhandler(ExcDB)
-def db_error(e: ExcDB):
-    logger.error(f'Ошибка при обработке запроса:\n{traceback.format_exc()}')
-    if e.code == 0 and auth['user'] == 0:
-        return redirect('/login')
-    return int_error(e.text)
+@app.errorhandler(WeHaveAProblem)
+def oops(e: WeHaveAProblem):
+    return e.response
 
 
 @app.errorhandler(Exception)
@@ -300,4 +301,6 @@ def on_error(e: Exception):
 @app.errorhandler(json.decoder.JSONDecodeError)
 def decode_error(e):
     logger.error(f'Ошибка при декодировании данных:\n{e}\n{traceback.format_exc()}')  # noqa
-    return f'Произошла ошибка при декодировании данных, проверьте файлы в ICAD/database<br>Место, где споткнулся декодер: {e}'  # noqa
+    return ('Произошла ошибка при декодировании JSON (скорее всего в файлах '
+            ' БД), проверь файлы в ICAD/database<br>Место, где споткнулся '
+            f'декодер: {e}')

@@ -8,8 +8,8 @@ from microvk import VkApi
 from wtflog import warden
 
 from idm.api_utils import get_msg
-from idm.utils import Message
-from . import DB, ExcDB, db_gen
+from idm.utils import Message, cmid_key
+from .database import DB, db_gen
 
 logger = warden.get_boy('События callback')
 
@@ -62,8 +62,7 @@ class Event:
     def set_msg(self, msg: dict = None):
         if msg is None:
             ct = datetime.now().timestamp()
-            self.msg = get_msg(self.api, self.chat.peer_id,
-                               self.msg['conversation_message_id'])
+            self.msg = get_msg(self.api, self.chat.peer_id, self.msg[cmid_key])
             self.vk_response_time = datetime.now().timestamp() - ct
         else:
             self.msg = msg
@@ -79,7 +78,6 @@ class Event:
             return
 
         if self.msg:
-            cmid_key = 'conversation_message_id'
             if self.msg[cmid_key] is None:
                 raise ExceptToJson(code=10, iris=True)
             ct = datetime.now().timestamp()
@@ -121,10 +119,9 @@ class Event:
             self.obj = _data.get('object', {})
             self.msg = _data.get('message', {})
 
-            try:
-                self.db = DB(_data.get('user_id'))
-            except ExcDB:
+            if _data.get('user_id') != db_gen.owner_id:
                 raise ExceptToJson('Неверный ID дежурного')
+            self.db = DB()
 
             self.time = datetime.now().timestamp()
             self.api = VkApi(self.db.access_token, raise_excepts=True)
@@ -228,7 +225,7 @@ class LongpollEvent(MySignalEvent):
         self.msg = data['message']
         self.parse()
         self.command = data.get('command', self.command)
-        self.db = DB(db_gen.owner_id)
+        self.db = DB()
         if data['chat'] is None:
             self.chat = Chat({'peer_id': self.msg['peer_id']}, 'N/A')
         else:

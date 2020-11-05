@@ -1,15 +1,16 @@
 # тут (да и не только тут) есть много странных костылей,
-# большинство из них предназначено для обратной совместимости (ну или мне просто лень было их убирать)
-import json
+# большинство из них предназначено для обратной совместимости
 import os
+from os.path import join as pjoin
+import json
 from typing import List
 
 from wtflog import warden
 
 logger = warden.get_boy('База данных')
 
-get_dir = os.path.dirname # p = это os.path, если че)
-path = os.path.join(get_dir(get_dir(get_dir(__file__))), 'database')
+get_dir = os.path.dirname
+path = pjoin(get_dir(get_dir(get_dir(__file__))), 'database')
 
 
 db_gen: "DB_general"
@@ -18,14 +19,12 @@ db_gen: "DB_general"
 def read(name: str) -> dict:
     'Возвращает словарь из файла с указанным названием'
     logger.debug(f'Открываю файл "{name}"')
-    with open(os.path.join(path, f'{name}.json'), "r", encoding="utf-8") as file:
+    with open(pjoin(path, f'{name}.json'), "r", encoding="utf-8") as file:
         return json.loads(file.read())
 
 
 gen_raw = {
     "owner_id": 0,
-    "vk_app_id": 0,
-    "vk_app_secret": "",
     "host": "",
     "installed": False,
     "dc_auth": False
@@ -34,7 +33,7 @@ gen_raw = {
 
 def create_general():
     try:
-        with open(os.path.join(path, 'general.json'), "w", encoding="utf-8") as file:
+        with open(pjoin(path, 'general.json'), "w", encoding="utf-8") as file:
             file.write(json.dumps(gen_raw, ensure_ascii=False, indent=4))
     except FileNotFoundError:
         os.mkdir(path)
@@ -45,20 +44,6 @@ try:
     read('general')
 except FileNotFoundError:
     create_general()
-
-
-class ExcDB(Exception):
-    code: int
-    text: str
-
-    def __init__(self, code):
-        self.code = int(code)
-        if self.code == 0:
-            self.text = "В админ панель можно зайти только с аккаунта дежурного 💅🏻"
-        elif self.code == 1:
-            self.text = 'Ошибка БД: Указанный ID уже добавлен в базу'
-        else:
-            self.text = code
 
 
 class DB_defaults:
@@ -139,15 +124,12 @@ class DB_defaults:
 
 class DB_general:
     'БД с основной информацией'
-    path: str = path
     general: dict = {}
+
     owner_id: int = 0
     host: str = ""
     installed: bool = False
-    vk_app_id: int = 0
     dc_auth: bool = False
-    vk_app_secret: str = ""
-    group_id = -195759899
 
     def __init__(self):
         logger.debug('Инициализация основной БД')
@@ -155,31 +137,30 @@ class DB_general:
         self.general['dc_auth'] = self.general.get('dc_auth', False)
         self.__dict__.update(self.general)
 
-    @property
-    def update_general(self):
+    @staticmethod
+    def update_general():
         'Обновляет экземпляр основной БД в файле database.py'
         global db_gen
         db_gen = DB_general()
 
-    def set_user(self, user_id: int):  # TODO: гавной воняет
-        if user_id == self.owner_id:
-            raise ExcDB(1)
+    def set_user(self, user_id: int):
         self.owner_id = user_id
-        with open(os.path.join(path, f'{user_id}.json'), "w", encoding="utf-8") as file:
-            file.write(json.dumps(DB_defaults.load_user(),
-                                  ensure_ascii=False, indent=4))
+        with open(pjoin(path, f'{user_id}.json'), "w", encoding="utf-8") as file:
+            file.write(json.dumps(
+                DB_defaults.load_user(), ensure_ascii=False, indent=4
+            ))
         self.save()
-        self.update_general
-        return DB(user_id)
+        self.update_general()
+        return DB()
 
     def save(self) -> str:
         'Сохранение основной БД'
         logger.debug("Сохраняю основную базу данных")
         for key in self.general:
             self.general[key] = getattr(self, key)
-        with open(os.path.join(path, 'general.json'), "w", encoding="utf-8") as file:
+        with open(pjoin(path, 'general.json'), "w", encoding="utf-8") as file:
             file.write(json.dumps(self.general, ensure_ascii=False, indent=4))
-        self.update_general
+        self.update_general()
         return "ok"
 
 
@@ -196,35 +177,29 @@ class DB:
     templates: List[dict] = []
     anims: List[dict] = []
     voices: List[dict] = []
-    responses: dict = DB_defaults.responses
+    responses = DB_defaults.responses
 
-    settings: dict = DB_defaults.settings
-    lp_settings: dict = DB_defaults.lp_settings
+    settings = DB_defaults.settings
+    lp_settings = DB_defaults.lp_settings
 
-    def __init__(self, user_id: int = None):
-        user_id = user_id or db_gen.owner_id
-        if user_id != db_gen.owner_id:
-            raise ExcDB(0)
+    def __init__(self):
         self.gen = db_gen
         self.duty_id = int(db_gen.owner_id)
         self.host = db_gen.host
         self.installed = db_gen.installed
-        self.vk_app_id = db_gen.vk_app_id
-        self.vk_app_secret = db_gen.vk_app_secret
         self.load_user()
 
     def load_user(self):
-        try:
-            user_db = read(str(self.duty_id))
-        except FileNotFoundError:
-            raise ExcDB(0)
+        user_db = read(str(self.duty_id))
         self.__dict__.update(user_db)
 
     def save(self) -> str:
-        'Сохраняет БД пользователя, которая открыта в данном экземпляре DB'
+        'Сохраняет БД пользователя в файл'
         logger.debug("Сохраняю базу данных")
-        with open(os.path.join(path, f'{str(self.duty_id)}.json'), "w", encoding="utf-8") as file:
-            file.write(json.dumps(DB_defaults.load_user(self), ensure_ascii=False, indent=4))
+        with open(pjoin(path, f'{self.duty_id}.json'), "w", encoding="utf-8") as file:
+            file.write(json.dumps(
+                DB_defaults.load_user(self), ensure_ascii=False, indent=4
+            ))
         return "ok"
 
 
@@ -244,11 +219,11 @@ def _update(data):
         data['dyntemplates'][i]['name'] = temp['name'].lower()
     if 'dyntemplates' in data:
         data['anims'] = data.pop('dyntemplates', [])
-    with open(os.path.join(path, f'{db_gen.owner_id}.json'), "w", encoding="utf-8") as file:
+    with open(pjoin(path, f'{db_gen.owner_id}.json'), "w", encoding="utf-8") as file:
         file.write(json.dumps(data, ensure_ascii=False, indent=4))
 
 
-DB_general().update_general  # инициализация основной БД при запуске скрипта
+DB_general.update_general()  # инициализация основной БД при запуске скрипта
 
 # форматирование старых жысонов под новый формат
 if db_gen.owner_id != 0:

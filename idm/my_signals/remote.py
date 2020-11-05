@@ -1,5 +1,5 @@
 from idm.objects import dp, MySignalEvent, db_gen
-from idm.utils import find_mention_by_event, get_plural
+from idm.utils import find_mention_by_event, get_plural, cmid_key
 from typing import Union
 import requests
 
@@ -63,7 +63,7 @@ def remote_control(event: MySignalEvent) -> Union[str, dict]:
         'session': session,
         'data': {
             'chat': event.chat.iris_id,
-            'local_id': event.msg['conversation_message_id']
+            'local_id': event.msg[cmid_key]
         }
     })
     if resp.status_code != 200:

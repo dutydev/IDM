@@ -1,9 +1,8 @@
-import os
+from os.path import join, dirname
 from wtflog import warden
 
-logger = warden.setup(os.path.join(os.path.dirname(os.path.dirname(__file__)), f"duty.log"),
-        level = warden.INFO, clear_on_start = 'backup')
-logger.info('Запуск IDM...')
+logger = warden.setup(join(dirname(dirname(__file__)), f"duty.log"),
+                      level=warden.INFO, clear_on_start='backup')
 
 from .app import app
 from idm.objects import db_gen as db, __version__

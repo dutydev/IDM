@@ -2,6 +2,7 @@
 import typing
 from idm.api_utils import get_msg
 from idm.objects import dp, Event
+from idm.utils import cmid_key
 from microvk import VkApiResponseException
 import re
 import requests
@@ -41,7 +42,7 @@ def to_group(event: Event) -> str:
         if event.reply_message != None:
             if payload == "":
                 payload = event.reply_message['text']
-            message = get_msg(event.api, event.chat.peer_id, event.reply_message['conversation_message_id'])
+            message = get_msg(event.api, event.chat.peer_id, event.reply_message[cmid_key])
             for attachment in message.get('attachments', []):
 
                 a_type = attachment['type']

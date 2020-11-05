@@ -1,7 +1,12 @@
-from microvk import VkApi, VkApiResponseException
-from typing import Any, Iterable, Union, List, TypeVar
-import random
+import os
 import re
+import sys
+import random
+from typing import Any, Iterable, Union, List, TypeVar
+from microvk import VkApi, VkApiResponseException
+
+
+cmid_key = 'conversation_message_id'
 
 
 MySignalEvent = TypeVar("MySignalEvent")

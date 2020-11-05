@@ -42,7 +42,7 @@ def get_data():
     except (KeyError, IndexError, ValueError):
         return json.dumps({'error': error.AuthFail})
 
-    db = DB(db_gen.owner_id)
+    db = DB()
     db.lp_settings['key'] = gen_secret(length=20)
     db.save()
     return json.dumps({

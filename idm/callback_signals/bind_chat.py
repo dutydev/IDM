@@ -1,9 +1,9 @@
 from idm.objects import dp, Event, Chat
+from idm.utils import cmid_key
 
 
 @dp.event_register('bindChat')
 def bind_chat(event: Event) -> str:
-    cmid_key = 'conversation_message_id'
     search_res = event.api("messages.search",
                            q=event.msg['text'], count=10, extended=1)
     for msg in search_res['items']:

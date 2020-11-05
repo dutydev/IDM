@@ -1,6 +1,6 @@
-__version__ = '1.3.4 beta'
+__version__ = '1.3.5 beta test'
 
-from .database import DB, DB_general, ExcDB, db_gen
+from .database import DB, DB_general, db_gen
 
 from .events import *
 

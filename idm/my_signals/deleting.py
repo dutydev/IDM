@@ -14,18 +14,8 @@ def delete_self_message(event: MySignalEvent) -> str:
     if 'все' in event.msg['text']:
         count = 200
 
-    # if edit:  # TODO: либо убрать, либо реализовать
-    #     vk.raise_excepts = False
-    #     i = 1
-    #     for cmsg in vk('messages.getHistory', peer_id = nd[3], count = 200)['items']:
-    #         if cmsg['out'] == 1:
-    #             resp = msg_op(2, nd[3], msg, msg_id = cmsg['id'])
-    #             if type(resp) != int: break
-    #             i += 1
-    #             if i > count: break
-    #             time.sleep(0.3)
-    # else:
-    event.msg_op(2, event.responses['del_self'])  # TODO: а нужно ли это вообще? лишние полсекунды
+    if not event.db.settings['silent_deleting']:
+        event.msg_op(2, event.responses['del_self'])
 
     event.api.exe("""
     var i = 0;

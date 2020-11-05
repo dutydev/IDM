@@ -85,7 +85,6 @@ def template_list(event: MySignalEvent) -> str:
     return "ok"
 
 
-# TODO: придумать менее идиотское применение обертке
 def get_name(event: MySignalEvent) -> Union[str]:
     return event, ' '.join(event.args).lower()
 

@@ -1,17 +1,24 @@
+import os
 
-from .add_user import add_user, ban_expired
-from .ban_get_reason import ban_get_reason
-from .bind_chat import bind_chat
-from .delete_messages import delete_messages, delete_by_type, delete_messages_from_user
-from .forbidden_links import forbidden_links
-from .meet_chat_duty import meet_chat_duty
-from .ping import ping as ping__
-from .print_bookmark import print_bookmark
-from .send_my_signal import send_my_signal
-from .send_signal import send_signal
-from .subscribe_signals import subscribe_signals
-from .to_group import to_group
-from .hireApi import hire
-from .gp_invited import groupbots
 
-from .signals import *
+def init(path: str, alter_path: str = ''):
+    if alter_path != '' and not alter_path.startswith('.'):
+        alter_path = '.' + alter_path
+    for name in os.listdir(path):
+        if name in {'__init__.py', '__pycache__'}:
+            continue
+        ext = name.split('.')
+        if len(ext) > 1:
+            ext = ext[-1]
+        else:
+            if alter_path == '':
+                init(os.path.join(path, name), ext[0])
+            else:
+                init(os.path.join(path, name), f"{alter_path}.{ext[0]}")
+            continue
+        if ext == 'py':
+            name = name.replace('.py', '')
+            exec(f"from {alter_path}.{name} import __name__")
+
+
+init(os.path.dirname(__file__))
