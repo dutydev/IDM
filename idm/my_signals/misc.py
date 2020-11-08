@@ -94,7 +94,7 @@ def ass_crackin(event: MySignalEvent) -> str:
     event.msg_op(1, 'передать 1 [id332619272|челику]\nна пивас', disable_mentions=1)
     time.sleep(4)
     for msg in event.api('messages.getHistory', count=10, peer_id=event.chat.peer_id)['items']:
-        if '🎃 [id332619272|' in msg['text']:
+        if '🍬 [id332619272|' in msg['text']:
             fail = False
             event.msg_op(1, '💚 Взлом жопы прошел успешно')
             break
