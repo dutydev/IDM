@@ -7,6 +7,9 @@
 4. [Благодарности](https://github.com/Elchinchel/IDM-SC-mod#Благодарности)
 
 ## Как установить
+
+### [Здесь](https://vk.com/video332619272_456239231) есть видео. Если что, [этот прекрасный человек](https://vk.com/id365530525) может помочь.
+
 Для установки мы будем использовать сайт [pythonanywhere.com](https://www.eu.pythonanywhere.com/)
 
 Переходим по [ссылке](https://www.eu.pythonanywhere.com/registration/register/beginner/), заполняем форму и нажимаем *Register*
@@ -15,8 +18,8 @@
 [![](https://sun9-35.userapi.com/GvwS8jmduczHApabBhlJyeJcAzhMLkFEE8Bqmw/_UZT_5jUQtk.jpg)](https://sun9-35.userapi.com/GvwS8jmduczHApabBhlJyeJcAzhMLkFEE8Bqmw/_UZT_5jUQtk.jpg)
 
 
-Далее открываем вкладку *Web*
-Кликаем на *Add a new web app*
+Открываем вкладку *Web*\
+Кликаем на *Add a new web app*\
 В появившемся окошке *next*  -> *Flask* -> *Python3.8*\
 В путь вводим /home/`имя аккаунта`/ICAD/start.py
 
@@ -30,7 +33,7 @@
 rm -rf ICAD
 git clone https://github.com/elchinchel/ICAD
 ```
-Убедитесь, что после выполнения второй команды в консоли присутствует текст, выделенный на картинке
+Убедитесь, что после выполнения второй команды в консоли присутствует текст, выделенный на картинке\
 [![](https://sun1-25.userapi.com/jHRFDx7NyayBffN6AKCK4_Daxu7tBDoCCFulyw/nTtDNh3aeD0.jpg)](https://sun1-25.userapi.com/jHRFDx7NyayBffN6AKCK4_Daxu7tBDoCCFulyw/nTtDNh3aeD0.jpg)
 
 
@@ -40,13 +43,7 @@ git clone https://github.com/elchinchel/ICAD
 
 [![](https://sun9-58.userapi.com/BQNI2zd65Erkq0AU9DlMfohvqJ8id8rFZ0yx3A/UVdo0UBPYSo.jpg)](https://sun9-58.userapi.com/BQNI2zd65Erkq0AU9DlMfohvqJ8id8rFZ0yx3A/UVdo0UBPYSo.jpg)
 
-<!-- *(По дальнейшим действиям есть **[более подробная статья](https://vk.com/@idmmod-install)**)* -->
-
-Вводим данные, нажимаем *Установить в CallBack режиме*.
-
-Если все прошло успешно, откроется страница с полем ввода токена. Вставляй!
-
-После этого нажимаем на синюю кнопку *Отправить конфигурационную фразу Ирису*
+Вводим данные, нажимаем *Установить*.
 
 Проверяем ЛС Ириса. Если наблюдается похожая картина, все прошло успешно.
 
@@ -54,18 +51,9 @@ git clone https://github.com/elchinchel/ICAD
 
 Поздравляю, у тебя теперь есть дежурный. Подключиться к нужному чату можно, написав в нем команду `+api`
 
-### Внимание! Через три месяца на бесплатном тарифе сайт отключается!
-Чтобы этого не произошло, нужно как минимум раз в три месяца заходить в аккаунт и нажимать на эту кнопку\
+### **Внимание!** Через три месяца на бесплатном тарифе сайт отключается!
+Чтобы этого не произошло, нужно как минимум раз в три месяца заходить в аккаунт и нажимать на эту кнопку (на вкладке Web под кнопкой перезагрузки)\
 [![](https://sun9-45.userapi.com/jCRPUmhR1BziUy5dWC-9RFd6ymSU9zbNC3DgCg/AlaKKXFA_Ko.jpg)](https://sun9-45.userapi.com/jCRPUmhR1BziUy5dWC-9RFd6ymSU9zbNC3DgCg/AlaKKXFA_Ko.jpg)
-
-### Как создать приложение ВК
-Переходим по ссылке [https://vk.com/editapp?act=create](https://vk.com/editapp?act=create "https://vk.com/editapp?act=create"), в поле платформа выбираем *сайт*
-
-Адрес сайта и базовый домен `http://{имя вашего аккаунта}.eu.pythonanywhere.com`
-
-[![](https://sun1-83.userapi.com/g4A8pmmIpssJtHlXUqb1K6OcPOVsmePa2Wb6WA/oaGRBEOYixc.jpg)](https://sun1-83.userapi.com/g4A8pmmIpssJtHlXUqb1K6OcPOVsmePa2Wb6WA/oaGRBEOYixc.jpg)`
-
-Кликаем на *подключить сайт*.
 
 ## Как обновить
 *".c обновить"*
