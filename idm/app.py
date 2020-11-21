@@ -149,7 +149,7 @@ def setup():
     VkApi(db.access_token).msg_op(
         1, -174105461, f'+api {db.secret} https://{request.host}/callback'
     )
-    return int_error('/login?next=/admin')
+    return redirect('/login')
 
 
 @app.route('/api/<string:method>', methods=["POST"])
