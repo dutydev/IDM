@@ -22,7 +22,7 @@ class Worker(ContextInstanceMixin):
         }
 
     async def manage_worker(self, state: str, start: bool):
-        await db.settings.change(state=start)
+        await db.settings.change(**{str(state): start})
         if start:
             self.loop.create_task(self.metadata[state]())
         logger.info(
