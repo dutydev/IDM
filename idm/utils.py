@@ -4,8 +4,7 @@ import time
 import re
 
 
-def get_all_history_gen(vk: VkApi, chat_id: int) -> typing.Generator[dict, None, None]:
-    offset = 0
+def get_all_history_gen(vk: VkApi, chat_id: int, offset: int = 0) -> typing.Generator[dict, None, None]:
     chat = vk("messages.getHistory", count=1, peer_id=chat_id, offset=offset)
     count = chat['count']
     while offset < count:

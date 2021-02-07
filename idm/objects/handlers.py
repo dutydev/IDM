@@ -1,8 +1,9 @@
-import typing
-from . import Methods, Event, SignalEvent, MySignalEvent
 import logging
-from vkapi import VkApiResponseException
 import traceback
+import typing
+
+from vkapi import VkApiResponseException
+from . import Methods, Event, SignalEvent, MySignalEvent
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +11,7 @@ logger = logging.getLogger(__name__)
 class Handler:
     method: Methods
     f: typing.Callable
-    
+
     def __init__(self, method: typing.Union[Methods, str], f: typing.Callable):
         self.method = Methods(method)
         self.f = f
@@ -21,29 +22,30 @@ class Handler:
             return self.f(event)
         except VkApiResponseException as e:
             data = {
-                    "тип":"vk_api",
-                    "код_ошибки":e.error_code,
-                    "сообщение":e.error_msg,
-                    "параметры":e.request_params,
-                    "traceback":traceback.format_exc()
+                "тип": "vk_api",
+                "код_ошибки": e.error_code,
+                "сообщение": e.error_msg,
+                "параметры": e.request_params,
+                "traceback": traceback.format_exc()
             }
             logger.exception(data)
             return data
-        except Exception as e:            
+        except Exception as e:
             data = {
-                "тип":e.__class__.__name__,
-                "ошибка":f"{e}",
-                "traceback":traceback.format_exc()
+                "тип": e.__class__.__name__,
+                "ошибка": f"{e}",
+                "traceback": traceback.format_exc()
             }
             logger.exception(data)
             return data
-        except:                       
+        except:
             data = {
-                "тип":"неизвестный",
-                "traceback":traceback.format_exc()
+                "тип": "неизвестный",
+                "traceback": traceback.format_exc()
             }
-            logger.exception(data) 
+            logger.exception(data)
             return data
+
 
 class SignalHandler:
     commands: typing.List[str]
@@ -59,30 +61,30 @@ class SignalHandler:
             return self.f(event)
         except VkApiResponseException as e:
             data = {
-                    "тип":"vk_api",
-                    "код_ошибки":e.error_code,
-                    "сообщение":e.error_msg,
-                    "параметры":e.request_params,
-                    "traceback":traceback.format_exc()
+                "тип": "vk_api",
+                "код_ошибки": e.error_code,
+                "сообщение": e.error_msg,
+                "параметры": e.request_params,
+                "traceback": traceback.format_exc()
             }
             logger.exception(data)
             return data
-        except Exception as e:            
+        except Exception as e:
             data = {
-                "тип":e.__class__.__name__,
-                "ошибка":f"{e}",
-                "traceback":traceback.format_exc()
+                "тип": e.__class__.__name__,
+                "ошибка": f"{e}",
+                "traceback": traceback.format_exc()
             }
             logger.exception(data)
             return data
-        except:                       
+        except:
             data = {
-                "тип":"неизвестный",
-                "traceback":traceback.format_exc()
+                "тип": "неизвестный",
+                "traceback": traceback.format_exc()
             }
-            logger.exception(data) 
+            logger.exception(data)
             return data
-    
+
 
 class MySignalHandler:
     commands: typing.List[str]
@@ -98,26 +100,26 @@ class MySignalHandler:
             return self.f(event)
         except VkApiResponseException as e:
             data = {
-                    "тип":"vk_api",
-                    "код_ошибки":e.error_code,
-                    "сообщение":e.error_msg,
-                    "параметры":e.request_params,
-                    "traceback":traceback.format_exc()
+                "тип": "vk_api",
+                "код_ошибки": e.error_code,
+                "сообщение": e.error_msg,
+                "параметры": e.request_params,
+                "traceback": traceback.format_exc()
             }
             logger.exception(data)
             return data
-        except Exception as e:            
+        except Exception as e:
             data = {
-                "тип":e.__class__.__name__,
-                "ошибка":f"{e}",
-                "traceback":traceback.format_exc()
+                "тип": e.__class__.__name__,
+                "ошибка": f"{e}",
+                "traceback": traceback.format_exc()
             }
             logger.exception(data)
             return data
-        except:                       
+        except:
             data = {
-                "тип":"неизвестный",
-                "traceback":traceback.format_exc()
+                "тип": "неизвестный",
+                "traceback": traceback.format_exc()
             }
-            logger.exception(data) 
+            logger.exception(data)
             return data

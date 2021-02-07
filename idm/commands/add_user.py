@@ -1,6 +1,7 @@
-from ..objects import dp, Event
-from .. import utils
 from vkapi import VkApiResponseException
+from .. import utils
+from ..objects import dp, Event
+
 
 @dp.event_handle(dp.Methods.ADD_USER)
 def add_user(event: Event) -> str:
@@ -14,10 +15,13 @@ def add_user(event: Event) -> str:
         message = f"✅ Пользователь [id{user['id']}|{user['first_name']} {user['last_name']}] добавлен в беседу."
     except VkApiResponseException as e:
         if e.error_code == 15:
-            message = f"❗ Не удалось добавить пользователя [id{user['id']}|{user['first_name']} {user['last_name']}].\nНет доступа.\n Возможно, он не в моих друзьях или он уже в беседе."
+            message = f"❗ Не удалось добавить пользователя [id{user['id']}|{user['first_name']} {user['last_name']}].\n" \
+                      f"Нет доступа.\n Возможно, он не в моих друзьях или он уже в беседе."
         else:
-            message = f"❗ Не удалось добавить пользователя [id{user['id']}|{user['first_name']} {user['last_name']}].\nОшибка ВК.\n{e.error_msg}"
+            message = f"❗ Не удалось добавить пользователя [id{user['id']}|{user['first_name']} {user['last_name']}].\n" \
+                      f"Ошибка ВК.\n{e.error_msg}"
     except:
-        message = f"❗ Не удалось добавить пользователя [id{user['id']}|{user['first_name']} {user['last_name']}].\nПроизошла неизвестная ошибка." 
+        message = f"❗ Не удалось добавить пользователя [id{user['id']}|{user['first_name']} {user['last_name']}].\n" \
+                  f"Произошла неизвестная ошибка."
     utils.edit_message(event.api, event.chat.peer_id, message_id, message=message)
     return "ok"

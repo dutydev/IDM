@@ -1,12 +1,13 @@
-from ...objects import dp, MySignalEvent
-from ... import utils
 from vkapi import VkApi
+from ... import utils
+from ...objects import dp, MySignalEvent
+
 
 @dp.my_signal_event_handle('проверить')
 def check(event: MySignalEvent) -> str:
     def check_token(t: str) -> str:
 
-        if t == "" or t == None:
+        if t == "" or t is None:
             return "Токен не задан"
 
         api = VkApi(t)
@@ -18,7 +19,6 @@ def check(event: MySignalEvent) -> str:
         user = user[0]
 
         return f"ОК, [id{user['id']}|{user['first_name']} {user['last_name']}]"
-    
 
     message = f"""
     Основной токен: {check_token(event.db.access_token)}
@@ -29,11 +29,5 @@ def check(event: MySignalEvent) -> str:
     """.replace('    ', '')
 
     utils.new_message(event.api, event.chat.peer_id, message=message)
-    
-
-
-
-
 
     return "ok"
-

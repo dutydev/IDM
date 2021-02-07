@@ -1,7 +1,7 @@
-import typing
-import os
 import json
 import logging
+import os
+import typing
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ class DB:
     secret: str
     chats: str
     trusted_users: list
-    owner_id: int 
+    owner_id: int
     duty_id: int
     vk_app_id: int
     vk_app_secret: str
@@ -42,7 +42,6 @@ class DB:
             self.__dict__.update(
                 json.loads(file.read()))
 
-    
     @property
     def raw(self) -> dict:
         return {
@@ -58,7 +57,7 @@ class DB:
             "vk_app_id": self.vk_app_id,
             "vk_app_secret": self.vk_app_secret,
             "templates": self.templates,
-            "dynamic_templates":self.dynamic_templates,
+            "dynamic_templates": self.dynamic_templates,
             "host": self.host,
             "installed": self.installed
         }

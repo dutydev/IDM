@@ -1,11 +1,11 @@
-from ...objects import dp, MySignalEvent, DB
-from vkapi import VkApi
 import time
 import typing
+from enum import Enum
 
+from vkapi import VkApi
+from ...objects import dp, MySignalEvent, DB
 from ...utils import new_message
 
-from enum import Enum
 
 class Frame:
     time: float
@@ -24,8 +24,6 @@ class Frame:
             time.sleep(self.time)
             return 0
 
-        
-
 
 """ 
 🌕🌕🌗🌑🌑🌑🌑🌑🌓
@@ -39,16 +37,15 @@ class Frame:
 🌕🌕🌗🌑🌓🌕🌕🌕🌕
 """
 
+
 class DynamicTemplateType(Enum):
     LTOR = "ltor"
     RTOL = "rtol"
     BY_PERSONNEL = "by_personnel"
 
 
-
 class DynamicTemplate:
-
-    """ 
+    """
         Если тип by_personnel кадры { time, data }
         Если тип LTOR или RTOL шаблон { type, time, data, name }
     """
@@ -76,7 +73,7 @@ class DynamicTemplate:
         elif self.type == DynamicTemplateType.LTOR:
             self.time = self.raw.get('time', 3)
             _data_split = self.raw['data'].split('\n')
-            for _ in range(0, len(_data_split[0]) + 1 ):
+            for _ in range(0, len(_data_split[0]) + 1):
                 self.frames.append(Frame(time=self.time, data="\n".join(_data_split)))
                 __data_split = [
                     d[-1] + d[:-1]
@@ -86,15 +83,13 @@ class DynamicTemplate:
         elif self.type == DynamicTemplateType.RTOL:
             self.time = self.raw.get('time', 3)
             _data_split = self.raw['data'].split('\n')
-            for _ in range(0, len(_data_split[0]) + 1 ):
+            for _ in range(0, len(_data_split[0]) + 1):
                 self.frames.append(Frame(time=self.time, data="\n".join(_data_split)))
                 __data_split = [
-                    d[1:] + d[0] 
+                    d[1:] + d[0]
                     for d in _data_split
                 ]
                 _data_split = __data_split
-
-
 
     def run(self, api: VkApi, peer_id: int, message_id: int):
         fr = []
@@ -103,13 +98,14 @@ class DynamicTemplate:
             fr.append(d)
         return fr
 
+
 @dp.my_signal_event_handle('дшаб')
 def dtemplate(event: MySignalEvent) -> str:
-    
     name = event.args[0]
 
     dt = DynamicTemplate(event.db, name)
     d = dt.run(event.api, event.chat.peer_id, event.msg['id'])
 
-    new_message(event.api, event.chat.peer_id, message=f"Рендер шаблона окончен\n Фреймов: {len(dt.frames)}\nОтчет: {d}")
+    new_message(event.api, event.chat.peer_id,
+                message=f"Рендер шаблона окончен\n Фреймов: {len(dt.frames)}\nОтчет: {d}")
     return "ok"

@@ -1,15 +1,14 @@
-from ...objects import dp, MySignalEvent, SignalEvent
-from ...utils import edit_message, new_message
-from datetime import datetime
-from idm import __version__
-import typing
 import threading
+import typing
+
+from idm import __version__
+from ...objects import dp, MySignalEvent, SignalEvent
+from ...utils import edit_message
+
 
 @dp.my_signal_event_handle('инфо', 'инфа', '-i', 'info')
 def info(event: typing.Union[MySignalEvent, SignalEvent]) -> str:
-
     owner = event.api('users.get', user_ids=event.db.owner_id)[0]
-
 
     message = f"""Информация о дежурном:
     IDM v{__version__}
@@ -29,5 +28,5 @@ def info(event: typing.Union[MySignalEvent, SignalEvent]) -> str:
     
     """.replace('    ', '')
 
-    edit_message(event.api, event.chat.peer_id, event.msg['id'],  message=message)
+    edit_message(event.api, event.chat.peer_id, event.msg['id'], message=message)
     return "ok"

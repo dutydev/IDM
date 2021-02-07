@@ -1,12 +1,12 @@
 from ...objects import dp, MySignalEvent
-from ...utils import new_message, edit_message
+from ...utils import edit_message
+
 
 @dp.my_signal_event_handle('+шаб')
 def create_template(event: MySignalEvent) -> str:
-
-    if ((event.payload == '' or event.payload == None) and len(event.attachments) == 0) or len(event.args) == 0:
-            edit_message(event.api, event.chat.peer_id, event.msg['id'], message="❗ Нет данных")
-            return "ok"
+    if ((event.payload == '' or event.payload is None) and len(event.attachments) == 0) or len(event.args) == 0:
+        edit_message(event.api, event.chat.peer_id, event.msg['id'], message="❗ Нет данных")
+        return "ok"
 
     name = " ".join(event.args)
     data = event.payload
@@ -15,12 +15,12 @@ def create_template(event: MySignalEvent) -> str:
         if temp['name'] == name:
             event.db.templates.remove(temp)
             event.db.save()
-            
+
     event.db.templates.append(
         {
-            "name":name,
-            "payload":data,
-            "attachments":event.attachments
+            "name": name,
+            "payload": data,
+            "attachments": event.attachments
         }
     )
     event.db.save()
@@ -30,7 +30,6 @@ def create_template(event: MySignalEvent) -> str:
 
 @dp.my_signal_event_handle('-шаб')
 def remove_template(event: MySignalEvent) -> str:
-        
     if len(event.args) == 0:
         edit_message(event.api, event.chat.peer_id, event.msg['id'], message="❗ Нет данных")
 
@@ -42,14 +41,13 @@ def remove_template(event: MySignalEvent) -> str:
             event.db.save()
             edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f"✅Шаблон \"{name}\" удален.")
             return "ok"
-    
+
     edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f"❗ Шаблон \"{name}\" не найден.")
     return "ok"
 
 
 @dp.my_signal_event_handle('шабы')
 def templates(event: MySignalEvent) -> str:
-
     _message = "Ваши шаблоны:"
     itr = 0
     for temp in event.db.templates:
@@ -59,9 +57,9 @@ def templates(event: MySignalEvent) -> str:
     edit_message(event.api, event.chat.peer_id, event.msg['id'], message=_message)
     return "ok"
 
+
 @dp.my_signal_event_handle('шаб')
 def run_template(event: MySignalEvent) -> str:
-    
     if len(event.args) == 0:
         edit_message(event.api, event.chat.peer_id, event.msg['id'], message="❗ Нет данных")
 
@@ -69,8 +67,9 @@ def run_template(event: MySignalEvent) -> str:
 
     for temp in event.db.templates:
         if temp['name'] == name:
-            edit_message(event.api, event.chat.peer_id, event.msg['id'], message=temp['payload'], attachment=",".join(temp['attachments']))
+            edit_message(event.api, event.chat.peer_id, event.msg['id'], message=temp['payload'],
+                         attachment=",".join(temp['attachments']))
             return "ok"
-    
+
     edit_message(event.api, event.chat.peer_id, event.msg['id'], message=f"❗ Шаблон \"{name}\" не найден.")
     return "ok"

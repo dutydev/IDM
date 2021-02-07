@@ -1,14 +1,13 @@
 import json
+import logging
 import re
 
 from flask import Request
 
 from vkapi import VkApi
-
-from .. import utils
 from . import DB, Methods
+from .. import utils
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -88,7 +87,7 @@ class Event:
             return
         self.chat = None
 
-    def __init__(self, request: Request, data_: dict=None):
+    def __init__(self, request: Request, data_: dict = None):
 
         if request != None and request.data == b'':
             self.user_id = None
@@ -111,17 +110,18 @@ class Event:
             self.method = Methods(_data.get('method', 'ping'))
             self.attachments = []
 
-            if self.method in [Methods.BIND_CHAT, Methods.SEND_SIGNAL, Methods.SEND_MY_SIGNAL, Methods.SUBSCRIBE_SIGNALS, Methods.TO_GROUP]:
+            if self.method in [Methods.BIND_CHAT, Methods.SEND_SIGNAL, Methods.SEND_MY_SIGNAL,
+                               Methods.SUBSCRIBE_SIGNALS, Methods.TO_GROUP]:
                 self.set_chat()
             elif self.method == Methods.PING:
                 pass
             else:
                 self.chat = Chat(
-                    self.db.chats[self.obj['chat']], self.obj['chat'], self.obj['chat'])
+                    self.db.chats[self.obj['chat']], self.obj['chat'], self.obj['chat']
+                )
 
                 self.message = self.msg = None
                 self.reply_message = None
-
 
         logger.info(self.__str__().replace('\n', ' '))
 
@@ -158,7 +158,7 @@ class SignalEvent(Event):
         return f"""Новое событие от Iris callback API
             Метод: {self.method}
             Команда: {self.command}
-            Агрументы: {self.args}
+            Аргументы: {self.args}
             Пользователь: {self.user_id}
             Данные: {json.dumps(self.object, ensure_ascii=False)}
             Сообщение: {json.dumps(self.message, ensure_ascii=False)}
@@ -205,7 +205,6 @@ class SignalEvent(Event):
 
 
 class MySignalEvent(Event):
-
     message: dict
     msg: dict
     chat: Chat

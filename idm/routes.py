@@ -1,5 +1,5 @@
 from flask import Flask, redirect, request, render_template
-from .objects import Event, dp, DB
+from idm.objects import Event, dp, DB
 from vkapi import VkApi
 from hashlib import md5
 
@@ -149,9 +149,9 @@ def callback():
         return "Неверный ID дежурного"
     data = [d for d in dp.event_run(event)]
     for d in data:
-        if d != "ok":
+        if d != "ok" and not isinstance(d, dict):
             return "<ошибочка>" + json.dumps({"ошибка": d}, ensure_ascii=False, indent=2)
-    return "ok"
+    return json.dumps(data[0], ensure_ascii=False) if data else "ok"
 
 
 @app.errorhandler(Exception)
