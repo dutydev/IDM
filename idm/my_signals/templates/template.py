@@ -7,7 +7,7 @@ from idm.objects import MySignalEvent, dp
 
 def delete_template(name: str, templates: list) -> Tuple[list, bool]:
     for template in templates:
-        if template['name'] == name:
+        if template['name'].lower() == name:
             templates.remove(template)
             return templates, True
     return templates, False
