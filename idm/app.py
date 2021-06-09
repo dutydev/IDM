@@ -204,7 +204,7 @@ def api(method: str):
             else:
                 break
             i += 1
-        temp = {'name': request.form['new_name'],
+        temp = {'name': request.form['new_name'].lower(),
                 'frames': frames, 'speed': float(request.form['speed'])}
         for i in range(len(db.anims)):
             if db.anims[i]['name'] == name:
