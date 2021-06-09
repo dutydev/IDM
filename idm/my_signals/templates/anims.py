@@ -6,7 +6,7 @@ from .template import delete_template
 @dp.longpoll_event_register('+анимка')
 @dp.my_signal_event_register('+анимка')
 def anim_create(event: MySignalEvent) -> str:
-    name = ' '.join(event.args)
+    name = ' '.join(event.args).lower()
     if not name:
         event.msg_op(2, "❗ Не указано название")
         return "ok"
