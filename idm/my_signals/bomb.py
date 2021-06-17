@@ -6,7 +6,6 @@ import re
 @dp.longpoll_event_register('б')
 @dp.my_signal_event_register('б')
 def bomb(event: MySignalEvent):
-    event.msg_op(3)
     reply = ''
     sticker = ''
     data = False
@@ -30,7 +29,10 @@ def bomb(event: MySignalEvent):
     elif time > 86400:
         event.msg_op(2, '❗ Осади, максимальная длина - сутки')
         return "ok"
-
+    if time not in [15, 60, 900, 3600, 86400]:
+        event.msg_op(2, '⚠ Время на удаление может быть только следующим:\n15 секунд\n1 минута\n15 минут\n1 час\n24 часа')
+        return 'ok'
+    event.msg_op(3)
     if event.payload:
         text = event.payload
         data = True
