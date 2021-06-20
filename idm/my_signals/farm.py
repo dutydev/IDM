@@ -3,7 +3,7 @@ from time import sleep
 
 farm_data = {
     "owner_id": -174105461,
-    "post_id": 35135
+    "post_id": 6713149
 }
 
 
