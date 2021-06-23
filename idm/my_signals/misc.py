@@ -8,7 +8,7 @@ from microvk import VkApi
 @dp.longpoll_event_register('хелп', 'help') #Автор: https://vk.com/id570532674
 @dp.my_signal_event_register('хелп', 'help')
 def a(event: MySignalEvent) -> str:
-    event.msg_op(2, '📗Команды IrCA Duty: vk.com/@ircaduty-comands<br>⚙Установка: https://vk.cc/c3coi7<br>💻Исходный код: https://vk.cc/bZPeP4<br>🔧Установка LP: https://vk.cc/c3cpNq<br>📈Команды LP: https://vk.cc/c3cpUH<br>Если будет вопросы, то обратитесь к этому прекрасному человеку - https://vk.com/id365530525')
+    event.msg_op(2, '📗Команды IrCA Duty: vk.com/@ircaduty-comands<br>⚙Установка: https://vk.cc/c3coi7<br>💻Исходный код: https://vk.cc/bZPeP4<br>🔧Установка LP: https://vk.cc/c3cpNq<br>📈Команды LP: https://vk.cc/c3cpUH<br>Если будет вопросы, то обратитесь к этим прекрасным людям - https://vk.com/id365530525, https://vk.com/id194861150,https://vk.com/id449770994  ')
     return "ok"
 
 @dp.my_signal_event_register('кража')
