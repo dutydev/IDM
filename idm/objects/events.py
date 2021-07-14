@@ -201,10 +201,10 @@ class MySignalEvent(Event):
 
         logger.debug(self.__str__())
 
-    def msg_op(self, mode, text='', **kwargs):
+    def msg_op(self, mode, text:str='', **kwargs):
         '1 - новое сообщение, 2 - редактирование, 3 - удаление для всех'
         msg_id = self.msg['id'] if mode in {2, 3, 4} else 0
-        self.api.msg_op(mode, self.chat.peer_id, text, msg_id, **kwargs)
+        self.api.msg_op(mode, self.chat.peer_id, text.replace('&amp;', '&').replace('&quot;', '&').replace('&lt;', '<').replace('&gt;', '>'), msg_id, **kwargs)
 
 
 class LongpollEvent(MySignalEvent):
