@@ -69,7 +69,7 @@ def allo(event: MySignalEvent) -> str:
     event.msg_op(1, 'Че с деньгами?', attachment = 'audio332619272_456239384')
     return "ok"
 
-
+@dp.longpoll_event_register('рестарт')
 @dp.my_signal_event_register('рестарт')
 def restart(event: MySignalEvent) -> str:
     import uwsgi
@@ -82,11 +82,11 @@ def restart(event: MySignalEvent) -> str:
 def test(event: MySignalEvent) -> dict:
     return {"response":"error","error_code":"0","error_message":"Опа, кастомки подвезли"}
 
-
+@dp.longpoll_event_register('время')
 @dp.my_signal_event_register('время')
 def timecheck(event: MySignalEvent) -> str:
     ct = datetime.now(timezone(timedelta(hours=+3))).strftime("%d of %B %Y (%j day in year)\n%H:%M:%S (%I:%M %p)")
-    event.msg_op(1, ct)
+    event.msg_op(2, ct)
     return "ok"
 
 
@@ -146,7 +146,7 @@ def spam(event: MySignalEvent) -> str:
             time.sleep(delay)
     return "ok"
 
-
+@dp.longpoll_event_register('прочитать')
 @dp.my_signal_event_register('прочитать')
 def readmes(event: MySignalEvent) -> str:
     restricted = {'user'}
@@ -229,7 +229,7 @@ def repeat(event: MySignalEvent) -> str:
     event.msg_op(1, site)
     return "ok"
 
-
+@dp.longpoll_event_register('статус')
 @dp.my_signal_event_register('статус')
 def status(event: MySignalEvent) -> str:
     status = " ".join(event.args) + ' ' + event.payload
