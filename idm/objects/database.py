@@ -1,8 +1,9 @@
-# тут (да и не только тут) есть много странных костылей,
-# большинство из них предназначено для обратной совместимости
+# TODO: накинуть аннотaции, поправить че по стилю, DBgen (кожурки) нахуй, оставшиеся костыли убрать
 import os
-from os.path import join as pjoin
 import json
+import traceback
+
+from os.path import join as pjoin
 from typing import List
 
 from wtflog import warden
@@ -10,40 +11,34 @@ from wtflog import warden
 logger = warden.get_boy('База данных')
 
 get_dir = os.path.dirname
-path = pjoin(get_dir(get_dir(get_dir(__file__))), 'database')
-
+core_path = get_dir(get_dir(get_dir(__file__)))
+dir_path = pjoin(core_path, 'database')
 
 db_gen: "DB_general"
 
 
-def read(name: str) -> dict:
+def read(rel_path: str) -> dict:
     'Возвращает словарь из файла с указанным названием'
-    logger.debug(f'Открываю файл "{name}"')
-    with open(pjoin(path, f'{name}.json'), "r", encoding="utf-8") as file:
-        return json.loads(file.read())
-
-
-gen_raw = {
-    "owner_id": 0,
-    "host": "",
-    "installed": False,
-    "dc_auth": False
-}
-
-
-def create_general():
     try:
-        with open(pjoin(path, 'general.json'), "w", encoding="utf-8") as file:
-            file.write(json.dumps(gen_raw, ensure_ascii=False, indent=4))
-    except FileNotFoundError:
-        os.mkdir(path)
-        create_general()
+        path = pjoin(core_path, rel_path)
+        logger.debug(f'Reading "{path}"')
+        with open(path, "r", encoding="utf-8") as file:
+            return json.loads(file.read())
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        raise e
 
 
-try:
-    read('general')
-except FileNotFoundError:
-    create_general()
+def write(rel_path, data):
+    try:
+        path = pjoin(core_path, rel_path)
+        logger.debug(f'Writing to "{path}"')
+        with open(path, "w", encoding="utf-8") as file:
+            file.write(json.dumps(data, ensure_ascii=False, indent=4))
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        raise e
+
 
 
 class DB_defaults:
@@ -108,6 +103,10 @@ class DB_defaults:
         if not instance:
             instance = DB
         return {
+            "owner_id": instance.owner_id,
+            "host": instance.host,
+            "installed": instance.installed,
+            "dc_auth": instance.dc_auth,
             "access_token": instance.access_token,
             "me_token": instance.me_token,
             "secret": instance.secret,
@@ -123,8 +122,7 @@ class DB_defaults:
 
 
 class DB_general:
-    'БД с основной информацией'
-    general: dict = {}
+    'костыль, пока нет компа почистить в коде все упоминания'
 
     owner_id: int = 0
     host: str = ""
@@ -132,42 +130,36 @@ class DB_general:
     dc_auth: bool = False
 
     def __init__(self):
-        logger.debug('Инициализация основной БД')
-        self.general = read('general')
-        self.general['dc_auth'] = self.general.get('dc_auth', False)
-        self.__dict__.update(self.general)
+        self.__dict__.update(read('database.json'))
 
     @staticmethod
     def update_general():
-        'Обновляет экземпляр основной БД в файле database.py'
         global db_gen
         db_gen = DB_general()
 
     def set_user(self, user_id: int):
         self.owner_id = user_id
-        with open(pjoin(path, f'{user_id}.json'), "w", encoding="utf-8") as file:
-            file.write(json.dumps(
-                DB_defaults.load_user(), ensure_ascii=False, indent=4
-            ))
         self.save()
         self.update_general()
         return DB()
 
     def save(self) -> str:
-        'Сохранение основной БД'
-        logger.debug("Сохраняю основную базу данных")
-        for key in self.general:
-            self.general[key] = getattr(self, key)
-        with open(pjoin(path, 'general.json'), "w", encoding="utf-8") as file:
-            file.write(json.dumps(self.general, ensure_ascii=False, indent=4))
-        self.update_general()
-        return "ok"
+        db = DB()
+        db.owner_id = self.owner_id
+        db.host = self.host
+        db.installed = self.installed
+        db.dc_auth =self.dc_auth
+        return db.save()
 
 
 class DB:
-    'БД для конкретного пользователя'
+    'Класс, представляющий хранилище данных пользователя'
     gen: DB_general
 
+    owner_id: int = 0
+    host: str = ""
+    installed: bool = False
+    dc_auth: bool = False
     access_token: str = "Не установлен"
     me_token: str = "Не установлен"
     secret: str = ""
@@ -183,58 +175,38 @@ class DB:
     lp_settings = DB_defaults.lp_settings
 
     def __init__(self):
-        self.gen = db_gen
-        self.duty_id = int(db_gen.owner_id)
+        self.gen = DB_general()
+        self.duty_id = int(db_gen.owner_id)  # crap
         self.host = db_gen.host
         self.installed = db_gen.installed
         self.load_user()
 
     def load_user(self):
-        user_db = read(str(self.duty_id))
-        self.__dict__.update(user_db)
+        self.__dict__.update(read('database.json'))
 
     def save(self) -> str:
-        'Сохраняет БД пользователя в файл'
+        'Сохраняет данные пользователя в файл'
         logger.debug("Сохраняю базу данных")
-        with open(pjoin(path, f'{self.duty_id}.json'), "w", encoding="utf-8") as file:
-            file.write(json.dumps(
-                DB_defaults.load_user(self), ensure_ascii=False, indent=4
-            ))
+        write('database.json', DB_defaults.load_user(self))
         return "ok"
 
 
-def _update(data):
-    data['voices'] = []
-    for i, temp in enumerate(data['templates']):
-        data['templates'][i]['name'] = temp['name'].lower()
-        data['templates'][i]['cat'] = temp['cat'].lower()
-        if temp['attachments']:
-            if temp['attachments'][0].startswith('audio_message'):
-                data['voices'].append(temp)
-                data['templates'][i]['payload'] = None
-    for temp in data['templates']:
-        if temp['payload'] is None:
-            data['templates'].remove(temp)
-    for i, temp in enumerate(data['dyntemplates']):
-        data['dyntemplates'][i]['name'] = temp['name'].lower()
-    if 'dyntemplates' in data:
-        data['anims'] = data.pop('dyntemplates', [])
-    with open(pjoin(path, f'{db_gen.owner_id}.json'), "w", encoding="utf-8") as file:
-        file.write(json.dumps(data, ensure_ascii=False, indent=4))
+def _update():
+    # кто до сих пор не обновился с версии июля 2020 года - я не виноват
+    gen = read('database/general.json')
+    usr = read(f'database/{gen["owner_id"]}.json')
+    write('database.json', dict(gen, **usr))
 
 
-DB_general.update_general()  # инициализация основной БД при запуске скрипта
+try:
+    read('database.json')
+except FileNotFoundError:
+    write('database.json', DB_defaults.load_user())
+    try:
+        _update()
+    except Exception as e:
+        raise e
+        pass
 
-# форматирование старых жысонов под новый формат
-if db_gen.owner_id != 0:
-    data = read(db_gen.owner_id)
-    if 'dyntemplates' in data:
-        try:
-            _update(data)
-        except Exception:
-            pass
-    if 'lp_settings' not in data:
-        data['lp_settings'] = {
 
-        }
-    del(data)
+DB_general.update_general()  # crap
