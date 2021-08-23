@@ -204,8 +204,7 @@ except FileNotFoundError:
     write('database.json', DB_defaults.load_user())
     try:
         _update()
-    except Exception as e:
-        raise e
+    except Exception:
         pass
 
 
