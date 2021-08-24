@@ -5,5 +5,5 @@ database/*
 *.log*
 LP.py
 *.bat
-/database/general.json
+database.json
 pylama.ini

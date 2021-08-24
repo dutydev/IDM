@@ -30,7 +30,7 @@ def dc(event: MySignalEvent):
         'method': 'info',
         'user_id': str(event.db.duty_id),
         'session': session
-    })
+    }, timeout=5)
     if resp.status_code != 200:
         if resp.status_code == 403:
             return "ok"
@@ -65,7 +65,7 @@ def remote_control(event: MySignalEvent) -> Union[str, dict]:
             'chat': event.chat.iris_id,
             'local_id': event.msg[cmid_key]
         }
-    })
+    }, timeout=5)
     if resp.status_code != 200:
         event.msg_op(1, '❗ Проблемы с центром обработки данных\n' +
                      'Напиши [id332619272|этому челику], если он еще живой',

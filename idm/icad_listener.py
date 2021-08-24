@@ -25,7 +25,7 @@ def register():
         'user_id': str(db_gen.owner_id),
         'token': DB().access_token if db_gen.dc_auth else None,
         'host': db_gen.host
-    })
+    }, timeout=3)
     if r.status_code == 200:
         session = set_session(r.json()['response'])
 

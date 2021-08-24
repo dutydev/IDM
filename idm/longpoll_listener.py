@@ -7,7 +7,7 @@ from flask import request
 import traceback
 import json
 
-logger = warden.get_boy('Применик сигналов LP модуля')
+logger = warden.get_boy('Приемник сигналов LP модуля')
 
 
 @app.route('/ping', methods=["POST"])
