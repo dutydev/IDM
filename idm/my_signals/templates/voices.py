@@ -4,7 +4,7 @@ import requests
 from html import escape
 
 from idm.objects import MySignalEvent, dp
-from .template import delete_template
+from .template import delete_template, get_template_list
 
 
 @dp.longpoll_event_register('+гс')
@@ -58,30 +58,13 @@ def voice_create(event: MySignalEvent) -> str:
 @dp.longpoll_event_register('гсы')
 @dp.my_signal_event_register('гсы')
 def template_list(event: MySignalEvent) -> str:
-    category = ' '.join(event.args)
-    voices = event.db.voices
-    if category == 'все':
-        message = '📃 Список всех голосовых сообщений:'
-        for i, v in enumerate(voices, 1):
-            message += f"\n{i}. {v['name']} | {v['cat']}"
-    elif not category:
-        cats = {}
-        for v in voices:
-            cats[v['cat']] = cats.get(v['cat'], 0) + 1
-        message = "📚 Категории голосовых сообщений:"
-        for cat in cats:
-            message += f"\n-- {cat} ({cats[cat]})"
-    else:
-        message = f'📖 Голосовые сообщения категории "{category}":'
-        for v in voices:
-            if v['cat'] == category:
-                message += f"\n-- {v['name']}"
-    if '\n' not in message:
-        if voices == []:
-            message = '👀 Нет ни одного голосового сообщения... Для создания используй команду "+гс"'  # noqa
-        else:
-            message = '⚠️ Голосовые сообщения по указанному запросу не найдены'
-    event.msg_op(2, message)
+    message = get_template_list(event, event.db.voices)
+    event.msg_op(2, message.format(
+        name_genitive='голосовых сообщений',
+        name_accusative='голосовые сообщения',
+        name_accusative_cap='Голосовые сообщения',
+        no_templates='👀 Нет ни одного голосового сообщения... Для создания используй команду "+гс"'
+    ))
     return "ok"
 
 

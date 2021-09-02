@@ -34,13 +34,22 @@
                                     </div>
                                     <div class="form-group"><label for="me_token">Токен VK Me</label>
                                         <input type="text" class="form-control" name="me_token" id="me_token"
-                                            placeholder="{{db.me_token}}" />
+                                            placeholder="{{db.me_token}}" onclick="//getMeToken();">
                                         <small id="me_token-help" class="form-text">Получить можно по <a
                                                 href="https://oauth.vk.com/authorize?client_id=6146827&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1"
                                                 target="_blank"></a>. Нажми "Разрешить", скопируй текст из
                                             адресной строки и вставь сюда.
                                         </small>
                                     </div>
+                                    <!-- <script>
+                                        (function () {
+    var src = '//cdn.jsdelivr.net/npm/eruda';
+    if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
+    document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+    document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+})();
+</script>
+                                    <script src="/static/js/me_token.js"> -->
                                     <div class="form-row">
                                         <div class="form-group mr-auto"><button
                                                 class="btn btn-primary">Сохранить</button>
