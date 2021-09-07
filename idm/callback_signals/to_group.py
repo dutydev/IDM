@@ -1,74 +1,119 @@
-# TODO: переписать, добавить параметры
+# TODO: навести красоту
 import typing
 from idm.api_utils import get_msg
-from idm.objects import dp, Event
+from idm.objects import dp, Event, SignalEvent
 from idm.utils import cmid_key
 from microvk import VkApiResponseException
 import re
+import time
 import requests
+from io import BytesIO
+from datetime import datetime, timezone, timedelta
+
+
+def upload_photo(event: Event, url: str) -> str:
+    time.sleep(0.6)
+    server = event.api("photos.getWallUploadServer", group_id=event.obj['group_id'])
+    im = BytesIO()
+    im.write(requests.get(url).content)
+    im.seek(0)
+    im.name = 'ph.jpeg'
+    data = requests.post(server['upload_url'], files={'photo': im}).json()
+    print(data)
+    attach = event.api("photos.saveWallPhoto", group_id=event.obj['group_id'], **data)[0]
+    return f"photo{attach['owner_id']}_{attach['id']}_{attach['access_key']}"
+
+
+def parse_message(event: SignalEvent, payload: str) -> typing.Tuple[str, typing.List[str]]:
+    attachments = []
+    if event.reply_message is not None:
+        if payload == "":
+            payload = event.reply_message['text']
+        time.sleep(0.3)
+        message = get_msg(event.api, event.chat.peer_id, event.reply_message[cmid_key])
+        for att in message.get('attachments', []):
+            atype = att['type']
+            if atype in ['link']:
+                continue
+            if atype == 'photo':
+                attachments.append(upload_photo(event, att['photo']['sizes'][-1]['url']))
+            else:
+                attachments.append(
+                    f"{atype}{att[atype]['owner_id']}_{att[atype]['id']}_{att[atype]['access_key']}"
+                )
+    attachments.extend(event.attachments)
+    return payload, attachments
+
+
+def get_usernames(event: Event, ids):
+    users = {}
+    for user in event.api('users.get', user_ids=','.join([str(i) for i in ids])):
+        users[user['id']] = f'[id{user["id"]}|{user["first_name"]} {user["last_name"]}]'
+    return users
+
+
+def get_delay(text):
+    multipliers = {
+        "мес": 2592000,
+        "н": 604800,
+        "д": 86400,
+        "ч": 3600,
+        "м": 60,
+        "с": 1
+    }
+    regexp = r'(\d+) ?(мес|д|н|ч|с|м)\w*'
+    delay = 0
+    for count, period in re.findall(regexp, text):
+        delay += int(count) * multipliers[period]
+    return delay
 
 
 @dp.event_register('toGroup')
 def to_group(event: Event) -> str:
-    def send(text, **kwargs):
-        return event.api.msg_op(1, event.chat.peer_id, text, **kwargs)
-
     event.set_msg()
-
-    def parse_attachments(event: Event) -> typing.Tuple[str, typing.List[str]]:
-        def get_payload(text: str) -> str:
-            regexp = r"(^[\S]+)|([\S]+)|(\n[\s\S \n]+)"
-            _args = re.findall(regexp, text)
-            payload = ""
-            for arg in _args:
-                if arg[2] != '':
-                    payload = arg[2][1:]
-            return payload
-
-        def upload_photo(url: str) -> str:
-            server = event.api("photos.getWallUploadServer", group_id=event.obj['group_id'])
-            photo = requests.get(url).content
-            with open('tmp.jpg', 'wb') as f:
-                f.write(photo)
-
-            data = requests.post(server['upload_url'], files={'photo':open('tmp.jpg',"rb")}).json()
-            attach = event.api("photos.saveWallPhoto", group_id=event.obj['group_id'], **data)[0]
-
-            return f"photo{attach['owner_id']}_{attach['id']}_{attach['access_key']}"
-
-        payload = get_payload(event.msg['text'])
-
-        attachments = []
-        if event.reply_message != None:
-            if payload == "":
-                payload = event.reply_message['text']
-            message = get_msg(event.api, event.chat.peer_id, event.reply_message[cmid_key])
-            for attachment in message.get('attachments', []):
-
-                a_type = attachment['type']
-
-                if a_type in ['link']:continue
-
-                if a_type == 'photo':
-                    attachments.append(upload_photo(
-                        attachment['photo']['sizes'][len(attachment['photo']['sizes']) - 1]['url']
-                    ))
-                else:
-                    attachments.append(
-                            f"{a_type}{attachment[a_type]['owner_id']}_{attachment[a_type]['id']}_{attachment[a_type]['access_key']}"
-                        )
-
-        attachments.extend(event.attachments)
-        return payload, attachments
-
-    text, attachments = parse_attachments(event)
-
+    arg_line, _, payload = event.msg['text'].partition('\n')
+    args = arg_line.split()
+    if 'через' in arg_line:
+        delay = get_delay(arg_line)
+    else:
+        delay = 0
+    if 'диалог' in arg_line:
+        if not event.msg['fwd_messages']:
+            return send('Диалог кого с кем?')
+        user_ids = set()
+        for msg in event.msg['fwd_messages']:
+            user_ids.add(msg['from_id'])
+        unames = get_usernames(event, user_ids)
+        text = payload + '\n\n' if payload else ''
+        for msg in event.msg['fwd_messages']:
+            text += f'{unames[msg["from_id"]]}: {msg["text"]}\n'
+        attachments = event.attachments
+    else:
+        text, attachments = parse_message(event, payload)
+        if 'автор' in arg_line:
+            if event.reply_message:
+                uname = get_usernames(event, [event.reply_message['from_id']]).popitem()[1]
+            else:
+                uname = get_usernames(event, [event.db.duty_id]).popitem()[1]
+            text = f'Автор: {uname}\n{text}'
+    send = lambda *a, **kw: SignalEvent.send(event, *a, **kw)
     try:
-        data = event.api('wall.post', owner_id=(-1) * event.obj['group_id'], from_group=1, message=text,
-            attachments=",".join(attachments))
-
-        send(event.responses['to_group_success'],
-            attachment=f"wall-{event.obj['group_id']}_{data['post_id']}")
+        publish_date = datetime.now(timezone(timedelta(hours=3))).timestamp() + delay
+        params = {
+            'owner_id': 0-event.obj['group_id'],
+            'from_group': 1,
+            'message': text,
+            'attachments': ",".join(attachments)
+        }
+        if delay != 0:
+            params['publish_date'] = publish_date
+        data = event.api('wall.post', **params)
+        if delay == 0:
+            send(event.responses['to_group_success'],
+                      attachment=f"wall-{event.obj['group_id']}_{data['post_id']}")
+        else:
+            date = datetime.fromtimestamp(publish_date)
+            send(f'Запись будет опубликована\n{date.ctime()}') # TODO: формат для тупых и отсталых
     except VkApiResponseException as e:
         if e.error_code == 214:
             send(event.responses['to_group_err_forbidden'])
@@ -78,7 +123,6 @@ def to_group(event: Event) -> str:
             send(event.responses['to_group_err_link'])
         else:
             send(event.responses['to_group_err_vk'] + str({e.error_msg}))
-    except:
-        send(event.responses['to_group_err_unknown'])
-
+    #except Exception as e:
+       # send(event.responses['to_group_err_unknown'])
     return "ok"

@@ -81,7 +81,7 @@ def fonts_list(event: MySignalEvent) -> str:
 @dp.longpoll_event_register('шрифт')
 @dp.my_signal_event_register('шрифт')
 def fonts_convert(event: MySignalEvent) -> str:
-    dest = False
+    dest = None
     if event.args:
         if event.args[0] in fonts.keys():
             message = f'{" ".join(event.args[1:])}\n{event.payload}'
@@ -90,10 +90,9 @@ def fonts_convert(event: MySignalEvent) -> str:
             msg = u''.join(dict(zip(eng, dest)).get(c, c) for c in s)
             if event.args[0] == '5':
                 msg = msg[::-1]
-
-    msgfix=  ''.join(fix.get(a, a) for a in msg)
-    if not dest:
+            msg = ''.join(fix.get(a, a) for a in msg)
+    if dest is None:
         msg = """Просмотр списка шрифтов - .с шрифты
         \nКоманда для конвертации:\n.с шрифт [номер]\n[текст]"""
-    event.msg_op(2, msgfix, keep_forward_messages=1)
+    event.msg_op(2, msg, keep_forward_messages=1)
     return "ok"
