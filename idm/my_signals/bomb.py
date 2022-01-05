@@ -29,9 +29,8 @@ def bomb(event: MySignalEvent):
     elif time > 86400:
         event.msg_op(2, '❗ Осади, максимальная длина - сутки')
         return "ok"
-    if time not in [15, 60, 900, 3600, 86400]:
-        event.msg_op(2, '⚠ Время на удаление может быть только следующим:\n15 секунд\n1 минута\n15 минут\n1 час\n24 часа')
-        return 'ok'
+    t = time
+    time = 15 if t <= 15 else 60 if t <= 60 else 900 if t <= 900 else 3600 if t <= 3600 else 86400
     event.msg_op(3)
     if event.payload:
         text = event.payload
