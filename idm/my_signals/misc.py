@@ -1,9 +1,9 @@
-# TODO: о господи что за дерьмо
+# TODO: навести марафет
 import io
-import json
 import re
-import requests
+import json
 import time
+import requests
 from datetime import datetime, timezone, timedelta
 
 from idm.utils import find_mention_by_event
@@ -11,7 +11,8 @@ from idm.api_utils import get_last_th_msgs
 from idm.objects import dp, MySignalEvent, db_gen
 
 
-@dp.longpoll_event_register('хелп', 'help')  # Автор: https://vk.com/id570532674, Доработал: https://vk.com/id194861150
+# Автор: https://vk.com/id570532674, Доработал: https://vk.com/id194861150
+@dp.longpoll_event_register('хелп', 'help')
 @dp.my_signal_event_register('хелп', 'help')
 def a(event: MySignalEvent) -> str:
     event.msg_op(2, f''' 📗Команды IrCA Duty: vk.com/@ircaduty-comands
@@ -298,7 +299,8 @@ def zh(event: MySignalEvent) -> str:
     return "ok"
 
 
-@dp.longpoll_event_register('стики')    #Свой вклад в развитие ирки сделали vk.com/id266287518 and vk.com/id197786896
+#Вклад vk.com/id266287518 и vk.com/id197786896
+@dp.longpoll_event_register('стики')
 @dp.my_signal_event_register('стики')
 def stick(event: MySignalEvent):
     uid = find_mention_by_event(event)
