@@ -127,7 +127,8 @@ def get_plural(number: Union[int, float], one: str, few: str,
         else:
             number = int(number)
     if number % 10 in {2, 3, 4}:
-        return few
+        if not 10 < number < 20:
+            return few
     number = str(number)
     if number[-1] == '1':
         return one

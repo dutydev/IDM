@@ -1,14 +1,14 @@
 # IrCA Duty - дежурный Iris Chat Manager
 
 ## Содержание
-1. [Как установить](https://github.com/Elchinchel/IDM-SC-mod#Как-установить)
-2. [Как обновить](https://github.com/Elchinchel/IDM-SC-mod#Как-обновить)
-3. [Сигналы](https://github.com/Elchinchel/IDM-SC-mod#Сигналы)
-4. [Благодарности](https://github.com/Elchinchel/IDM-SC-mod#Благодарности)
-
-## Как установить
+1. [Как установить](./README.md#Как-установить)
+2. [Как обновить](./README.md#Как-обновить)
+3. [Сигналы](./README.md#Сигналы)
+4. [Благодарности](./README.md#Благодарности)
 
 ### [Здесь](https://vk.com/video332619272_456239231) есть видео. Если что, [этот прекрасный человек](https://vk.com/id365530525) может помочь.
+
+## Как установить
 
 Для установки мы будем использовать сайт [pythonanywhere.com](https://www.eu.pythonanywhere.com/)
 
@@ -39,7 +39,7 @@ git clone https://github.com/elchinchel/ICAD
 
 Далее переходим во вкладку *Web* и нажимаем на кнопку *Reload* `имя аккаунта`.eu.pythonanywhere.com
 
-Переходим по ссылке `имя аккаунта`.eu.pythonanywhere.com (ссылка над кнопкой перезагрузки)
+Переходим по ссылке `имяаккаунта`.eu.pythonanywhere.com (ссылка над кнопкой перезагрузки)
 
 [![](https://sun9-58.userapi.com/BQNI2zd65Erkq0AU9DlMfohvqJ8id8rFZ0yx3A/UVdo0UBPYSo.jpg)](https://sun9-58.userapi.com/BQNI2zd65Erkq0AU9DlMfohvqJ8id8rFZ0yx3A/UVdo0UBPYSo.jpg)
 
@@ -58,29 +58,29 @@ git clone https://github.com/elchinchel/ICAD
 ## Как обновить
 *".c обновить"*
 
-Если такого сигнала нет, то вводим следующие команды и 
-**перезагружаем сайт на вкладке *Web***
-``` bash
-cp -rf ICAD/database database
-rm -rf ICAD
-git clone https://github.com/elchinchel/ICAD
-cp -rf database ICAD
-rm -rf database
-```
-
-
 ## Команды
-Команды можно найти [тут](http://vk.com/@ircaduty-commands) (потом переделаю в нормальный вид, пока так)
+Команды можно найти [тут](http://vk.com/@ircaduty-commands)
 
 ## Благодарности
+
+Спасибо за поддержку в сложные времена, public relations и просто всё хорошее:
+
+> [Мария Громова](https://vk.com/id549315693)
 
 Спасибо за исходный код:
 
 > Юрий Юшманов [VK](https://vk.com/id460908267) | [GitHub](https://github.com/lordralinc)
 
-
 Спасибо за идеи и помощь в тестировании:
 
-> [Аня Фельченко](https://vk.com/id324036713)
->
 > [Степа Та](https://vk.com/id365530525)
+>
+> [Аня Фельченко](https://vk.com/id324036713)
+
+Спасибо за вклад в кодовую базу:
+
+> [Алексей Кузнецов](https://vk.com/id194861150)
+>
+> [Альнур Ахмадуллин](https://vk.com/id197786896)
+>
+> [Серёжа Сафронов](https://vk.com/id266287518)
