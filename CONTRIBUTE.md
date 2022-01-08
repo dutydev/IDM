@@ -54,7 +54,6 @@ git clone ЗдесьСсылкаНаТвойРепозиторий ICAD
     ```
 
 2. Зайди на [страницу создания токенов в GitHub](https://github.com/settings/tokens)
-image
 
 3. Создай токен (не забудь отметить чекбокс **repo** в списке разрешений)
 ![](https://sun9-68.userapi.com/impg/2UnynhTTSHZYqpFzyTMKbcRzXhFhuWuMBVSfiw/3zm4OkS8q8s.jpg?size=722x138&quality=96&sign=4c0a9657730d3c080dd2360f1275d091&type=album)
