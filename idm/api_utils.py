@@ -31,9 +31,10 @@ def set_online_privacy(db, mode = 'only_me'):
 
 def get_msg(vk: VkApi, peer_id: int, local_id: int) -> Union[dict, None]:
     try:
-        return vk("messages.getByConversationMessageId",
-                  conversation_message_ids=local_id,
-                  peer_id=peer_id)['items'][0]
+        return vk(
+            "messages.getByConversationMessageId",
+            conversation_message_ids=local_id, peer_id=peer_id
+        )['items'][0]
     except (KeyError, IndexError):
         return None
 
