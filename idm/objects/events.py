@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import List
+from typing import Dict, List
 
 from flask import Request
 
@@ -205,6 +205,15 @@ class MySignalEvent(Event):
         '1 - новое сообщение, 2 - редактирование, 3 - удаление для всех'
         msg_id = self.msg['id'] if mode in {2, 3, 4} else 0
         self.api.msg_op(mode, self.chat.peer_id, text.replace('&amp;', '&').replace('&quot;', '&').replace('&lt;', '<').replace('&gt;', '>'), msg_id, **kwargs)
+
+    def send(self, message: str, **params) -> int:
+        return self.msg_op(1, message, **params)
+
+    def edit(self, message: str, **params) -> int:
+        return self.msg_op(2, message, **params)
+
+    def delete(self) -> Dict[str, int]:
+        return self.msg_op(3)
 
 
 class LongpollEvent(MySignalEvent):
