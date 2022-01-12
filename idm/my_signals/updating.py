@@ -73,4 +73,10 @@ if fail:
     edit('❌ Помянем (скинь update.log из рабочей директории)')
 else:
     edit('%s')
+def get_last_version():
+    out = subprocess.run("git log origin/master-beta -1 --pretty=format:%%B",
+                         shell=True, cwd=os.getcwd(), capture_output=True).stdout
+    return out.decode('utf-8').splitlines()[0]
+with open(os.path.join(os.getcwd(), "idm", "objects", "_version.py"), 'w', encoding="utf-8") as file:
+    file.write(f"__version__ = '{get_last_version()}'\\n")
     """ % (token, message_id, peer_id, msg)

@@ -1,4 +1,7 @@
-__version__ = '1.4.7 beta'
+try:
+    from ._version import __version__
+except ImportError:
+    __version__ = '__blank__'
 
 from .database import DB, DB_general, db_gen
 
