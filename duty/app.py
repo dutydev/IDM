@@ -247,11 +247,12 @@ def admin():
     else:
         username = f"{users[0]['first_name']} {users[0]['last_name']}"
 
-    db.access_token = get_mask(db.access_token)
-    db.me_token = get_mask(db.me_token)
+    access_token = get_mask(db.access_token)
+    me_token = get_mask(db.me_token)
 
-    return render_template('pages/admin.html', db=db,
-                           users=users, warn=warning, username=username)
+    return render_template('pages/admin.html', db=db, access_token=access_token,
+                           users=users, warn=warning, username=username,
+                           me_token=me_token)
 
 
 @app.route('/login')

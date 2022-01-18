@@ -25,7 +25,7 @@
                                 <form action="/api/edit_current_user" method="post">
                                     <div class="form-group"><label for="access_token">Основной токен VK</label><input
                                             type="text" class="form-control" name="access_token" id="access_token"
-                                            placeholder="{{db.access_token}}">
+                                            placeholder="{{access_token}}">
                                         <small id="access_token-help" class="form-text">Получить можно по <a
                                                 href="https://oauth.vk.com/authorize?client_id=2685278&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1"
                                                 target="_blank">этой ссылке</a>. Нажми "Разрешить", скопируй текст из
@@ -34,7 +34,7 @@
                                     </div>
                                     <div class="form-group"><label for="me_token">Токен VK Me</label>
                                         <input type="text" class="form-control" name="me_token" id="me_token"
-                                            placeholder="{{db.me_token}}" onclick="//getMeToken();">
+                                            placeholder="{{me_token}}" onclick="//getMeToken();">
                                         <small id="me_token-help" class="form-text">Получить можно по <a
                                                 href="https://oauth.vk.com/authorize?client_id=6146827&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1"
                                                 target="_blank"></a>. Нажми "Разрешить", скопируй текст из
