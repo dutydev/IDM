@@ -1,4 +1,4 @@
-from idm import app
+from duty import app
 
 if __name__ == "__main__":
     import sys

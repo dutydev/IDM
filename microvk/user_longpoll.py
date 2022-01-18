@@ -2,8 +2,8 @@ import requests
 from . import VkApi
 from datetime import datetime
 
-from wtflog import warden
-logger = warden.get_boy('VK LongPoll')
+from logger import get_writer
+logger = get_writer('VK LongPoll')
 
 class LP():
     key: str

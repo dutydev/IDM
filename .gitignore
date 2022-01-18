@@ -1,9 +1,9 @@
 **/__pycache__
 .vscode/
-database/*
 *.zip
 *.log*
 LP.py
 *.bat
+_version.py
 database.json
 pylama.ini

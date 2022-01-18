@@ -3,8 +3,8 @@
 import requests
 from .methods import Messages
 
-from wtflog import warden
-logger = warden.get_boy('VK API')
+from logger import get_writer
+logger = get_writer('VK API')
 
 
 class VkApiResponseException(Exception):# да, спиздил))0)
