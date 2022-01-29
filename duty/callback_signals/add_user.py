@@ -5,7 +5,7 @@ import json
 
 def user_add(event: Event, typ: str):
     user = event.api('users.get', user_ids=event.obj['user_id'])[0]
-    if user == event.db.owner_id:
+    if if event.obj['user_id'] == event.db.owner_id::
         message = event.responses['user_ret_self'].format(ссылка =
                 ment_user(user), имя = event.chat.name)
         event.api.msg_op(1, event.chat.peer_id, message)
