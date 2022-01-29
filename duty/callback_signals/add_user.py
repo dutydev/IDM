@@ -5,6 +5,9 @@ import json
 
 def user_add(event: Event, typ: str):
     user = event.api('users.get', user_ids=event.obj['user_id'])[0]
+    if user == event.api('users.get', user_ids=event.db.owner_id)[0]:
+        event.api.msg_op(1, event.chat.peer_id, 'А чё меня возвращать если я тут?')
+        return 'ok'
     message_id = event.api.msg_op(1, event.chat.peer_id,
         event.responses[typ].format(ссылка = ment_user(user), имя = event.chat.name))
 
