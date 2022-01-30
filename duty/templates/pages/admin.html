@@ -247,6 +247,15 @@
                                                     значение:</small>
                                                 <p>{{db.responses['user_ret_success']}}</p>
                                             </div>
+                                            <div class="form-group"><label for="user_ret_self" style="color: #d89999;">Возврат дежуного</label>
+                                                <small id="user_ret_success-help" class="form-text text-muted">Отправляется, если пытаться добавить дежурного
+                                                    ({ссылка} - имя и фамилия пользователя, {имя} - название чата)
+                                                </small>
+                                                <input type="text" class="form-control" name="user_ret_self" id="user_ret_self">
+                                                <small id="user_ret_self" class="form-text text-muted">Текущее
+                                                    значение:</small>
+                                                <p>{{db.responses['user_ret_self']}}</p>
+                                            </div>
                                             <div class="form-group"><label for="user_ret_err_no_access"
                                                     style="color: #d89999;">Нет доступа</label>
                                                 <small id="user_ret_err_no_access-help"
