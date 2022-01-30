@@ -35,7 +35,7 @@ def format_response(text: str, **values):
                 f'{{Ошибка! Не существует переменной "{var_name}", '
                 'ВНИМАТЕЛЬНО проверь название}'
             )
-        text = text.replace('{'+var_name+'}', values[lowcase])
+        text = text.replace('{'+var_name+'}', str(values[lowcase]))
     return text
 
 
