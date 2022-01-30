@@ -1,5 +1,5 @@
 from duty.objects import dp, Event, Chat
-from duty.utils import cmid_key
+from duty.utils import cmid_key, format_response
 
 
 @dp.event_register('bindChat')
@@ -22,6 +22,5 @@ def bind_chat(event: Event) -> str:
     }
     event.db.chats.update({event.obj['chat']: chat_raw})
     event.chat = Chat(chat_raw, event.obj['chat'])
-    event.api.msg_op(1, event.chat.peer_id,
-                     event.responses['chat_bind'].format(имя=event.chat.name))
+    event.send(format_response(event.responses['chat_bind'], имя=event.chat.name))
     return "ok"

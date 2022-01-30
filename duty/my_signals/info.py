@@ -1,5 +1,5 @@
-from duty.objects import dp, MySignalEvent, SignalEvent, __version__
-from duty.utils import ment_user
+from duty.objects import dp, MySignalEvent, __version__
+from duty.utils import ment_user, format_response
 from .updating import get_last_version
 
 
@@ -13,7 +13,7 @@ def info(event: MySignalEvent) -> str:
         if changes != '':
             update_info += 'Что нового:\n' + changes + '\n\n'
     owner = event.api('users.get', user_ids=event.db.owner_id)[0]
-    message = event.responses['info_myself'].format(
+    message = format_response(event.responses['info_myself'], 
         чаты=len(event.db.chats.keys()),
         владелец=ment_user(owner),
         ид=event.chat.iris_id,

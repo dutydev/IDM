@@ -39,6 +39,14 @@ def write(rel_path, data):
         raise e
 
 
+class _Responses(dict):
+    def __getitem__(self, __k):
+        try:
+            return super().__getitem__(__k)
+        except KeyError:
+            return _StandardDefaults.responses.__getitem__(__k)
+
+
 class __UserDefinedDefaults:
     '''
     запихивай сюда дефолтные значения для своих атрибутов класса БД
@@ -51,7 +59,7 @@ class __UserDefinedDefaults:
     '''
 
 
-class __StandardDefaults(__UserDefinedDefaults):
+class _StandardDefaults(__UserDefinedDefaults):
     # да, я знаю, что так делать не правильно, но мне похуй, если честно
     owner_id: int = 0
     host: str = ""
@@ -77,7 +85,7 @@ class __StandardDefaults(__UserDefinedDefaults):
         "key": ""
     }
 
-    responses: dict = {
+    responses: _Responses = {
         "del_self": "&#13;",
         "del_process": "УДАЛЯЮ ЩАЩАЩ ПАДАЖЖЫ",
         "del_success": "✅ *Произошло удаление*",
@@ -123,19 +131,20 @@ class __StandardDefaults(__UserDefinedDefaults):
     }
 
 
-class DB(__StandardDefaults):
+class DB(_StandardDefaults):
     'здесь исключительно функционал, значения добавляй в __UserDefinedDefaults'
 
     def __init__(self):
         _global_data.update(read('database.json'))
+        _global_data['responses'] = _Responses(_global_data['responses'])
 
     def __getattribute__(self, __name: str) -> Any:
         if __name in _global_data:
             return _global_data[__name]
         obj = object.__getattribute__(self, __name)
-        if (obj_type := type(obj)) in {list, dict, set}:
+        if isinstance(obj, (list, dict, set)):
             obj = obj.copy()
-        elif not (obj_type in {str, int, bool, tuple, float} or obj is None):
+        elif not (isinstance(obj, (str, int, bool, tuple, float)) or obj is None):
             return obj
         _global_data[__name] = obj
         return _global_data[__name]

@@ -1,4 +1,5 @@
 from duty.objects import dp, SignalEvent
+from duty.utils import format_response
 from datetime import datetime
 
 
@@ -10,5 +11,7 @@ def ping(event: SignalEvent) -> str:
     r_type = ('ПОНГ' if event.command == "пинг" else "ПАУ" if event.command == "пиу"
     else "ТОК" if event.command == "тик" else "КОНГ")
 
-    event.send(event.responses['ping_duty'].format(время = delta, ответ = r_type))
+    event.send(format_response(
+        event.responses['ping_duty'], время=delta, ответ=r_type
+    ))
     return "ok"

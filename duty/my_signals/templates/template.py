@@ -1,7 +1,7 @@
 import re
 from typing import Tuple
 
-from duty.utils import att_parse
+from duty.utils import att_parse, format_response
 from duty.objects import MySignalEvent, dp
 
 
@@ -118,7 +118,7 @@ def template_create(event: MySignalEvent) -> str:
 @dp.my_signal_event_register('шабы')
 def template_list(event: MySignalEvent) -> str:
     message = get_template_list(event, event.db.templates)
-    event.msg_op(2, message.format(
+    event.msg_op(2, format_response(message, 
         name_genitive='шаблонов',
         name_accusative='шаблоны',
         name_accusative_cap='Шаблоны',
