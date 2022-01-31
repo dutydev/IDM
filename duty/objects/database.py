@@ -136,7 +136,7 @@ class DB(_StandardDefaults):
 
     def __init__(self):
         _global_data.update(read('database.json'))
-        _global_data['responses'] = _Responses(_global_data['responses'])
+        _global_data['responses'] = _Responses(_global_data.get('responses', {}))
 
     def __getattribute__(self, __name: str) -> Any:
         if __name in _global_data:
