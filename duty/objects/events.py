@@ -227,11 +227,11 @@ class MySignalEvent(Event):
         return self.msg_op(1, message, **params)
 
     def edit(self, message: str = '', **params) -> int:
-        'Редактирование сообщения-события (если это MySignalEvent)'
+        'Редактирование сообщения-события'
         return self.msg_op(2, message, **params)
 
     def delete(self) -> Dict[str, int]:
-        'Удаление сообщения-события (если это MySignalEvent)'
+        'Удаление сообщения-события'
         return self.msg_op(3)
 
 
