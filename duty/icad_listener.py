@@ -51,15 +51,11 @@ class error:
 
 @app.route('/remote', methods=["POST"])
 def handle_rc():
-    if session is None:
-        return error.json('HostTroubles')
-
     data = json.loads(request.data)
-
     if data['user_id'] not in db.trusted_users:
         return error.json('NotTrusted')
-    if data['session'] != session:
-        return error.json('WrongSession')
+    if data['secret'] != db.secret:
+        return error.json('WrongSecret')
     if data['chat'] not in db.chats:
         return error.json('NotBinded')
 
