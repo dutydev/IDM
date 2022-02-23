@@ -34,7 +34,7 @@ def reg_dc(event: MySignalEvent):
     protocol = 'https' if 'pythonanywhere' in request.host else 'http'
     VkApi(db.access_token).msg_op(1, group_dc, f'+cod {db.secret} {protocol}://{request.host}/')
     time.sleep(0.5)
-    event.msg_op(2, f'Запрос отправлен. Иди проверяй.')
+    event.msg_op(2, f'🆗 Запрос отправлен. Иди проверяй.')
     return "ok"
 
 
@@ -49,7 +49,7 @@ def dc(event: MySignalEvent):
                      disable_mentions=1)
         return "ok"
     users = resp.json()['count']
-    event.msg_op(2, f'Зарегистрировано {users} пользовател{get_plural(users, "ь", "я", "ей")}')
+    event.msg_op(2, f'👥 Зарегистрировано {users} пользовател{get_plural(users, "ь", "я", "ей")}')
     return 'ok'
 
 
@@ -70,7 +70,7 @@ def check(event: MySignalEvent):
         event.msg_op(2, msg)
         return "ok"
     else:
-        msg = f'[id{uid}|Пользователь] {"" if r["is_registered"] == 1 else "не"} зарегестрирован.'
+        msg = f'{"🥑" if r["is_registered"] == 1 else "🗿"} [id{uid}|Пользователь] {"" if r["is_registered"] == 1 else "не"} зарегестрирован.'
         event.msg_op(2, msg)
         return "ok"
 
