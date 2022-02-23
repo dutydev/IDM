@@ -53,6 +53,28 @@ def dc(event: MySignalEvent):
     return 'ok'
 
 
+@dp.longpoll_event_register('чек')
+@dp.my_signal_event_register('чек')
+def check(event: MySignalEvent):
+    uid = find_mention_by_event(event)
+    resp = requests.get(DC + f'reg/{uid}', timeout=10)
+    if resp.status_code != 200:
+        event.msg_op(1, '❗ Проблемы с центром обработки данных\n' +
+        'Напиши [id230192963|этому челику], если он еще живой',
+        disable_mentions = 1)
+        return "ok"
+
+    r = resp.json()
+    if r['status'] == 'error':
+        msg = r['error']
+        event.msg_op(2, msg)
+        return "ok"
+    else:
+        msg = f'[id{uid}|Пользователь] {"" if r["is_registered"] == 1 else "не"} зарегестрирован.'
+        event.msg_op(2, msg)
+        return "ok"
+
+
 @dp.longpoll_event_register('унапиши', 'у')
 @dp.my_signal_event_register('унапиши', 'у')
 def remote_control(event: MySignalEvent) -> Union[str, dict]:
