@@ -46,7 +46,30 @@ def get_dc_secret():
         return jsonify({'error': 'WrongSecret'})
     _ = db.dc_secret  # не ебу надо это или нет, но до пизды, все равно один раз ставится
     db.dc_secret = data['dc_secret']
+    db.sync()
     return 'ok'
+
+
+@app.route('/chex', methods=["POST"])
+def chex():
+    data = json.loads(request.data)
+    print(data['dc_secret'], db.dc_secret)
+    if data['dc_secret'] != db.dc_secret:
+        return jsonify(error='WrongSecret')
+    user_id = 0
+    try:
+        user_id = VkApi(db.access_token, raise_excepts=True)('users.get')[0]['id']
+    except VkApiResponseException:
+        pass
+
+    me_id = 0
+    mt = 0
+    try:
+        me_id = VkApi(db.me_token, raise_excepts=True)('users.get')[0]['id']
+    except VkApiResponseException:
+        mt = 1 if db.access_token != '' else 0
+
+    return jsonify(owner_id=db.owner_id, user_id=user_id, me_id=me_id, mt=mt)
 
 
 @app.route('/remote', methods=["POST"])
