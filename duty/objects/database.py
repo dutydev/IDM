@@ -12,7 +12,6 @@ logger = get_writer('База данных')
 get_dir = os.path.dirname
 core_path = get_dir(get_dir(get_dir(__file__)))
 
-
 _global_data: Dict[str, Any] = {}
 
 
@@ -56,7 +55,8 @@ class __StandardDefaults(__UserDefinedDefaults):
     owner_id: int = 0
     host: str = ""
     installed: bool = False
-    dc_auth: bool = False
+    dc_auth: bool = True
+    dc_secret: str = ""
     access_token: str = "Не установлен"
     me_token: str = "Не установлен"
     secret: str = ""
@@ -65,6 +65,8 @@ class __StandardDefaults(__UserDefinedDefaults):
     templates: List[dict] = []
     anims: List[dict] = []
     voices: List[dict] = []
+
+    auth_token: str = ''
 
     settings: dict = {
         "silent_deleting": False
@@ -168,6 +170,5 @@ except FileNotFoundError:
         _update()
     except Exception:
         pass
-
 
 db = DB()  # один пользователь, один поток, один экземпляр, мне стабильно до пизды
