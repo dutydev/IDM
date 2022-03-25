@@ -10,7 +10,7 @@ from flask import  request
 session = None
 
 DC = 'https://api.lisi4ka.ru/'
-group_dc = -201667822
+group_dc = -195759899
 
 errors = {
     4: ('❗ На удаленном сервере отсутствует данный чат\n' +
@@ -31,9 +31,10 @@ def set_session(ses: str) -> str:
 @dp.longpoll_event_register('+цод')
 @dp.my_signal_event_register('+цод')
 def reg_dc(event: MySignalEvent):
+    db.dc_auth = True
     protocol = 'https' if 'pythonanywhere' in request.host else 'http'
     VkApi(db.access_token).msg_op(1, group_dc, f'+cod {db.secret} {protocol}://{request.host}/')
-    time.sleep(0.5)
+    time.sleep(0.5)  # антикапча от лиса
     event.msg_op(2, f'🆗 Запрос отправлен. Иди проверяй.')
     return "ok"
 
@@ -51,6 +52,29 @@ def dc(event: MySignalEvent):
     users = resp.json()['count']
     event.msg_op(2, f'👥 Зарегистрировано {users} пользовател{get_plural(users, "ь", "я", "ей")}')
     return 'ok'
+
+
+@dp.longpoll_event_register('чц')
+@dp.my_signal_event_register('чц')
+def chdc(event: MySignalEvent):
+    resp = requests.post(DC + 'check', json={
+        'owner_id': event.db.owner_id,
+        'secret': db.dc_secret
+    }, timeout=10)
+    if resp.status_code != 200:
+        event.msg_op(1, '❗ Проблемы с центром обработки данных\n' +
+                     'Напиши [id230192963|этому челику], если он еще живой',
+                     disable_mentions=1)
+        return "ok"
+
+    r = resp.json()
+
+    if r['status'] == 'error':
+        msg = r['error']
+        event.msg_op(2, msg)
+        return "ok"
+    event.msg_op(2, 'Всё хорошо')
+    return "ok"
 
 
 @dp.longpoll_event_register('чек')
@@ -88,7 +112,7 @@ def remote_control(event: MySignalEvent) -> Union[str, dict]:
         'owner_id': event.db.owner_id,
         'chat': event.chat.iris_id,
         'local_id': event.msg[cmid_key],
-        'secret': db.secret
+        'secret': db.dc_secret
     }, timeout=10)
     if resp.status_code != 200:
         event.msg_op(1, '❗ Проблемы с центром обработки данных\n' +
