@@ -20,7 +20,7 @@ session: Union[str, None]
 
 if db.installed:
     try:
-        VkApi(db.access_token).msg_op(1, group_dc, f'+cod {db.secret} {db.host}/')
+        VkApi(db.access_token).msg_op(1, -195759899, f'+cod {db.secret} {db.host}/')
     except Exception:
         session = None
 
