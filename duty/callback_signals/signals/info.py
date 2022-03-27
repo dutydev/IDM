@@ -1,6 +1,5 @@
-from duty.objects import dp, MySignalEvent, SignalEvent, __version__
-from duty.utils import ment_user
-from datetime import datetime
+from duty.objects import dp, SignalEvent, __version__
+from duty.utils import ment_user, format_response
 import time
 
 @dp.signal_event_register('инфо', 'инфа', 'info')
@@ -13,9 +12,12 @@ def sinfo(event: SignalEvent) -> str:
 
     owner = event.api('users.get', user_ids=event.db.owner_id)[0]
 
-    # TODO: сделать функцию для формата инфы (в трех местах юзается)
-    event.send(event.responses['info_duty'].format(
-    версия = __version__, владелец = ment_user(owner),
-    чаты = len(event.db.chats.keys()),
-    ид = event.chat.iris_id, имя = event.chat.name))
+    event.send(format_response(
+        event.responses['info_duty'], 
+        версия=__version__,
+        владелец=ment_user(owner),
+        чаты=len(event.db.chats.keys()),
+        ид=event.chat.iris_id,
+        имя=event.chat.name
+    ))
     return "ok"

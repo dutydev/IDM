@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from flask import Request
 
@@ -55,7 +55,7 @@ class Event:
     vk_response_time: float
     obj: dict
     secret: str
-    chat: Chat
+    chat: Union[Chat, None]
     reply_message: dict
     responses: dict
 
@@ -70,40 +70,47 @@ class Event:
 
     def set_chat(self):
         if 'chat' not in self.obj.keys():
-            return
+            raise ValueError('В событии отсутствует ID чата!')
 
         if self.obj['chat'] in self.db.chats.keys():
-            self.chat = Chat(
-                self.db.chats[self.obj['chat']], self.obj['chat'])
+            self.chat = Chat(self.db.chats[self.obj['chat']], self.obj['chat'])
             return
 
-        if self.msg:
-            if self.msg[cmid_key] is None:
-                raise ExceptToJson(code=10, iris=True)
-            ct = datetime.now().timestamp()
-            search_res = self.api("messages.search",
-                                  q=self.msg['text'], count=10, extended=1)
-            self.vk_response_time = datetime.now().timestamp() - ct
-            for msg in search_res['items']:
-                if msg[cmid_key] == self.msg[cmid_key]:
-                    if msg['from_id'] == self.msg['from_id']:
-                        message = msg
-                        break
-            for conv in search_res['conversations']:
-                if conv['peer']['id'] == message['peer_id']:  # type: ignore
-                    chat_name = conv['chat_settings']['title']
+        if not self.msg:
+            raise RuntimeError(
+                'Невозможно связать чат! В событии отсутствует сообщение!'
+            )
+
+        if self.msg[cmid_key] is None:
+            raise ExceptToJson(code=10, iris=True)
+
+        ct = datetime.now().timestamp()
+        search_res = self.api("messages.search",
+                              q=self.msg['text'], count=10, extended=1)
+        self.vk_response_time = datetime.now().timestamp() - ct
+        message = None
+        for msg in search_res['items']:
+            if msg[cmid_key] == self.msg[cmid_key]:
+                if msg['from_id'] == self.msg['from_id']:
+                    message = msg
                     break
-            chat_raw = {
-                "peer_id": message['peer_id'],  # type: ignore
-                "name": chat_name,  # type: ignore
-                "installed": False
-            }
-            self.db.chats.update({self.obj['chat']: chat_raw})
-            self.chat = Chat(chat_raw, self.obj['chat'])
-            self.set_msg(message)  # type: ignore
-            return
+        if message is None:
+            raise RuntimeError(
+                'Не могу привязать чат! Не нашёл сообщение-команду'
+            )
+        for conv in search_res['conversations']:
+            if conv['peer']['id'] == message['peer_id']:
+                chat_name = conv['chat_settings']['title']
+                break
+        chat_raw = {
+            "peer_id": message['peer_id'],
+            "name": chat_name,
+            "installed": False
+        }
+        self.db.chats.update({self.obj['chat']: chat_raw})
+        self.chat = Chat(chat_raw, self.obj['chat'])
+        self.set_msg(message)
 
-        self.chat = None
 
     def __init__(self, request: Request):
         if request.data == b'':
@@ -139,6 +146,20 @@ class Event:
                 self.chat = Chat(self.db.chats[chat], chat)
         if self.method not in {'sendSignal', 'sendMySignal'}:
             logger.info(self.__str__())
+    
+    def send(self, text='', **kwargs) -> int:
+        if self.chat is None:
+            raise RuntimeError(
+                'Невозможно отправить соообщение, т.к. чат не установлен'
+            )
+        return self.api.msg_op(1, self.chat.peer_id, text, **kwargs)
+    
+    def edit_msg(self, message_id: int, text='', **kwargs):
+        if self.chat is None:
+            raise RuntimeError(
+                'Невозможно отредактировать соообщение, т.к. чат не установлен'
+            )
+        return self.api.msg_op(2, self.chat.peer_id, text, message_id, **kwargs)
 
     def parse(self):
         msg = Message(self.msg)
@@ -176,9 +197,6 @@ class SignalEvent(Event):
 
         logger.debug(self.__str__())
 
-    def send(self, text='', **kwargs) -> int:
-        return self.api.msg_op(1, self.chat.peer_id, text, **kwargs)
-
 
 class MySignalEvent(Event):
     command: str
@@ -209,11 +227,11 @@ class MySignalEvent(Event):
         return self.msg_op(1, message, **params)
 
     def edit(self, message: str = '', **params) -> int:
-        'Редактирование сообщения-события (если это MySignalEvent)'
+        'Редактирование сообщения-события'
         return self.msg_op(2, message, **params)
 
     def delete(self) -> Dict[str, int]:
-        'Удаление сообщения-события (если это MySignalEvent)'
+        'Удаление сообщения-события'
         return self.msg_op(3)
 
 

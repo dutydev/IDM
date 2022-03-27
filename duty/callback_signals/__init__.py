@@ -1,4 +1,7 @@
 import os
+from traceback import format_exc
+
+from logger import get_writer
 
 
 def init(path: str, alter_path: str = ''):
@@ -18,7 +21,10 @@ def init(path: str, alter_path: str = ''):
             continue
         if ext == 'py':
             name = name.replace('.py', '')
-            exec(f"from {alter_path}.{name} import __name__")
+            try:
+                exec(f"from {alter_path}.{name} import __name__")
+            except (SyntaxError, NameError, ImportError):
+                get_writer('Импорт Callback команд').critical(format_exc())
 
 
 init(os.path.dirname(__file__))

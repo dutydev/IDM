@@ -1,44 +1,49 @@
 from duty.objects import dp, Event
-from duty.utils import ment_user
+from duty.utils import ment_user, format_response
 from microvk import VkApiResponseException
 
 
 def user_add(event: Event, typ: str):
     user = event.api('users.get', user_ids=event.obj['user_id'])[0]
-    if event.obj['user_id'] == event.db.owner_id:
-        message = event.responses['user_ret_self'].format(ссылка =
-                ment_user(user), имя = event.chat.name)
-        event.api.msg_op(1, event.chat.peer_id, message)
-        return 'ok'
-    message_id = event.api.msg_op(1, event.chat.peer_id,
-        event.responses[typ].format(ссылка = ment_user(user), имя = event.chat.name))
 
-    try: # не надо вот тут, чел просто попросил, я по-быстренькому сделал, все довольны, на код всем похуй
-        event.api('messages.removeChatUser', chat_id=event.chat.id, user_id=user['id'])
+
+    def _format(response_name, err=None):
+        return format_response(
+            event.responses[response_name],
+            ссылка=ment_user(user), имя=event.chat.name, ошибка=err
+        )
+
+    if event.obj['user_id'] == event.db.owner_id:
+        event.send(_format('user_ret_self'))
+
+        return 'ok'
+
+    message_id = event.send(_format(typ))
+
+    try:
+        event.api('messages.removeChatUser',
+                  chat_id=event.chat.id, user_id=user['id'])
     except VkApiResponseException:
         pass
 
     try:
-        event.api('messages.addChatUser', chat_id=event.chat.id, user_id=user['id'])
-        message = event.responses['user_ret_success'].format(ссылка = 
-        ment_user(user), имя = event.chat.name)
-        ret = "ok"
+        event.api('messages.addChatUser',
+                  chat_id=event.chat.id, user_id=user['id'])
+        event.edit_msg(message_id, _format('user_ret_success'))
+        return "ok"
     except VkApiResponseException as e:
         if e.error_code == 15:
-            message = event.responses['user_ret_err_no_access'].format(ссылка = 
-            ment_user(user), имя = event.chat.name)
+            event.edit_msg(message_id, _format('user_ret_err_no_access'))
         else:
-            message = (event.responses['user_ret_err_vk'].format(ссылка = 
-            ment_user(user), имя = event.chat.name, ошибка = e.error_msg))
-        ret = {"response":"vk_error",
-        "error_code": e.error_code,"error_message": e.error_msg}
-    except:
-        message = event.responses['user_ret_err_unknown'].format(ссылка = 
-        ment_user(user), имя = event.chat.name)
-        ret = {"response":"error","error_code":"0","error_message":""}
-
-    event.api.msg_op(2, event.chat.peer_id, message, message_id)
-    return ret
+            event.edit_msg(message_id, _format('user_ret_err_vk', e.error_msg))
+        return {
+            "response":"vk_error",
+            "error_code": e.error_code,
+            "error_message": e.error_msg
+        }
+    except Exception:
+        event.edit_msg(message_id, _format('user_ret_err_unknown'))
+        return {"response":"error","error_code":"0","error_message":""}
 
 
 @dp.event_register('addUser')

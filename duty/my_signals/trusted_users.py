@@ -1,5 +1,5 @@
 from duty.objects import dp, MySignalEvent
-from duty.utils import ment_user
+from duty.utils import ment_user, format_response
 from duty.utils import find_mention_by_event
 
 
@@ -27,7 +27,8 @@ def tr_user_op(event, error, typ):
     else:
         event.db.trusted_users.remove(tr_id)
 
-    event.msg_op(2, event.responses[f'trusted_success_{typ}'].format(
+    # TODO: избавиться от этих msg_op
+    event.msg_op(2, format_response(event.responses[f'trusted_success_{typ}'], 
                  ссылка=ment_user(tr_user)))
     return "ok"
 

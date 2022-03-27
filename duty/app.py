@@ -180,8 +180,7 @@ def app_method_connect_to_iris():
 
 
 def app_method_edit_responses():
-    for key in db.responses.keys():
-        response = request.form.get(key)
+    for key, response in request.form.items():
         if response:
             db.responses[key] = response
     return redirect('/admin#Responses')

@@ -4,6 +4,8 @@ import requests
 from html import escape
 
 from duty.objects import MySignalEvent, dp
+from duty.utils import format_response
+
 from .template import delete_template, get_template_list
 
 
@@ -58,7 +60,7 @@ def voice_create(event: MySignalEvent) -> str:
 @dp.my_signal_event_register('гсы')
 def template_list(event: MySignalEvent) -> str:
     message = get_template_list(event, event.db.voices)
-    event.msg_op(2, message.format(
+    event.msg_op(2, format_response(message, 
         name_genitive='голосовых сообщений',
         name_accusative='голосовые сообщения',
         name_accusative_cap='Голосовые сообщения',

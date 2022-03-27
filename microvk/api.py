@@ -16,6 +16,9 @@ class VkApiResponseException(Exception):# да, спиздил))0)
         self.args = args
         self.kwargs = kwargs
 
+    def __str__(self):
+        return 'Ошибка #%s: "%s"' % (self.error_code, self.error_msg)
+
 
 class VkApi:
     url: str = 'https://api.vk.com/method/'
@@ -57,10 +60,10 @@ class VkApi:
         else: dfa = 1
 
         mode = ['messages.send', 'messages.edit', 'messages.delete'][mode - 1]
-        
+
         return self(mode, peer_id = peer_id, message = message,
         message_id = msg_id, delete_for_all = dfa, random_id = 0, **kwargs)
-            
+
     def exe(self, code, token: str = None):
         if token:
             return VkApi(token)('execute', code = code)

@@ -1,5 +1,5 @@
 from duty.objects import dp, Event
-from duty.utils import ment_user, cmid_key
+from duty.utils import ment_user, cmid_key, format_response
 from duty.api_utils import get_msgs
 from datetime import datetime
 import time
@@ -12,8 +12,7 @@ def msg_delete(event, msg_id, msg_ids=[]):
 
     def del_edit(key, err=''):
         if not event.obj['silent']:
-            event.api.msg_op(2, event.chat.peer_id,
-                             event.responses[key].format(ошибка=err), msg_id)
+            event.send(format_response(event.responses[key], ошибка=err), msg_id)
             time.sleep(3)
             event.api.msg_op(3, msg_id=msg_id)
 

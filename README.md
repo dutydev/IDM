@@ -59,6 +59,12 @@ git clone https://github.com/elchinchel/ICAD
 ## Как обновить
 *".c обновить"*
 
+Если дежурный не работает, обновиться можно, открыв bash консоль и введя следующие команды:
+```bash
+git fetch --all
+git reset --hard origin/master-beta
+```
+
 ## Команды
 Команды можно найти [тут](http://vk.com/@ircaduty-commands)
 
