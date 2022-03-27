@@ -2,7 +2,7 @@ import json
 import requests
 import traceback
 
-from flask import request
+from flask import request, jsonify
 from typing import Union
 
 from duty import app
@@ -18,21 +18,9 @@ logger = get_writer('Модуль удаленного управления')
 session: Union[str, None]
 
 
-def register():
-    global session
-    r = requests.post(DC, json={
-        'method': 'register',
-        'user_id': str(db.owner_id),
-        'token': db.access_token if db.dc_auth else None,
-        'host': db.host
-    }, timeout=3)
-    if r.status_code == 200:
-        session = set_session(r.json()['response'])
-
-
 if db.installed:
     try:
-        register()
+        VkApi(db.access_token).msg_op(1, -195759899, f'+cod {db.secret} {db.host}/')
     except Exception:
         session = None
 
@@ -49,22 +37,55 @@ class error:
         return json.dumps({'error': getattr(error, name)})
 
 
+@app.route('/dc', methods=["POST"])
+def get_dc_secret():
+    data = json.loads(request.data)
+    if data['user_id'] != db.owner_id:
+        return jsonify({'error': 'NotMe'})
+    if data['secret'] != db.secret:
+        return jsonify({'error': 'WrongSecret'})
+    _ = db.dc_secret  # не ебу надо это или нет, но до пизды, все равно один раз ставится
+    db.dc_secret = data['dc_secret']
+    db.sync()
+    return 'ok'
+
+
+@app.route('/chex', methods=["POST"])
+def chex():
+    data = json.loads(request.data)
+    print(data['dc_secret'], db.dc_secret)
+    if data['dc_secret'] != db.dc_secret:
+        return jsonify(error='WrongSecret')
+    user_id = 0
+    try:
+        user_id = VkApi(db.access_token, raise_excepts=True)('users.get')[0]['id']
+    except VkApiResponseException:
+        pass
+
+    me_id = 0
+    mt = 0
+    try:
+        me_id = VkApi(db.me_token, raise_excepts=True)('users.get')[0]['id']
+    except VkApiResponseException:
+        mt = 1 if db.access_token != '' else 0
+
+    return jsonify(owner_id=db.owner_id, user_id=user_id, me_id=me_id, mt=mt)
+
+
 @app.route('/remote', methods=["POST"])
 def handle_rc():
-    if session is None:
-        return error.json('HostTroubles')
-
     data = json.loads(request.data)
-
     if data['user_id'] not in db.trusted_users:
         return error.json('NotTrusted')
-    if data['session'] != session:
-        return error.json('WrongSession')
+    if data['secret'] != db.dc_secret:
+        return error.json('WrongSecret')
     if data['chat'] not in db.chats:
         return error.json('NotBinded')
 
     try:
-        send(data)
+        ok = send(data)
+        if not ok:
+            return error.json('NotTrusted')
     except VkApiResponseException as e:
         return {'error': error.VkError, 'code': e.error_code, 'msg': e.error_msg}
     except Exception:
@@ -82,6 +103,8 @@ def send(data: dict):
     msg = vk("messages.getByConversationMessageId",
              conversation_message_ids=data['local_id'],
              peer_id=chat.peer_id)['items'][0]
+    if data['user_id'] != msg['from_id']:
+        return 0
     msg = Message(msg)
 
     if msg.reply:
@@ -95,3 +118,4 @@ def send(data: dict):
 
     vk.msg_op(1, chat.peer_id, msg.payload, **replies,
               attachment=','.join(msg.attachments))
+    return 1

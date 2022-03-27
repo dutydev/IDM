@@ -6,6 +6,7 @@ from microvk import VkApiResponseException
 def user_add(event: Event, typ: str):
     user = event.api('users.get', user_ids=event.obj['user_id'])[0]
 
+
     def _format(response_name, err=None):
         return format_response(
             event.responses[response_name],
@@ -14,6 +15,7 @@ def user_add(event: Event, typ: str):
 
     if event.obj['user_id'] == event.db.owner_id:
         event.send(_format('user_ret_self'))
+
         return 'ok'
 
     message_id = event.send(_format(typ))
