@@ -98,6 +98,7 @@ def do_auth():
     db.auth_token_date = int(time.time())
     response.set_cookie("auth", value=db.auth_token)
     response.headers['location'] = "/"
+    db.sync()
     return response, 302
 
 
@@ -138,7 +139,6 @@ def setup():
     VkApi(db.access_token).msg_op(
         1, -174105461, f'+api {db.secret} {protocol}://{request.host}/callback'
     )
-    db.sync()
     try:
         __import__('uwsgi').reload()
     except ImportError:
@@ -229,10 +229,6 @@ def app_method_delete_anim():
             return redirect('/admin#DynTemplates')
 
 
-def app_method_dc_auth():
-    db.dc_auth = True  # (request.form.get('permit') == 'on') # ой да иди ты нахуй, а
-
-
 @app.route('/admin')
 def admin():
     login_check(request)
@@ -244,7 +240,7 @@ def admin():
 
     users = VkApi(db.access_token)('users.get', user_ids=db.owner_id)
     if type(users) == dict:
-        username = 'unknown'
+        username = 'НЕИЗВЕСТНЫЙ ПОЛЬЗОВАТЕЛЬ'
         warning = {'type': 'danger', 'text': 'Ошибка доступа, смени токены'}
     else:
         username = f"{users[0]['first_name']} {users[0]['last_name']}"
