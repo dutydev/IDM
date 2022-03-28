@@ -81,6 +81,12 @@ def tosms(event: MySignalEvent):
     return "ok"
 
 
+@dp.my_signal_event_register('вкошибка')
+def allo(event: MySignalEvent) -> str:
+    event.api('execute', code='ага, попався, питонист!')
+    return "ok"
+
+
 @dp.my_signal_event_register('алло')
 def allo(event: MySignalEvent) -> str:
     event.msg_op(1, 'Че с деньгами?', attachment='audio332619272_456239384')
@@ -90,8 +96,7 @@ def allo(event: MySignalEvent) -> str:
 @dp.longpoll_event_register('рестарт')
 @dp.my_signal_event_register('рестарт')
 def restart(event: MySignalEvent) -> str:
-    import uwsgi
-    uwsgi.reload()
+    __import__('uwsgi').reload()
     event.msg_op(2, '...в процессе...')
     return "ok"
 

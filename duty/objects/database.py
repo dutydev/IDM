@@ -2,7 +2,7 @@ import os
 import json
 import traceback
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from os.path import join as pjoin
 
 from logger import get_writer
@@ -53,7 +53,7 @@ class __UserDefinedDefaults:
     постарайся придумать относительно оригинальное название для своих
     атрибутов, чтобы оно не помешало в будущем кому-то другому добавить
     свои значения (нет, блдяь, не надо называть атрибут "1", опиши адекватно,
-    че там, сука, хранится (если совсем туго с мозгами, питон умеет в юникод, 
+    че там, сука, хранится (если совсем туго с мозгами, питон умеет в юникод,
     поэтому можно тупо написать "супер_дупер_данные_жорика"))
     '''
 
@@ -63,8 +63,7 @@ class _StandardDefaults(__UserDefinedDefaults):
     owner_id: int = 0
     host: str = ""
     installed: bool = False
-    dc_auth: bool = True
-    dc_secret: str = ""
+    dc_secret: Optional[str] = None
     access_token: str = "Не установлен"
     me_token: str = "Не установлен"
     secret: str = ""

@@ -35,10 +35,8 @@
                                     <div class="form-group"><label for="me_token">Токен VK Me</label>
                                         <input type="text" class="form-control" name="me_token" id="me_token"
                                             placeholder="{{me_token}}" onclick="//getMeToken();">
-                                        <small id="me_token-help" class="form-text">Получить можно по <a
-                                                href="https://oauth.vk.com/authorize?client_id=6146827&scope=1073737727&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1"
-                                                target="_blank"></a>. Нажми "Разрешить", скопируй текст из
-                                            адресной строки и вставь сюда.
+                                        <small id="me_token-help" class="form-text">
+                                            Получить нормальным способом пока нельзя.
                                         </small>
                                     </div>
                                     <!-- <script src="/static/js/me_token.js"></script> -->
@@ -54,30 +52,6 @@
                                     </div>
                                 </form>
                             </div>
-                            <!--<div class="row">
-                                <div class="col-md-12">
-                                    <form id="switch_form" action="/api/dc_auth" method="post">
-                                        <div class="form-row pl-3 pt-3">
-                                            <script>
-                                                var switch_input = document.getElementById('switch_input');
-                                                var switch_form = document.getElementById('switch_form');
-                                            </script>
-                                            <label class="switch">
-                                                <input id="switch_input" name="permit" type="checkbox"
-                                                    onchange="switch_form.submit()"
-                                                    {%if db.dc_auth%}checked{%endif%}>
-                                                <span class="slider"></span>
-                                            </label>
-                                            <p class="ml-2 mb-1" style="padding-top: 2px;">Разрешить авторизацию в ЦОД
-                                                по токену</p>
-                                        </div>
-                                        <div class="form-row pl-3">
-                                            <small>(токены не хранятся и используются только для подтверждения ID
-                                                дежурного)</small>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>-->
                         </div>
                     </div>
                 </div>

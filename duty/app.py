@@ -138,9 +138,11 @@ def setup():
     VkApi(db.access_token).msg_op(
         1, -174105461, f'+api {db.secret} {protocol}://{request.host}/callback'
     )
-    time.sleep(0.5)
-    VkApi(db.access_token).msg_op(1, -195759899, f'+cod {db.secret} {protocol}://{request.host}/')
     db.sync()
+    try:
+        __import__('uwsgi').reload()
+    except ImportError:
+        pass
     return redirect('/login')
 
 
@@ -173,8 +175,10 @@ def app_method_connect_to_iris():
             message=f'+api {db.secret} {protocol}://{request.host}/callback',
             random_id=0
         )
-        time.sleep(0.5)
-        VkApi(db.access_token).msg_op(1, -195759899, f'+cod {db.secret} {protocol}://{request.host}/')
+        try:
+            __import__('uwsgi').reload()
+        except ImportError:
+            pass
     except VkApiResponseException as e:
         return int_error(f'Ошибка VK #{e.error_code}: {e.error_msg}')
 
