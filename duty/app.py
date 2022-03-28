@@ -43,10 +43,12 @@ def login_check(request) -> None:
         return
     if not db.installed:
         raise ReturnResponse(redirect('/install'))
-    if request.cookies.get('auth') != db.auth_token:
-        raise ReturnResponse(int_error(
-            'Ошибка авторизации, попробуй очистить cookies или перелогиниться'
-        ))
+    if request.cookies.get('auth') == db.auth_token:
+        if time.time() - db.auth_token_date < 86400:
+            return
+    raise ReturnResponse(int_error(
+        'Ошибка авторизации, попробуй очистить cookies или перелогиниться'
+    ))
 
 
 def format_tokens(tokens: list) -> List[Union[str, None]]:
@@ -84,7 +86,6 @@ def index():
 
 @app.route('/auth', methods=["POST"])
 def do_auth():
-    global auth
     user_id = check_tokens(format_tokens([request.form.get('access_token')]))
     if type(user_id) != list:
         return user_id
@@ -93,10 +94,9 @@ def do_auth():
             'Вставлен токен от другого аккаунта. Проверь авторизацию ВК'
         )
     response = make_response()
-    new_auth = md5(gen_secret().encode()).hexdigest()
-    _ = db.auth_token
-    db.auth_token = new_auth
-    response.set_cookie("auth", value=new_auth)
+    db.auth_token = md5(gen_secret().encode()).hexdigest()
+    db.auth_token_date = int(time.time())
+    response.set_cookie("auth", value=db.auth_token)
     response.headers['location'] = "/"
     return response, 302
 
@@ -143,7 +143,7 @@ def setup():
         __import__('uwsgi').reload()
     except ImportError:
         pass
-    return redirect('/login')
+    return do_auth()
 
 
 @app.route('/api/<string:method>', methods=["POST"])

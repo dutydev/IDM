@@ -74,6 +74,7 @@ class _StandardDefaults(__UserDefinedDefaults):
     voices: List[dict] = []
 
     auth_token: str = ''
+    auth_token_date: int = 0
 
     settings: dict = {
         "silent_deleting": False
