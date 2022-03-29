@@ -41,7 +41,7 @@ def make_dc_request(event: MySignalEvent, path: str, **data):
         )
         raise RequestError
     decoded_response = resp.json()
-    if decoded_response['status'] == 'error':
+    if decoded_response.get('status') == 'error':
         event.edit(str(decoded_response['error']))
         raise RequestError
     return decoded_response

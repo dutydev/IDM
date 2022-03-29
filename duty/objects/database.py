@@ -173,7 +173,7 @@ def _update():
 
 try:
     read('database.json')
-except FileNotFoundError:
+except (FileNotFoundError, json.JSONDecodeError):
     write('database.json', {})
     try:
         _update()
