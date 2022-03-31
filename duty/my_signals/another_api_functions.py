@@ -1,8 +1,7 @@
-import os
 import requests
 
 from duty.objects import MySignalEvent, dp
-from duty.utils import find_mention_by_event
+from duty.utils import find_mention_by_event, path_from_root
 
 
 @dp.longpoll_event_register('группы')
@@ -30,14 +29,15 @@ def unbind_chat(event: MySignalEvent) -> str: # нахуя оно ток над�
 
 @dp.my_signal_event_register('связать')
 def iosif_prosti(event: MySignalEvent) -> str:
-    name = os.path.join(os.getcwd(), 'ICAD', 'duty', 'sorry.ogg')
-    topovoe_audio_msg = open(name, "rb")
-    nu_ne_zlis = event.api('docs.getUploadServer',
-                           type='audio_message')['upload_url']
-    budet_poshalka = requests.post(nu_ne_zlis,
-                             files={'file': topovoe_audio_msg}).json()['file']
-    a = event.api('docs.save', file=budet_poshalka)['audio_message']
-    event.send(attachment=f'audio_message{a["owner_id"]}_{a["id"]}')
+    upload_url = event.api(
+        'docs.getUploadServer', type='audio_message'
+    )['upload_url']
+    with open(path_from_root('content', 'sorry.ogg'), "rb") as audio:
+        uploaded = requests.post(upload_url, files={'file': audio}).json()
+
+    att = event.api('docs.save', file=uploaded['file'])['audio_message']
+
+    event.send(attachment=f'audio_message{att["owner_id"]}_{att["id"]}')
 
 
 @dp.longpoll_event_register('курс')
@@ -52,5 +52,8 @@ def exchange_rate(event: MySignalEvent) -> str:
         else:
             message = f'Курс валюты \"{valute["name"]}\": {valute["value"]}'
     else:
-        message = f'$ Курс доллара: {valutes["USD"]["value"]}\n€ Курс евро: {valutes["EUR"]["value"]}'
+        message = (
+            f'$ Курс доллара: {valutes["USD"]["value"]}\n'
+            f'€ Курс евро: {valutes["EUR"]["value"]}'
+        )
     event.edit(message)

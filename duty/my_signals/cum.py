@@ -1,7 +1,9 @@
-import os
 import requests
 
+from io import BytesIO
 from PIL import Image
+
+from duty.utils import path_from_root
 from duty.objects import dp, MySignalEvent
 
 
@@ -25,26 +27,26 @@ def cum(event: MySignalEvent) -> str:
             return "ok"
         url = event.msg['attachments'][0]['photo']['sizes'][-1]['url']
 
-    r = requests.get(url)
-    out = open('content/input.png', "wb")
-    out.write(r.content)
-    out.close()
-    fon = Image.open('content/fon.png', 'r')
-    image = Image.open('content/input.png', 'r')
     width = 200
     height = 265
-    resized_img = image.resize((width, height), Image.ANTIALIAS)
+    out_path = path_from_root('content', 'cum_out.png')
+
+    bg = Image.open(path_from_root('content', 'background.png'), 'r')
+    image = Image.open(
+        BytesIO(requests.get(url).content), formats=['jpeg']
+    ).resize((width, height), Image.ANTIALIAS)
 
     img = Image.new('RGBA', (660, 401), (0, 0, 0, 0))
-
-    img.paste(resized_img, (213, 109))
-    img.paste(fon, (0, 0), mask=fon)
-
-    img.save("content/cum.png", format="png")
+    img.paste(image, (213, 109))
+    img.paste(bg, (0, 0), mask=bg)
+    img.save(out_path, format="png")
 
     upload_url = event.api('photos.getMessagesUploadServer')['upload_url']
-    uploaded = requests.post(upload_url, files={'photo': open("content/cum.png", 'rb')}).json()
-    a = \
-    event.api('photos.saveMessagesPhoto', server=uploaded["server"], photo=uploaded["photo"], hash=uploaded["hash"])[0]
-    event.msg_op(2, '', attachment=f'photo{a["owner_id"]}_{a["id"]}', keep_forward_messages=1)
+    with open(out_path, 'rb') as out_image:
+        uploaded = requests.post(upload_url, files={'photo': out_image}).json()
+
+    att = event.api('photos.saveMessagesPhoto', **uploaded)[0]
+    event.edit(
+        attachment=f'photo{att["owner_id"]}_{att["id"]}', keep_forward_messages=1
+    )
     return "ok"

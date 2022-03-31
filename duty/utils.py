@@ -6,10 +6,17 @@ from typing import Any, Iterable, Union, List, TypeVar
 from microvk import VkApi, VkApiResponseException
 
 
+MySignalEvent = TypeVar("MySignalEvent")
 cmid_key = 'conversation_message_id'
 
+dirname = os.path.dirname
+joinpath = os.path.join
 
-MySignalEvent = TypeVar("MySignalEvent")
+ROOT_DIR = dirname(dirname(os.path.abspath(__file__)))
+
+
+def path_from_root(*paths) -> str:
+    return joinpath(ROOT_DIR, *paths)
 
 
 def att_parse(attachments):
