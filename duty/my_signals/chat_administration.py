@@ -8,7 +8,7 @@ from microvk import VkApiResponseException
 # github: https://github.com/Alex1249
 
 @dp.longpoll_event_register('добавить')
-#@dp.my_signal_event_register('добавить')
+@dp.my_signal_event_register('добавить')
 def add_user_in_chat(event: MySignalEvent):
     uid=find_mention_by_event(event)
     if uid:
@@ -32,7 +32,7 @@ def add_user_in_chat(event: MySignalEvent):
     return 'ok'
 
 @dp.longpoll_event_register('кик')
-#@dp.my_signal_event_register('кик')
+@dp.my_signal_event_register('кик')
 def kick_user_from_chat(event: MySignalEvent):
     if get_index(event.args, 0)=='меня':
         uid=event.db.owner_id

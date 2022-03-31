@@ -33,7 +33,7 @@ def cum(event: MySignalEvent) -> str:
 
     bg = Image.open(path_from_root('content', 'background.png'), 'r')
     image = Image.open(
-        BytesIO(requests.get(url).content), formats=['jpeg']
+        BytesIO(requests.get(url).content)
     ).resize((width, height), Image.ANTIALIAS)
 
     img = Image.new('RGBA', (660, 401), (0, 0, 0, 0))
