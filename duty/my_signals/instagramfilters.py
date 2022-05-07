@@ -1,6 +1,5 @@
 from duty.objects import MySignalEvent, dp
 import requests, os
-import cv2
 
 
 @dp.longpoll_event_register('инст')
@@ -8,10 +7,17 @@ import cv2
 def initial(event: MySignalEvent) -> str:
     try:
         from instafilter import Instafilter
-        event.msg_op(2, 'Все готово!')
     except ImportError:
         event.msg_op(2, 'Скачиваю зависимость...')
         os.system('python3.8 -m pip install git+https://github.com/Obnovlator3000/instafilter.git')
+        __import__('uwsgi').reload()
+        event.msg_op(2, 'Перезагружаюсь... На всякий случай, после этого пропиши ".с инст"')
+    try:
+        import cv2
+        event.msg_op(2, 'Все готово!')
+    except ImportError:
+        event.msg_op(2, 'Скачиваю зависимость...')
+        os.system('python3.8 -m pip install opencv-python')
         __import__('uwsgi').reload()
         event.msg_op(2, 'Перезагружаюсь...')
     return "ok"
@@ -28,6 +34,7 @@ def filternames(event: MySignalEvent) -> str:
 def insta(event: MySignalEvent) -> str:
     try:
         from instafilter import Instafilter
+        import cv2
     except ImportError:
         event.msg_op(1, 'Сначала нужно доустановить одну зависимость, щас сделаю...')
         event.msg_op(1, f'{event.msg["text"].split()[0]} инст')
