@@ -7,7 +7,7 @@ import cv2
 @dp.my_signal_event_register('инст')
 def initial(event: MySignalEvent) -> str:
     try:
-        from instafilter import Instafilter #noqa
+        from instafilter import Instafilter
         event.msg_op(2, 'Все готово!')
     except ImportError:
         event.msg_op(2, 'Скачиваю зависимость...')
