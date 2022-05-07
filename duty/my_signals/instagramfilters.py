@@ -20,6 +20,12 @@ def initial(event: MySignalEvent) -> str:
 @dp.longpoll_event_register('фильтр')
 @dp.my_signal_event_register('фильтр')
 def insta(event: MySignalEvent) -> str:
+    event.msg_op(2, "Список фильтров и их отличия: https://vk.com/@ircaduty-insta-filtry")
+
+
+@dp.longpoll_event_register('фильтр')
+@dp.my_signal_event_register('фильтр')
+def insta(event: MySignalEvent) -> str:
     try:
         from instafilter import Instafilter
     except ImportError:
