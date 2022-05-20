@@ -7,7 +7,9 @@
 4. [Благодарности](./README.md#Благодарности)
 5. [**Статья про ЛП**](http://vk.com/@ircaduty-lp-module)
 
-### [Здесь](https://vk.com/video332619272_456239231) есть видео. Если что, [этот прекрасный человек](https://vk.com/id365530525) может помочь.
+### [Здесь](https://vk.com/video332619272_456239231) есть видео.
+<!-- Если что, [в нашей беседке](https://vk.me/join/cDa3Oe01mwpXuBL2QPOIPLfmJlaLKYBHWEo=) тебе могут помочь. -->
+<!-- **(уважай чужое время и проверь сначала заметки беседы, скорее всего, там есть ответ на твой вопрос)** -->
 
 ## Как установить
 
@@ -26,16 +28,15 @@
 
 [![](https://sun1-88.userapi.com/7GyijrmWOq2WKYg-RqZMsZjn_5J9FAN0yTv8hA/EzO72_mIHwc.jpg)](https://sun1-88.userapi.com/7GyijrmWOq2WKYg-RqZMsZjn_5J9FAN0yTv8hA/EzO72_mIHwc.jpg)
 
-Тыкаем на вкладку *Consoles*. Ищем блок *Start a new console*, в нем выбираем *Bash*
+Тыкаем на вкладку *Files*. Смотрим на картинку:\
+[![](https://sun9-79.userapi.com/impf/UxI4dBLSwiYBT_JojwqN1O6xq_I0tZSVqKvBoQ/zVjLKL9NpKc.jpg?size=777x137&quality=96&sign=fd988e120467f5046da6a4ce944947d8&type=album)](https://sun9-79.userapi.com/impf/UxI4dBLSwiYBT_JojwqN1O6xq_I0tZSVqKvBoQ/zVjLKL9NpKc.jpg?size=777x137&quality=96&sign=fd988e120467f5046da6a4ce944947d8&type=album)
 
-После загрузки набираем в консоли
-(это две команды, после каждой нужно нажимать Enter)
-```bash
-rm -rf ICAD
-git clone https://github.com/elchinchel/ICAD
+Вставляем в открывшийся редактор следующий текст и тыкаем на кнопку **Run**
+```python
+import os
+os.system('rm -rf ICAD')
+os.system('git clone https://github.com/elchinchel/ICAD')
 ```
-Убедитесь, что после выполнения второй команды в консоли присутствует текст, выделенный на картинке\
-[![](https://sun1-25.userapi.com/jHRFDx7NyayBffN6AKCK4_Daxu7tBDoCCFulyw/nTtDNh3aeD0.jpg)](https://sun1-25.userapi.com/jHRFDx7NyayBffN6AKCK4_Daxu7tBDoCCFulyw/nTtDNh3aeD0.jpg)
 
 
 Далее переходим во вкладку *Web* и нажимаем на кнопку *Reload* `имя аккаунта`.eu.pythonanywhere.com
