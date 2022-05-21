@@ -109,8 +109,8 @@ def test(event: MySignalEvent) -> dict:
 @dp.longpoll_event_register('время')
 @dp.my_signal_event_register('время')
 def timecheck(event: MySignalEvent) -> str:
-    ct = datetime.now(timezone(timedelta(hours=+3))).strftime("%d of %B %Y (%j day in year)\n%H:%M:%S (%I:%M %p)")
-    event.msg_op(2, ct)
+    current_time = datetime.now(timezone(timedelta(hours=+3))).strftime(f"✨ Россия, Москва\n⏰ Время: %H:%M:%S\n📆 Дата: %d/%m/%Y\n\n⚙️ С нового года прошло: %j дней")
+    event.msg_op(2, current_time)
     return "ok"
 
 
