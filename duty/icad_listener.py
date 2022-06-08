@@ -6,7 +6,7 @@ from flask import request, jsonify
 from typing import Union
 
 from duty import app
-from duty.objects import Chat, db
+from duty.objects import Chat, db, __version__
 from duty.utils import Message
 
 from microvk import VkApi, VkApiResponseException
@@ -68,6 +68,7 @@ def chex():
         user_id=locals().get('user_id', 0),
         me_id=locals().get('me_id', 0),
         mt=(1 if 'me_id' in locals() else 0)
+        v =  __version__
     )
 
 
