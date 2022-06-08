@@ -55,7 +55,7 @@ def format_tokens(tokens: list) -> List[Union[str, None]]:
     for i in range(len(tokens)):
         token = re.search(r'access_token=vk1.a.[^.]{192}&', tokens[i])
         if token:
-            token = token[0][13:192]
+            token = token[0][13:211]
         elif len(tokens[i]) > 0:
             token = tokens[i]
         else:
