@@ -12,7 +12,6 @@ def nigga(event: MySignalEvent) -> str:
 
     if event.reply_message:
         event.attachments = event.reply_message['attachments']
-        print(event.attachments)
         if event.attachments:
             if event.attachments[0]['type'] != 'photo':
                 event.msg_op(2, 'Как я тебе не на картинку наложу фильтр?')
@@ -48,17 +47,18 @@ def dist(event: MySignalEvent) -> str:
 
     if event.reply_message:
         event.attachments = event.reply_message['attachments']
-        print(event.attachments)
         if event.attachments:
             if event.attachments[0]['type'] != 'photo':
                 event.msg_op(2, 'Как я тебе не на картинку наложу фильтр?')
                 return "ok"
             url = event.attachments[0]['photo']['sizes'][-1]['url']
+            hw = str(event.attachments[0]['photo']['sizes'][-1]['height'])+'x'+str(event.attachments[0]['photo']['sizes'][-1]['width'])
     else:
         if event.msg['attachments'][0]['type'] != 'photo':
             event.msg_op(2, 'Как я тебе не на картинку наложу фильтр?')
             return "ok"
         url = event.msg['attachments'][0]['photo']['sizes'][-1]['url']
+        hw = str(event.attachments[0]['photo']['sizes'][-1]['height'])+'x'+str(event.attachments[0]['photo']['sizes'][-1]['width'])
     r = requests.get(url)
     filename = os.path.join(os.getcwd(), 'file.png')
     out = open(filename, "wb")
@@ -75,7 +75,7 @@ def dist(event: MySignalEvent) -> str:
     else:
         size = '50x50%'
 
-    os.system(f"convert {filename} -liquid-rescale {size} {filename}")
+    os.system(f"convert {filename} -liquid-rescale {size} -resize {hw} {filename}")
 
     upload_url = event.api('photos.getMessagesUploadServer')['upload_url']
     uploaded = requests.post(upload_url, files={'photo': open(filename, 'rb')}).json()
