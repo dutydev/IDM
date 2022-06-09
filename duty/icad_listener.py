@@ -66,8 +66,8 @@ def chex():
         owner_id=db.owner_id,
         user_id=locals().get('user_id', 0),
         me_id=locals().get('me_id', 0),
-        mt=(1 if 'me_id' in locals() else 0)
-        v =  __version__
+        mt=(1 if 'me_id' in locals() else 0),
+        v=__version__
     )
 
 
