@@ -33,7 +33,7 @@ class ReturnResponse(Exception):
 
 
 def get_mask(token: str) -> str:
-    if len(token) != 85:
+    if len(token) == 0:
         return 'Не установлен'
     return token[:4] + "*" * 77 + token[81:]
 
@@ -54,10 +54,10 @@ def login_check(request) -> None:
 
 def format_tokens(tokens: list) -> List[Union[str, None]]:
     for i in range(len(tokens)):
-        token = re.search(r'access_token=[a-z0-9]{85}', tokens[i])
+        token = re.search(r'access_token=vk1.a.[^.]{192}&', tokens[i])
         if token:
-            token = token[0][13:]
-        elif len(tokens[i]) == 85:
+            token = token[0][13:211]
+        elif len(tokens[i]) > 0:
             token = tokens[i]
         else:
             token = None
