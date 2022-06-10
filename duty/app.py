@@ -46,6 +46,7 @@ def login_check(request) -> None:
     if request.cookies.get('auth') == db.auth_token:
         if time.time() - db.auth_token_date < 86400:
             return
+        raise ReturnResponse(redirect('/login'))
     raise ReturnResponse(int_error(
         'Ошибка авторизации, попробуй очистить cookies или перелогиниться'
     ))
