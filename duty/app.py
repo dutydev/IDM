@@ -33,9 +33,9 @@ class ReturnResponse(Exception):
 
 
 def get_mask(token: str) -> str:
-    if len(token) == 0:
+    if len(token) < 20:
         return 'Не установлен'
-    return token[:4] + "*" * 77 + token[81:]
+    return token[:15] + "*" * 50
 
 
 def login_check(request) -> None:
@@ -54,9 +54,9 @@ def login_check(request) -> None:
 
 def format_tokens(tokens: list) -> List[Union[str, None]]:
     for i in range(len(tokens)):
-        token = re.search(r'access_token=vk1.a.[^.]{192}&', tokens[i])
+        token = re.search(r'access_token=[^&]+', tokens[i])
         if token:
-            token = token[0][13:211]
+            token = token[0][13:]
         elif len(tokens[i]) > 0:
             token = tokens[i]
         else:
@@ -233,7 +233,7 @@ def admin():
 
     users = VkApi(db.access_token)('users.get', user_ids=db.owner_id)
     if type(users) == dict:
-        username = 'НЕИЗВЕСТНЫЙ ПОЛЬЗОВАТЕЛЬ'
+        username = 'N/D'
         warning = {'type': 'danger', 'text': 'Ошибка доступа, смени токены'}
     else:
         username = f"{users[0]['first_name']} {users[0]['last_name']}"
