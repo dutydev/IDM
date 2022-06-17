@@ -3,6 +3,9 @@ import time
 import json
 import traceback
 
+from requests import Session
+from urllib.parse import urlencode
+
 from os import environ
 from hashlib import md5
 from typing import List, Union
@@ -23,6 +26,7 @@ app = Flask(__name__)
 
 logger = get_writer('Веб-приложение')
 
+me_data = {}
 
 
 class ReturnResponse(Exception):
@@ -30,6 +34,28 @@ class ReturnResponse(Exception):
 
     def __init__(self, response: Response):
         self.response = response
+
+
+def make_oauth_request(**params):
+    return me_data['session'].get(
+        'https://oauth.vk.com/token?' +
+        urlencode([
+            ('client_secret', 'qVxWRF1CwHERuIrKBnqe'),
+            ('grant_type', 'password'),
+            ('client_id', '6146827'),
+            ('2fa_supported', '1'),
+            ('lang', 'ru'),
+            ('v', '5.130'),
+           *((k, v) for k, v in params.items())
+        ])
+    ).json()
+
+
+def make_oauth_validation(**params):
+    params['v'] = '5.130'
+    return me_data['session'].get(
+        f'https://api.vk.com/method/auth.validatePhone?{urlencode(params)}'
+    ).json()
 
 
 def get_mask(token: str) -> str:
@@ -176,6 +202,57 @@ def app_method_connect_to_iris():
         return int_error(f'Ошибка VK #{e.error_code}: {e.error_msg}')
 
 
+def app_method_get_me_token():
+    me_data['session'] = Session()
+    resp = make_oauth_request(
+        password=request.form['password'],
+        username=request.form['login'],
+    )
+
+    if (token := resp.get('access_token')) is not None:
+        if check_tokens([token])[0] != db.owner_id:
+            me_data['error'] = 'введены логин и пароль от другого аккаунта'
+        else:
+            me_data['success'] = 1
+            db.me_token = token
+        return redirect('/admin')
+
+    if (sid := resp.get('validation_sid')) is not None:
+        me_data['login'] = request.form['login']
+        me_data['password'] = request.form['password']
+        make_oauth_validation(validation_sid=sid)
+        return render_template('pages/me_confirm.html')
+
+    me_data['error'] = resp['error']
+    return redirect('/admin')
+
+
+def app_method_me_token_confirm():
+    resp = make_oauth_request(
+        password=me_data['password'],
+        username=me_data['login'],
+        code=request.form['code'],
+        force_sms=1,
+    )
+
+    if (token := resp.get('access_token')) is not None:
+        if check_tokens([token])[0] != db.owner_id:
+            me_data['error'] = 'введены логин и пароль от другого аккаунта'
+        else:
+            me_data['success'] = 1
+            db.me_token = token
+        return redirect('/admin')
+
+    if (sid := resp.get('validation_sid')) is not None:
+        me_data['login'] = request.form['login']
+        me_data['password'] = request.form['password']
+        make_oauth_validation(validation_sid=sid)
+        return render_template('pages/me_confirm.html')
+
+    me_data['error'] = resp['error']
+    return redirect('/admin')
+
+
 def app_method_edit_responses():
     for key, response in request.form.items():
         if response:
@@ -231,19 +308,41 @@ def admin():
 
     warning = None
 
-    users = VkApi(db.access_token)('users.get', user_ids=db.owner_id)
+    users = VkApi(db.access_token)('users.get')
     if type(users) == dict:
         username = 'N/D'
         warning = {'type': 'danger', 'text': 'Ошибка доступа, смени токены'}
     else:
-        username = f"{users[0]['first_name']} {users[0]['last_name']}"
+        user = users[0]
+        username = f"{user['first_name']} {user['last_name']}"
+        if user['id'] != db.owner_id:
+            warning = {
+                'type': 'danger',
+                'text': ('Используется токен от другого аккаунта, это '
+                         'приведет к неработоспособности вебхука')
+            }
 
     access_token = get_mask(db.access_token)
     me_token = get_mask(db.me_token)
 
-    return render_template('pages/admin.html', db=db, access_token=access_token,
-                           users=users, warn=warning, username=username,
-                           me_token=me_token)
+    if (me_error := me_data.get('error')) is not None:
+        warning = {
+            'type': 'danger',
+            'text': f'Ошибка получения токена VkMe: {me_error}'
+        }
+    if 'success' in me_data:
+        warning = {'type': 'success', 'text': 'Токен успешно получен!'}
+    me_data.clear()
+
+    return render_template(
+        'pages/admin.html',
+        db=db,
+        users=users,
+        warn=warning,
+        username=username,
+        me_token=me_token,
+        access_token=access_token,
+    )
 
 
 @app.route('/login')

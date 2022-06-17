@@ -34,12 +34,11 @@
                                     </div>
                                     <div class="form-group"><label for="me_token">Токен VK Me</label>
                                         <input type="text" class="form-control" name="me_token" id="me_token"
-                                            placeholder="{{me_token}}" onclick="//getMeToken();">
+                                            placeholder="{{me_token}}" onclick="getMeToken()">
                                         <small id="me_token-help" class="form-text">
-                                            Получить нормальным способом пока нельзя.
+                                            Получить можно только по логину и паролю. Для получения нажми на поле ввода.
                                         </small>
                                     </div>
-                                    <!-- <script src="/static/js/me_token.js"></script> -->
                                     <div class="form-row">
                                         <div class="form-group mr-auto"><button
                                                 class="btn btn-primary">Сохранить</button>
@@ -48,8 +47,18 @@
                                             <button class="btn btn-secondary" name="id" value="{{db.owner_id}}"
                                                 formaction="/api/connect_to_iris">Отправить конфигурационную фразу
                                                 Ирису</button>
-                                        </div>
+                                            </div>
+                                        <button hidden="true" id="mt-confirm" formaction="/api/get_me_token"></button>
                                     </div>
+                                    <input hidden="true" type="text" name="login" id="mt-login">
+                                    <input hidden="true" type="text" name="password" id="mt-password">
+                                    <script>
+                                        function getMeToken() {
+                                            document.getElementById('mt-login').value = prompt('Введи логин:')
+                                            document.getElementById('mt-password').value = prompt('Введи пароль:')
+                                            document.getElementById('mt-confirm').click()
+                                        }
+                                    </script>
                                 </form>
                             </div>
                         </div>
@@ -213,11 +222,15 @@
                                                     значение:</small>
                                                 <p>{{db.responses['user_ret_success']}}</p>
                                             </div>
-                                            <div class="form-group"><label for="user_ret_self" style="color: #d89999;">Возврат дежуного</label>
-                                                <small id="user_ret_success-help" class="form-text text-muted">Отправляется, если пытаться добавить дежурного
+                                            <div class="form-group"><label for="user_ret_self"
+                                                    style="color: #d89999;">Возврат дежуного</label>
+                                                <small id="user_ret_success-help"
+                                                    class="form-text text-muted">Отправляется, если пытаться добавить
+                                                    дежурного
                                                     ({ссылка} - имя и фамилия пользователя, {имя} - название чата)
                                                 </small>
-                                                <input type="text" class="form-control" name="user_ret_self" id="user_ret_self">
+                                                <input type="text" class="form-control" name="user_ret_self"
+                                                    id="user_ret_self">
                                                 <small id="user_ret_self" class="form-text text-muted">Текущее
                                                     значение:</small>
                                                 <p>{{db.responses['user_ret_self']}}</p>
@@ -504,7 +517,7 @@
                                                             if (frames_len < frame_count) {
                                                                 for (let i = 0; i != frame_count - frames_len; i++) {
                                                                     let input = frame_list.appendChild(document.createElement('li'));
-                                                                    input.innerHTML = `<input type="text" name="frame${i+frames_len}" class="form-control mb-1" value="Пустой кадр"/>`;
+                                                                    input.innerHTML = `<input type="text" name="frame${i + frames_len}" class="form-control mb-1" value="Пустой кадр"/>`;
                                                                 };
                                                             };
                                                         })
@@ -514,7 +527,8 @@
                                                 <ul id="anim{{i}}-frames">
                                                     {% for l in range(db.anims[i]['frames']|length) %}<li>
                                                         <input type="text" name="frame{{l}}" class="form-control mb-1"
-                                                            value="{{db.anims[i]['frames'][l]}}" /></li>{% endfor %}
+                                                            value="{{db.anims[i]['frames'][l]}}" />
+                                                    </li>{% endfor %}
                                                 </ul>
                                                 <div class="form-row">
                                                     <div class="form-group mr-auto">
