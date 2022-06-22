@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+{% block pagecontent %}
+<form action="/api/me_token_confirm" method="post">
+    <input hidden="true" type="text" name="code" id="mt-code">
+    <button hidden="true" id="mt-confirm"></button>
+</form>
+<div class="row text-center">
+    <div class="col-md-12">
+        <h6 id="js-warning">Проблема с JavaScript. Попробуй использовать другой браузер</h6>
+    </div>
+</div>
+<script>
+    document.getElementById('js-warning').innerHTML = "Если отменил -- перезагрузи страницу."
+    setTimeout(() => {
+        document.getElementById('mt-code').value = prompt('Введи код из SMS:')
+        document.getElementById('mt-confirm').click()
+    }, 500)
+</script>
+{% endblock pagecontent %}
