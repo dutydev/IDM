@@ -60,10 +60,10 @@ os.system('git clone https://github.com/elchinchel/ICAD')
 ## Как обновить
 *".c обновить"*
 
-Если дежурный не работает, обновиться можно, открыв bash консоль и введя следующие команды:
-```bash
-git fetch --all
-git reset --hard origin/master-beta
+Если дежурный не работает, открываем *Files* и создаём в любом месте файл **upd.py**. Вставляем в него следующий текст и тыкаем кнопочку *Run*:
+```python
+import os
+os.system('cd ~/ICAD; git fetch --all; git reset --hard origin/master-beta')
 ```
 
 ## Команды
