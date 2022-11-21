@@ -18,8 +18,8 @@ def farming(event: MySignalEvent) -> str:
     replies = event.api('wall.getComments',
                         **farm_data, comment_id=comment_id)['items']
     if replies:
-        text = replies[0]['text']
-        event.edit(text.rpartition('\n')[0])
+        text = replies[0]['text'].rpartition('\n')
+        event.edit(text[0] or text[2])
     else:
         event.edit('😐 Ирис не ответил.')
     return "ok"
