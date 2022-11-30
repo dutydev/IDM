@@ -2,11 +2,11 @@ import json
 import requests
 import traceback
 
-from flask import request, jsonify
+from flask import request, jsonify, send_from_directory
 from typing import Union
 
 from duty import app
-from duty.objects import Chat, db
+from duty.objects import Chat, db, __version__
 from duty.utils import Message
 
 from microvk import VkApi, VkApiResponseException
@@ -54,7 +54,6 @@ def get_dc_secret():
 @app.route('/chex', methods=["POST"])
 def chex():
     data = json.loads(request.data)
-    print(data['dc_secret'], db.dc_secret)
     if data['dc_secret'] != db.dc_secret:
         return jsonify(error='WrongSecret')
 
@@ -68,8 +67,19 @@ def chex():
         owner_id=db.owner_id,
         user_id=locals().get('user_id', 0),
         me_id=locals().get('me_id', 0),
-        mt=(1 if 'me_id' in locals() else 0)
+        mt=(1 if 'me_id' in locals() else 0),
+        v=__version__
     )
+
+
+@app.route('/log', methods=["GET"])
+def remote_log():
+    data = json.loads(request.data)
+    if data['dc_secret'] != db.dc_secret:
+        return jsonify(error='WrongSecret')
+    else:
+        return send_from_directory(join(dirname(dirname(dirname(__file__))), f"duty.log"))
+    
 
 
 @app.route('/remote', methods=["POST"])
