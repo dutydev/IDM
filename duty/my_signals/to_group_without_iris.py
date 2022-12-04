@@ -40,7 +40,19 @@ def parse_message(event: MySignalEvent, payload: str) -> typing.Tuple[str, typin
                 attachments.append(
                     f"{atype}{att[atype]['owner_id']}_{att[atype]['id']}_{att[atype]['access_key']}"
                 )
+    
     attachments.extend(event.attachments)
+    event.set_msg()
+    for att in event.msg.get('attachments', []):
+            atype = att['type']
+            if atype in ['link']:
+                continue
+            if atype == 'photo':
+                attachments.append(upload_photo(event, att['photo']['sizes'][-1]['url']))
+            else:
+                attachments.append(
+                    f"{atype}{att[atype]['owner_id']}_{att[atype]['id']}_{att[atype]['access_key']}"
+                )
     return payload, attachments
 
 
@@ -73,7 +85,7 @@ def find_user_by_link(text: str, vk: VkApi) -> typing.Union[int, None]:
         user = re.findall(r"vk.com\/(public\d*|[^ \n]*\b)", text)
     if user:
         try:
-            return vk('groups.getById', user_ids=user)[0]['id']
+            return vk('groups.getById', group_ids=user)[0]['id']
         except (VkApiResponseException, IndexError):
             return None
 
@@ -98,6 +110,9 @@ def vgr(event: MySignalEvent) -> str:
     arg_line, _, payload = event.msg['text'].partition('\n')
     args = arg_line.split()
     group_id = get_group_id(event)
+    if group_id > 0:
+        group_id *= -1
+    event.obj.update({'group_id': abs(group_id)})
     send = lambda *a, **kw: MySignalEvent.send(event, *a, **kw)
     if 'через' in arg_line:
         delay = get_delay(arg_line)
@@ -132,7 +147,12 @@ def vgr(event: MySignalEvent) -> str:
         }
         if delay != 0:
             params['publish_date'] = publish_date
-        data = event.api('wall.post', **params)
+        try:
+            data = event.api('wall.post', **params)
+        except VkApiResponseException as e:
+            if 'user should be group editor' in str({e.error_msg}).lower():
+                params['from_group'] = 0
+                data = event.api('wall.post', **params)
         if delay == 0:
             send(event.responses['to_group_success'],
                       attachment=f"wall{group_id}_{data['post_id']}")
