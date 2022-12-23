@@ -40,7 +40,7 @@ def parse_message(event: MySignalEvent, payload: str) -> typing.Tuple[str, typin
                 attachments.append(
                     f"{atype}{att[atype]['owner_id']}_{att[atype]['id']}_{att[atype]['access_key']}"
                 )
-    
+
     attachments.extend(event.attachments)
     event.set_msg()
     for att in event.msg.get('attachments', []):
@@ -110,8 +110,20 @@ def vgr(event: MySignalEvent) -> str:
     arg_line, _, payload = event.msg['text'].partition('\n')
     args = arg_line.split()
     group_id = get_group_id(event)
+
+    if group_id is None:
+        group_id = event.db.to_group_saved_group_id
+    elif group_id < 0:
+        event.db.to_group_saved_group_id = group_id
+
+    if group_id is None:
+        event.send('⚠️ Не указана группа, в которую нужно сделать пост!')
+        return 'ok'
+
     if group_id > 0:
-        group_id *= -1
+        event.send('⚠️ Нужна ссылочка на группу, а не пользователя.')
+        return 'ok'
+
     event.obj.update({'group_id': abs(group_id)})
     send = lambda *a, **kw: MySignalEvent.send(event, *a, **kw)
     if 'через' in arg_line:
@@ -120,7 +132,8 @@ def vgr(event: MySignalEvent) -> str:
         delay = 0
     if 'диалог' in arg_line:
         if not event.msg['fwd_messages']:
-            return send('Диалог кого с кем?')
+            send('Диалог кого с кем?')
+            return "ok"
         user_ids = set()
         for msg in event.msg['fwd_messages']:
             user_ids.add(msg['from_id'])
@@ -145,20 +158,26 @@ def vgr(event: MySignalEvent) -> str:
             'message': text,
             'attachments': ",".join(attachments)
         }
+
         if delay != 0:
             params['publish_date'] = publish_date
+
         try:
             data = event.api('wall.post', **params)
         except VkApiResponseException as e:
             if 'user should be group editor' in str({e.error_msg}).lower():
                 params['from_group'] = 0
                 data = event.api('wall.post', **params)
+            else:
+                raise
+
         if delay == 0:
             send(event.responses['to_group_success'],
-                      attachment=f"wall{group_id}_{data['post_id']}")
+                 attachment=f"wall{group_id}_{data['post_id']}")
         else:
             date = datetime.fromtimestamp(publish_date)
             send(f'Запись будет опубликована\n{date.ctime()}') # TODO: формат для тупых и отсталых
+
     except VkApiResponseException as e:
         if e.error_code == 214:
             send(event.responses['to_group_err_forbidden'])

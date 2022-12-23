@@ -1,13 +1,13 @@
-
-# давай вот щас не начинай, работает, а больше мне ничего не нужно
 import requests
-from .methods import Messages
 
 from logger import get_writer
+
+from .methods import Messages
+
 logger = get_writer('VK API')
 
 
-class VkApiResponseException(Exception):# да, спиздил))0)
+class VkApiResponseException(Exception):
     def __init__(self, *args, **kwargs):
         self.error_code = kwargs.get('error_code', None)
         self.error_msg = kwargs.get('error_msg', None)
@@ -51,6 +51,9 @@ class VkApi:
     def method(self, method, **kwargs):
         return self.__call__(method, **kwargs)
 
+    def message_send(self, message: str, peer_id: int, **kwargs):
+        return self.msg_op(1, peer_id, message, **kwargs)
+
     def msg_op(self, mode: int, peer_id: int = 0, message = '', msg_id = '', **kwargs):
         '''mode: 1 - отправка, 2 - редактирование, 3 - удаление, 4 - удаление только для себя'''
 
@@ -59,12 +62,19 @@ class VkApi:
             dfa = 0
         else: dfa = 1
 
-        mode = ['messages.send', 'messages.edit', 'messages.delete'][mode - 1]
+        method = ['messages.send', 'messages.edit', 'messages.delete'][mode - 1]
 
-        return self(mode, peer_id = peer_id, message = message,
-        message_id = msg_id, delete_for_all = dfa, random_id = 0, **kwargs)
+        return self(
+            method,
+            peer_id=peer_id,
+            message=message,
+            message_id=msg_id,
+            delete_for_all=dfa,
+            random_id=0,
+            **kwargs
+        )
 
-    def exe(self, code, token: str = None):
+    def exe(self, code, token: 'str | None' = None):
         if token:
             return VkApi(token)('execute', code = code)
         return self('execute', code = code)

@@ -73,6 +73,8 @@ class _StandardDefaults(__UserDefinedDefaults):
     anims: List[dict] = []
     voices: List[dict] = []
 
+    to_group_saved_group_id: 'int | None' = None
+
     auth_token: str = ''
     auth_token_date: int = 0
 
@@ -87,7 +89,7 @@ class _StandardDefaults(__UserDefinedDefaults):
         "key": ""
     }
 
-    responses: _Responses = {
+    responses = _Responses({
         "del_self": "&#13;",
         "del_process": "УДАЛЯЮ ЩАЩАЩ ПАДАЖЖЫ",
         "del_success": "✅ *Произошло удаление*",
@@ -130,7 +132,7 @@ class _StandardDefaults(__UserDefinedDefaults):
         "trusted_success_add": "✅ Пользователь {ссылка} в доверенных",
         "trusted_success_rem": "✅ Пользователь {ссылка} удален из доверенных",
         "trusted_list": "Доверенные пользователи:"
-    }
+    })
 
 
 class DB(_StandardDefaults):
