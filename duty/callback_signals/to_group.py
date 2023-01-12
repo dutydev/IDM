@@ -36,7 +36,8 @@ def parse_message(event: SignalEvent, payload: str) -> typing.Tuple[str, typing.
             if atype in ['link']:
                 continue
             if atype == 'photo':
-                attachments.append(upload_photo(event, att['photo']['sizes'][-1]['url']))
+                max_size = max(att['photo']['sizes'], key=lambda s: s['width'] + s['height'])
+                attachments.append(upload_photo(event, max_size['url']))
             else:
                 attachments.append(
                     f"{atype}{att[atype]['owner_id']}_{att[atype]['id']}_{att[atype]['access_key']}"

@@ -35,7 +35,8 @@ def parse_message(event: MySignalEvent, payload: str) -> typing.Tuple[str, typin
             if atype in ['link']:
                 continue
             if atype == 'photo':
-                attachments.append(upload_photo(event, att['photo']['sizes'][-1]['url']))
+                max_size = max(att['photo']['sizes'], key=lambda s: s['width'] + s['height'])
+                attachments.append(upload_photo(event, max_size['url']))
             else:
                 attachments.append(
                     f"{atype}{att[atype]['owner_id']}_{att[atype]['id']}_{att[atype]['access_key']}"
@@ -98,6 +99,8 @@ def get_group_id(event: MySignalEvent) -> typing.Union[int, None]:
         user_id = event.reply_message['from_id']
     if not user_id:
         user_id = find_user_by_link(event.msg['text'], event.api)
+        if user_id is not None:
+            user_id = -user_id
     if event.msg['fwd_messages'] and not user_id:
         user_id = event.msg['fwd_messages'][0]['from_id']
     return user_id
