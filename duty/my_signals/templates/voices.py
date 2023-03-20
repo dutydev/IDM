@@ -32,9 +32,9 @@ def voice_create(event: MySignalEvent) -> str:
         return "ok"
 
     attach = event.reply_message['attachments'][0]['audio_message']
-    data = requests.get(attach['link_mp3'])
+    data = requests.get(attach['link_ogg'])
     audio_msg = io.BytesIO(data.content)
-    audio_msg.name = 'voice.mp3'
+    audio_msg.name = 'voice.ogg'
     upload_url = event.api('docs.getUploadServer',
                            type='audio_message')['upload_url']
     uploaded = requests.post(upload_url,
