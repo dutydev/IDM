@@ -23,7 +23,9 @@ def binds_list(event: LongpollEvent):
     event.msg_op(2, message)
 
 
-@dp.my_signal_event_register('+префикс', '-префикс')
+@dp.my_signal_event_register('префиксы', '+префикс', '-префикс')
 def prefixes_callback_info(event: MySignalEvent):
-    event.msg_op(2, 'ℹ️ Менять префиксы можно только через LP модуль\n' +
-                 'https://github.com/Elchinchel/ICAD-Longpoll')
+    event.edit('ℹ️ В Ирке такое сделать невозможно из-за ириса, '
+               'префиксы зависят от него.\n'
+               'Но есть бот гораздо круче, залетай в беседу в группе '
+               '@ircaduty, тебе расскажут.')

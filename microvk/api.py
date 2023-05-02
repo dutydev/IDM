@@ -1,3 +1,5 @@
+from typing import Any
+
 import requests
 
 from logger import get_writer
@@ -32,7 +34,7 @@ class VkApi:
         self.query = f'?v={version}&access_token={access_token}&lang=ru'
         self.raise_excepts = raise_excepts
 
-    def __call__(self, method, **kwargs):
+    def __call__(self, method, **kwargs) -> Any:
         logger.debug(f'URL = "{self.url}{method}{self.query}" Data = {kwargs}')
         r = requests.post(f'{self.url}{method}{self.query}', data=kwargs)
         if r.status_code == 200:

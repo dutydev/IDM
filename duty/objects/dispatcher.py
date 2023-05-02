@@ -24,7 +24,7 @@ def event_register(method: str):
     return registrator
 
 
-def signal_event_register(*commands: tuple):
+def signal_event_register(*commands: str):
     def registrator(func):
         _logger.debug(f'Зарегистрирована новая команда для сигналов к ' +
                       f'дежурному. Команды {list(commands)}')
@@ -34,7 +34,7 @@ def signal_event_register(*commands: tuple):
     return registrator
 
 
-def my_signal_event_register(*commands: tuple, skip_receiving: bool = False):
+def my_signal_event_register(*commands: str, skip_receiving: bool = False):
     def registrator(func):
         _logger.debug(f'Зарегистрирована новая команда для сигналов к ' +
                       f'приемнику. Команды {list(commands)}')
@@ -46,7 +46,7 @@ def my_signal_event_register(*commands: tuple, skip_receiving: bool = False):
     return registrator
 
 
-def longpoll_event_register(*commands: tuple):
+def longpoll_event_register(*commands: str):
     def registrator(func):
         _logger.debug(f'Зарегистрирована новая команда для сигналов к ' +
                       f'LP приемнику. Команды {list(commands)}')

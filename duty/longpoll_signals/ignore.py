@@ -45,5 +45,7 @@ def ignore_list(event: LongpollEvent):
 
 @dp.my_signal_event_register('+игнор', '-игнор', 'игнор', 'игнорлист')
 def ignore_callback_info(event: MySignalEvent):
-    event.msg_op(2, 'ℹ️ Для обеспечения работы игнора необходим LP модуль\n' +
-                 'https://github.com/Elchinchel/ICAD-Longpoll')
+    event.edit('ℹ️ В Ирке такое сделать невозможно из-за платформы, '
+               'на которой это все дело запускается.\n'
+               'Но есть бот гораздо круче, залетай в беседу в группе '
+               '@ircaduty, тебе расскажут.')

@@ -59,7 +59,7 @@ class Event:
     reply_message: dict
     responses: dict
 
-    def set_msg(self, msg: dict = None):
+    def set_msg(self, msg: 'dict | None' = None):
         if msg is None:
             ct = datetime.now().timestamp()
             self.msg = get_msg(self.api, self.chat.peer_id, self.msg[cmid_key])
@@ -77,9 +77,8 @@ class Event:
             return
 
         if not self.msg:
-            raise RuntimeError(
-                'Невозможно связать чат! В событии отсутствует сообщение!'
-            )
+            raise RuntimeError('Невозможно связать чат! '
+                               'В событии отсутствует сообщение!')
 
         if self.msg[cmid_key] is None:
             raise ExceptToJson(code=10, iris=True)
@@ -88,6 +87,7 @@ class Event:
         search_res = self.api("messages.search",
                               q=self.msg['text'], count=10, extended=1)
         self.vk_response_time = datetime.now().timestamp() - ct
+
         message = None
         for msg in search_res['items']:
             if msg[cmid_key] == self.msg[cmid_key]:
@@ -95,16 +95,17 @@ class Event:
                     message = msg
                     break
         if message is None:
-            raise RuntimeError(
-                'Не могу привязать чат! Не нашёл сообщение-команду'
-            )
+            raise RuntimeError('Не могу привязать чат! '
+                               'Не нашёл сообщение-команду')
+
         for conv in search_res['conversations']:
             if conv['peer']['id'] == message['peer_id']:
                 chat_name = conv['chat_settings']['title']
                 break
+
         chat_raw = {
             "peer_id": message['peer_id'],
-            "name": chat_name,
+            "name": chat_name,  # type: ignore
             "installed": False
         }
         self.db.chats.update({self.obj['chat']: chat_raw})
@@ -146,14 +147,14 @@ class Event:
                 self.chat = Chat(self.db.chats[chat], chat)
         if self.method not in {'sendSignal', 'sendMySignal'}:
             logger.info(self.__str__())
-    
+
     def send(self, text='', **kwargs) -> int:
         if self.chat is None:
             raise RuntimeError(
                 'Невозможно отправить соообщение, т.к. чат не установлен'
             )
         return self.api.msg_op(1, self.chat.peer_id, text, **kwargs)
-    
+
     def edit_msg(self, message_id: int, text='', **kwargs):
         if self.chat is None:
             raise RuntimeError(
